@@ -98,7 +98,10 @@ const headerProps = {
         {(section || author) && (
           <div class="mt-2 flex items-center justify-between">
             {author ? (
-              <div class="flex items-center gap-3 text-xs text-neutral-600 dark:text-neutral-300">
+              <a
+                href={getRelativeLocaleUrl(resolvedLang, '/author/')}
+                class="flex items-center gap-3 text-xs text-neutral-600 no-underline transition-opacity hover:opacity-80 dark:text-neutral-300"
+              >
                 <Image
                   src={authorAvatar}
                   alt={author}
@@ -106,14 +109,8 @@ const headerProps = {
                   height={32}
                   class="rounded-full"
                 />
-                {authorUrl ? (
-                  <a href={authorUrl} class="no-underline hover:no-underline focus:no-underline">
-                    {author}
-                  </a>
-                ) : (
-                  <span>{author}</span>
-                )}
-              </div>
+                <span>{author}</span>
+              </a>
             ) : (
               <span />
             )}
