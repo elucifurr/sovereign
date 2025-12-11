@@ -193,9 +193,16 @@ const years = [currentYear, currentYear - 1, currentYear - 2];
 />
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+  // 等待DOM加载完成后执行
+  function initYearSelector() {
     const yearButtons = document.querySelectorAll('#year-selector button[data-year]');
     const calendars = document.querySelectorAll('[data-calendar-year]');
+
+    if (yearButtons.length === 0 || calendars.length === 0) {
+      // 如果元素还没加载，稍后重试
+      setTimeout(initYearSelector, 100);
+      return;
+    }
 
     const activeClasses = [
       'bg-neutral-900',
@@ -246,5 +253,12 @@ const years = [currentYear, currentYear - 1, currentYear - 2];
         });
       });
     });
-  });
+  }
+
+  // 如果DOM已加载，立即执行；否则等待
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initYearSelector);
+  } else {
+    initYearSelector();
+  }
 </script>
