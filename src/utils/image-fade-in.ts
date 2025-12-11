@@ -4,13 +4,21 @@ interface FadeInOptions {
     duration?: number;
     delay?: number;
     stagger?: number;
+    customSelectors?: string[];
+    excludeSelectors?: string[];
+    respectMotionPreference?: boolean;
 }
 
 class ImageFadeIn {
     private observer: IntersectionObserver | null = null;
     private mutationObserver: MutationObserver | null = null;
-    private options: Required<FadeInOptions>;
+    private options: Required<Omit<FadeInOptions, 'customSelectors' | 'excludeSelectors'>> & {
+        customSelectors: string[];
+        excludeSelectors: string[];
+    };
     private imageCount: number = 0;
+    private observedElements: WeakSet<HTMLElement> = new WeakSet();
+    private debouncedObserve: (() => void) | null = null;
 
     constructor(options: FadeInOptions = {}) {
         this.options = {
@@ -19,6 +27,9 @@ class ImageFadeIn {
             duration: options.duration ?? 800,
             delay: options.delay ?? 0,
             stagger: options.stagger ?? 50,
+            customSelectors: options.customSelectors ?? [],
+            excludeSelectors: options.excludeSelectors ?? [],
+            respectMotionPreference: options.respectMotionPreference ?? true,
         };
 
         this.init();
@@ -30,11 +41,20 @@ class ImageFadeIn {
             return;
         }
 
+        // Check for user's motion preference
+        if (this.options.respectMotionPreference) {
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (prefersReducedMotion) {
+                console.info('Fade-in animations disabled per user preference (prefers-reduced-motion)');
+                return;
+            }
+        }
+
         this.observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
-                        this.fadeInImage(entry.target as HTMLElement);
+                        this.fadeInElement(entry.target as HTMLElement);
                     }
                 });
             },
@@ -44,25 +64,45 @@ class ImageFadeIn {
             }
         );
 
+        // Create debounced observe function
+        this.debouncedObserve = this.debounce(() => {
+            this.observeImages();
+            this.observeTextElements();
+            this.observeCustomElements();
+        }, 100);
+
         this.observeImages();
-
         this.observeTextElements();
-
+        this.observeCustomElements();
         this.observeDOMChanges();
-
         this.setupViewTransitions();
+    }
+
+    private debounce(func: () => void, wait: number): () => void {
+        let timeout: ReturnType<typeof setTimeout> | null = null;
+        return () => {
+            if (timeout) clearTimeout(timeout);
+            timeout = setTimeout(func, wait);
+        };
     }
 
     private observeImages(): void {
         if (!this.observer) return;
 
         const images = document.querySelectorAll<HTMLElement>(
-            'img:not([data-no-fade]):not([data-fade-observed]), picture:not([data-no-fade]):not([data-fade-observed])'
+            'img:not([data-fade-observed]), ' +
+            'picture:not([data-fade-observed]), ' +
+            'svg:not([data-fade-observed]), ' +
+            'canvas:not([data-fade-observed]), ' +
+            'video:not([data-fade-observed])'
         );
 
         let firstContentImage: HTMLElement | null = null;
 
         images.forEach((img) => {
+            // Skip if already observed
+            if (this.observedElements.has(img)) return;
+
             const isPriority =
                 img.getAttribute('fetchpriority') === 'high' ||
                 img.getAttribute('loading') === 'eager' ||
@@ -76,59 +116,93 @@ class ImageFadeIn {
                 rect.right <= (window.innerWidth || document.documentElement.clientWidth)
             );
 
-            if (isInViewport && !firstContentImage && !this.isNavigationImage(img)) {
+            if (isInViewport && !firstContentImage && !this.isNavigationElement(img)) {
                 firstContentImage = img;
             }
 
             const shouldExclude =
                 isPriority ||
                 img === firstContentImage ||
-                this.isNavigationImage(img);
+                this.shouldExcludeElement(img);
+
+            this.observedElements.add(img);
+            img.setAttribute('data-fade-observed', 'true');
 
             if (shouldExclude) {
                 img.setAttribute('data-no-fade', 'true');
-                img.setAttribute('data-fade-observed', 'true');
                 return;
             }
 
-            img.style.opacity = '0';
-            img.style.transform = 'translateY(20px)';
-            img.style.transition = `opacity ${this.options.duration}ms cubic-bezier(0.4, 0, 0.2, 1), transform ${this.options.duration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
-            img.style.willChange = 'opacity, transform';
-            img.setAttribute('data-fade-observed', 'true');
-
-            img.setAttribute('data-fade-index', String(this.imageCount++));
-
+            this.prepareElement(img);
             this.observer!.observe(img);
         });
     }
 
-
-    private isNavigationImage(img: HTMLElement): boolean {
-        const parent = img.closest('header, nav, footer, [role="navigation"]');
+    private isNavigationElement(element: HTMLElement): boolean {
+        // Always exclude from header, nav, footer
+        const parent = element.closest('header, nav, footer, [role="navigation"]');
         if (parent) {
             return true;
         }
 
-        const rect = img.getBoundingClientRect();
-        if (rect.width < 80 && rect.height < 80) {
-            return true;
+        // For images (not SVG, canvas, video), keep the size check
+        if (!['SVG', 'CANVAS', 'VIDEO'].includes(element.tagName)) {
+            const rect = element.getBoundingClientRect();
+            if (rect.width < 80 && rect.height < 80) {
+                return true;
+            }
+
+            const alt = element.getAttribute('alt')?.toLowerCase() || '';
+            const className = element.className?.toLowerCase() || '';
+            const keywords = ['logo', 'icon', 'badge'];
+
+            if (keywords.some(keyword => alt.includes(keyword) || className.includes(keyword))) {
+                return true;
+            }
         }
 
+        // For SVG, canvas, video: only exclude if explicitly in navigation context
+        return false;
+    }
 
-        const alt = img.getAttribute('alt')?.toLowerCase() || '';
-        const className = img.className?.toLowerCase() || '';
-        const keywords = ['logo', 'icon', 'badge'];
+    private shouldExcludeElement(element: HTMLElement): boolean {
+        // 1. Check data-fade-in attribute for explicit control
+        const fadeInAttr = element.getAttribute('data-fade-in');
+        if (fadeInAttr === 'false') return true;
+        if (fadeInAttr === 'true') return false;
 
-        if (keywords.some(keyword => alt.includes(keyword) || className.includes(keyword))) {
-            return true;
+        // 2. Check data-no-fade attribute
+        if (element.hasAttribute('data-no-fade')) return true;
+
+        // 3. Check custom exclude selectors
+        if (this.options.excludeSelectors.length > 0) {
+            if (this.options.excludeSelectors.some(selector => element.matches(selector))) {
+                return true;
+            }
         }
+
+        // 4. Check if in navigation area
+        if (this.isNavigationElement(element)) return true;
 
         return false;
     }
 
+    private prepareElement(element: HTMLElement): void {
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(20px)';
+
+        // Check for custom duration
+        const customDuration = element.getAttribute('data-fade-duration');
+        const duration = customDuration ? parseInt(customDuration, 10) : this.options.duration;
+
+        element.style.transition = `opacity ${duration}ms cubic-bezier(0.4, 0, 0.2, 1), transform ${duration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+        element.style.willChange = 'opacity, transform';
+        element.setAttribute('data-fade-index', String(this.imageCount++));
+    }
+
     private observeTextElements(): void {
         if (!this.observer) return;
+
         const textElements = document.querySelectorAll<HTMLElement>(
             'h1:not([data-fade-observed]), h2:not([data-fade-observed]), h3:not([data-fade-observed]), ' +
             'h4:not([data-fade-observed]), h5:not([data-fade-observed]), h6:not([data-fade-observed]), ' +
@@ -146,9 +220,20 @@ class ImageFadeIn {
         );
 
         textElements.forEach((element) => {
+            if (this.observedElements.has(element)) return;
+
+            this.observedElements.add(element);
+            element.setAttribute('data-fade-observed', 'true');
+
+            // 检查是否在文章内容区 - 文章区所有文字都不淡入
+            const isInArticle = element.closest('.prose, [data-article-content]');
+            if (isInArticle) {
+                return; // 文章内容区的所有文字元素都不淡入
+            }
+
+            // 检查导航区域
             const parent = element.closest('header, nav, footer, [role="navigation"]');
             if (parent) {
-                element.setAttribute('data-fade-observed', 'true');
                 return;
             }
 
@@ -161,7 +246,6 @@ class ImageFadeIn {
             );
 
             if (isInViewport) {
-                element.setAttribute('data-fade-observed', 'true');
                 return;
             }
 
@@ -169,19 +253,51 @@ class ImageFadeIn {
             element.style.transform = 'translateY(30px)';
             element.style.transition = `opacity 600ms cubic-bezier(0.4, 0, 0.2, 1), transform 600ms cubic-bezier(0.4, 0, 0.2, 1)`;
             element.style.willChange = 'opacity, transform';
-            element.setAttribute('data-fade-observed', 'true');
             element.setAttribute('data-fade-index', String(this.imageCount++));
 
             this.observer!.observe(element);
         });
     }
 
-    private fadeInImage(element: HTMLElement): void {
+    private observeCustomElements(): void {
+        if (!this.observer || this.options.customSelectors.length === 0) return;
+
+        const customElements = document.querySelectorAll<HTMLElement>(
+            this.options.customSelectors.join(', ')
+        );
+
+        customElements.forEach((element) => {
+            // Skip if already observed
+            if (this.observedElements.has(element)) return;
+
+            this.observedElements.add(element);
+            element.setAttribute('data-fade-observed', 'true');
+
+            if (this.shouldExcludeElement(element)) {
+                element.setAttribute('data-no-fade', 'true');
+                return;
+            }
+
+            this.prepareElement(element);
+            this.observer!.observe(element);
+        });
+    }
+
+    private fadeInElement(element: HTMLElement): void {
         if (!this.observer) return;
 
         const fadeIndex = parseInt(element.getAttribute('data-fade-index') || '0', 10);
+
+        // Check for custom delay
+        const customDelay = element.getAttribute('data-fade-delay');
+        const baseDelay = customDelay ? parseInt(customDelay, 10) : this.options.delay;
         const staggerDelay = fadeIndex * this.options.stagger;
-        const totalDelay = this.options.delay + staggerDelay;
+        const totalDelay = baseDelay + staggerDelay;
+
+        // Get duration for cleanup timing
+        const customDuration = element.getAttribute('data-fade-duration');
+        const duration = customDuration ? parseInt(customDuration, 10) : this.options.duration;
+
         setTimeout(() => {
             element.style.opacity = '1';
             element.style.transform = 'translateY(0)';
@@ -192,13 +308,13 @@ class ImageFadeIn {
                 element.style.willChange = 'auto';
                 element.style.transition = '';
                 element.style.transform = '';
-            }, this.options.duration);
+            }, duration);
         }, totalDelay);
     }
 
     private observeDOMChanges(): void {
         this.mutationObserver = new MutationObserver((mutations) => {
-            let hasNewImages = false;
+            let hasNewContent = false;
 
             mutations.forEach((mutation) => {
                 if (mutation.addedNodes.length) {
@@ -208,19 +324,20 @@ class ImageFadeIn {
                             if (
                                 element.tagName === 'IMG' ||
                                 element.tagName === 'PICTURE' ||
-                                element.querySelector('img, picture')
+                                element.tagName === 'SVG' ||
+                                element.tagName === 'CANVAS' ||
+                                element.tagName === 'VIDEO' ||
+                                element.querySelector('img, picture, svg, canvas, video')
                             ) {
-                                hasNewImages = true;
+                                hasNewContent = true;
                             }
                         }
                     });
                 }
             });
 
-            if (hasNewImages) {
-                requestAnimationFrame(() => {
-                    this.observeImages();
-                });
+            if (hasNewContent && this.debouncedObserve) {
+                this.debouncedObserve();
             }
         });
 
@@ -235,6 +352,7 @@ class ImageFadeIn {
             this.imageCount = 0;
             this.observeImages();
             this.observeTextElements();
+            this.observeCustomElements();
         });
 
         document.addEventListener('astro:before-preparation', () => {
@@ -264,6 +382,7 @@ if (typeof window !== 'undefined') {
             duration: 800,
             delay: 0,
             stagger: 50,
+            respectMotionPreference: true,
         });
     };
 
