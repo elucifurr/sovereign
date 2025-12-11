@@ -62,7 +62,9 @@ const siteName = t(resolvedLang, 'site.name');
   <MobileNav lang={resolvedLang} />
 </header>
 
-<script is:inline>
+<script>
+  import { registerPageInit } from '@/utils/page-init';
+
   function handleMobileToggle() {
     const panel = document.querySelector('[data-mobile-panel]');
     if (panel) panel.classList.toggle('hidden');
@@ -71,11 +73,14 @@ const siteName = t(resolvedLang, 'site.name');
   function initMobileMenu() {
     const btn = document.querySelector('[data-mobile-trigger]');
     if (!btn) return;
+
     btn.removeEventListener('click', handleMobileToggle);
     btn.addEventListener('click', handleMobileToggle);
+
+    return () => {
+      btn.removeEventListener('click', handleMobileToggle);
+    };
   }
 
-  initMobileMenu();
-  document.addEventListener('DOMContentLoaded', initMobileMenu, { once: true });
-  document.addEventListener('astro:page-load', initMobileMenu);
+  registerPageInit('mobileMenu', initMobileMenu);
 </script>

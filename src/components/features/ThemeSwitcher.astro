@@ -56,93 +56,103 @@ const THEME_OPTIONS = [
 </details>
 
 <script>
+  import { registerPageInit } from '@/utils/page-init';
+
   function initThemeSwitcher() {
     const themeRoot = document.querySelector('[data-theme-root]');
     const themeIcon = document.querySelector('[data-theme-icon]');
     const themeButtons = document.querySelectorAll('[data-theme-option]');
 
-    if (themeRoot && themeIcon && themeButtons.length) {
+    if (!themeRoot || !themeIcon || themeButtons.length === 0) return;
+
+    function updateIcon(theme: 'light' | 'dark') {
+      const icons = themeIcon?.querySelectorAll('svg');
+      if (!icons || icons.length < 2) return;
+      icons[0]!.classList.toggle('hidden', theme === 'dark');
+      icons[1]!.classList.toggle('hidden', theme !== 'dark');
+    }
+
+    function applyTheme(theme: 'light' | 'dark') {
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      updateIcon(theme);
+    }
+
+    function setTheme(theme: 'light' | 'dark' | 'system') {
+      localStorage.setItem('theme', theme);
+      const actualTheme =
+        theme === 'system'
+          ? window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light'
+          : theme;
+      applyTheme(actualTheme);
+
+      themeButtons.forEach((btn) => {
+        const value = btn.getAttribute('data-theme-option');
+        btn.setAttribute('aria-pressed', String(value === theme));
+      });
+    }
+
+    function handleThemeChange(event: Event) {
+      const button = (event.target as Element | null)?.closest('[data-theme-option]');
+      if (!button) return;
+
+      const theme = button.getAttribute('data-theme-option');
+      setTheme((theme as 'light' | 'dark' | 'system') || 'system');
+
+      if (themeRoot instanceof HTMLDetailsElement) {
+        themeRoot.open = false;
+      } else if (themeRoot) {
+        themeRoot.removeAttribute('open');
+      }
+
+      const mobilePanel = document.querySelector('[data-mobile-panel]');
+      if (
+        mobilePanel &&
+        mobilePanel.classList.contains('md:hidden') &&
+        !mobilePanel.classList.contains('hidden')
+      ) {
+        mobilePanel.classList.add('hidden');
+      }
+    }
+
+    // 移除旧的事件监听器
+    themeButtons.forEach((button) => {
+      button.removeEventListener('click', handleThemeChange);
+    });
+
+    const storedPref = localStorage.getItem('theme') as 'light' | 'dark' | 'system' | null;
+    const initialTheme: 'light' | 'dark' | 'system' = storedPref ?? 'system';
+    setTheme(initialTheme);
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleMediaChange = () => {
+      if (localStorage.getItem('theme') === 'system' || !localStorage.getItem('theme')) {
+        const newTheme = mediaQuery.matches ? 'dark' : 'light';
+        applyTheme(newTheme);
+      }
+    };
+
+    mediaQuery.addEventListener('change', handleMediaChange);
+
+    themeButtons.forEach((button) => {
+      button.addEventListener('click', handleThemeChange);
+    });
+
+    // 返回清理函数
+    return () => {
+      mediaQuery.removeEventListener('change', handleMediaChange);
       themeButtons.forEach((button) => {
         button.removeEventListener('click', handleThemeChange);
       });
-
-      function updateIcon(theme: 'light' | 'dark') {
-        const icons = themeIcon?.querySelectorAll('svg');
-        if (!icons || icons.length < 2) return;
-        icons[0]!.classList.toggle('hidden', theme === 'dark');
-        icons[1]!.classList.toggle('hidden', theme !== 'dark');
-      }
-
-      function applyTheme(theme: 'light' | 'dark') {
-        if (theme === 'dark') {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-        updateIcon(theme);
-      }
-
-      function setTheme(theme: 'light' | 'dark' | 'system') {
-        localStorage.setItem('theme', theme);
-        const actualTheme =
-          theme === 'system'
-            ? window.matchMedia('(prefers-color-scheme: dark)').matches
-              ? 'dark'
-              : 'light'
-            : theme;
-        applyTheme(actualTheme);
-
-        themeButtons.forEach((btn) => {
-          const value = btn.getAttribute('data-theme-option');
-          btn.setAttribute('aria-pressed', String(value === theme));
-        });
-      }
-
-      function handleThemeChange(event: Event) {
-        const button = (event.target as Element | null)?.closest('[data-theme-option]');
-        if (!button) return;
-
-        const theme = button.getAttribute('data-theme-option');
-        setTheme((theme as 'light' | 'dark' | 'system') || 'system');
-
-        if (themeRoot instanceof HTMLDetailsElement) {
-          themeRoot.open = false;
-        } else if (themeRoot) {
-          themeRoot.removeAttribute('open');
-        }
-
-        const mobilePanel = document.querySelector('[data-mobile-panel]');
-        if (
-          mobilePanel &&
-          mobilePanel.classList.contains('md:hidden') &&
-          !mobilePanel.classList.contains('hidden')
-        ) {
-          mobilePanel.classList.add('hidden');
-        }
-      }
-
-      const storedPref = localStorage.getItem('theme') as 'light' | 'dark' | 'system' | null;
-      const initialTheme: 'light' | 'dark' | 'system' = storedPref ?? 'system';
-      setTheme(initialTheme);
-
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-        if (localStorage.getItem('theme') === 'system' || !localStorage.getItem('theme')) {
-          const newTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
-            ? 'dark'
-            : 'light';
-          applyTheme(newTheme);
-        }
-      });
-
-      themeButtons.forEach((button) => {
-        button.addEventListener('click', handleThemeChange);
-      });
-    }
+    };
   }
 
-  initThemeSwitcher();
-
-  document.addEventListener('astro:page-load', initThemeSwitcher);
+  registerPageInit('themeSwitcher', initThemeSwitcher);
 </script>
 
 <style>

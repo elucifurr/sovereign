@@ -73,34 +73,41 @@ const resolvedLang = ((Astro.currentLocale as Lang | undefined) ??
   </div>
 </div>
 
-<script is:inline>
-  // Stable handler reference so we don't double-toggle
-  function handleAccordionClick(e) {
-    var t = e.target;
-    if (!(t instanceof Element)) return;
-    var trigger = t.closest('[data-accordion-trigger]');
+<script>
+  import { registerPageInit } from '@/utils/page-init';
+
+  function handleAccordionClick(e: Event) {
+    const target = e.target;
+    if (!(target instanceof Element)) return;
+
+    const trigger = target.closest('[data-accordion-trigger]');
     if (!trigger) return;
-    var root = trigger.closest('[data-mobile-panel]');
+
+    const root = trigger.closest('[data-mobile-panel]');
     if (!root) return;
-    var id = trigger.getAttribute('data-accordion-trigger');
+
+    const id = trigger.getAttribute('data-accordion-trigger');
     if (!id) return;
-    var panel = root.querySelector('[data-accordion-panel="' + id + '"]');
+
+    const panel = root.querySelector(`[data-accordion-panel="${id}"]`);
     if (panel) panel.classList.toggle('hidden');
   }
 
   function initMobileAccordion() {
-    var script = document.currentScript;
-    var root = script && script.previousElementSibling;
-    if (!root || !(root instanceof HTMLElement)) {
-      root = document.querySelector('[data-mobile-panel]');
-    }
+    const root = document.querySelector('[data-mobile-panel]');
     if (!root) return;
 
-    if (root.getAttribute('data-accordion-initialized') === 'true') return;
-    root.setAttribute('data-accordion-initialized', 'true');
+    // 移除旧的事件监听器（如果有）
+    root.removeEventListener('click', handleAccordionClick);
+
+    // 添加新的事件监听器
     root.addEventListener('click', handleAccordionClick);
+
+    // 返回清理函数
+    return () => {
+      root.removeEventListener('click', handleAccordionClick);
+    };
   }
 
-  initMobileAccordion();
-  document.addEventListener('astro:page-load', initMobileAccordion);
+  registerPageInit('mobileAccordion', initMobileAccordion);
 </script>

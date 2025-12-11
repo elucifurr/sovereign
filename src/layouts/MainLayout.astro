@@ -28,6 +28,7 @@ const resolvedLang = ((Astro.currentLocale as Lang | undefined) ??
     <slot name="head" />
     <GTMHead />
     <ClientRouter />
+    <script src="../utils/page-init.ts"></script>
     <script src="../utils/image-fade-in.ts"></script>
   </head>
   <body class="bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
