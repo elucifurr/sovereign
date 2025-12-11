@@ -1,8 +1,9 @@
 ---
 import OptimizedPicture from '@/features/OptimizedPicture.astro';
+import SkeletonCardCover from '@/ui/SkeletonCardCover.astro';
+import { formatDate } from '@/utils/date';
 import type { Lang } from '@/utils/i18n';
 import { categoryLabel } from '@/utils/translations';
-import { formatDate } from '@/utils/date';
 
 interface Props {
   href?: string;
@@ -16,6 +17,7 @@ interface Props {
   priority?: boolean;
   aspectClass?: string;
   class?: string;
+  loading?: boolean;
 }
 
 const {
@@ -29,46 +31,48 @@ const {
   priority = false,
   aspectClass = 'aspect-[16/9]',
   class: className,
+  loading = false,
 } = Astro.props as Props;
 
 const Container = href ? 'a' : 'div';
 const containerAttrs = href ? { href } : {};
 ---
 
-<Container
-  {...containerAttrs}
-  class={`group relative block overflow-hidden rounded-xl ${aspectClass} ${className ?? ''} transition-shadow duration-300`.trim()}
->
-  <OptimizedPicture
-    src={imageSrc}
-    alt={imageAlt}
-    class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out will-change-transform group-hover:scale-[1.03]"
-    fit="cover"
-    position="center"
-    priority={priority}
-  />
-
-  <div
-    class="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/80 transition-opacity duration-300 group-hover:opacity-90"
-  >
-  </div>
-
-  <div class="absolute inset-x-0 bottom-0 p-4 sm:p-5">
-    <div class="flex items-center justify-between text-xs text-white/85 sm:text-sm">
-      <span>{date ? formatDate(date, lang) : ''}</span>
-      {category && <span class="ml-4 truncate">{categoryLabel(lang, category)}</span>}
-    </div>
-    <h3
-      class="mt-4 text-base leading-snug font-bold text-white sm:text-lg"
-      style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;"
+{
+  loading ? (
+    <SkeletonCardCover aspectClass={aspectClass} class={className} />
+  ) : (
+    <Container
+      {...containerAttrs}
+      class={`group relative block overflow-hidden rounded-xl ${aspectClass} ${className ?? ''}`.trim()}
     >
-      {title}
-    </h3>
-  </div>
+      <OptimizedPicture
+        src={imageSrc}
+        alt={imageAlt}
+        class="absolute inset-0 h-full w-full object-cover transition-transform duration-[800ms] ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:scale-[1.03]"
+        fit="cover"
+        position="center"
+        priority={priority}
+      />
 
-  {
-    href && (
-      <span class="pointer-events-none absolute inset-0 rounded-xl ring-transparent ring-inset focus-within:ring-2 focus-within:ring-white/50" />
-    )
-  }
-</Container>
+      <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/80 transition-opacity duration-300 group-hover:opacity-90"></div>
+
+      <div class="absolute inset-x-0 bottom-0 p-4 sm:p-5">
+        <div class="flex items-center justify-between text-xs text-white/85 sm:text-sm">
+          <span>{date ? formatDate(date, lang) : ''}</span>
+          {category && <span class="ml-4 truncate">{categoryLabel(lang, category)}</span>}
+        </div>
+        <h3
+          class="mt-4 text-base leading-snug font-bold text-white sm:text-lg"
+          style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;"
+        >
+          {title}
+        </h3>
+      </div>
+
+      {href && (
+        <span class="pointer-events-none absolute inset-0 rounded-xl ring-transparent ring-inset focus-within:ring-2 focus-within:ring-white/50" />
+      )}
+    </Container>
+  )
+}

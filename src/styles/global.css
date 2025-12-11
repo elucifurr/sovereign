@@ -18,3 +18,87 @@ body {
     Arial,
     sans-serif;
 }
+
+.skeleton {
+  background-color: #f0f0f0;
+  border-radius: 0.5rem;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+:global(.dark) .skeleton {
+  background-color: #2a2a2a;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+
+.lazy-image-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: block;
+}
+
+.blur-placeholder {
+  filter: blur(20px);
+  transform: scale(1.1);
+  transition: opacity 400ms ease-out;
+}
+
+.blur-placeholder.hidden {
+  opacity: 0;
+}
+
+@keyframes lazy-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.lazy-fade-in {
+  animation: lazy-fade-in 400ms ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+
+  .skeleton-shimmer {
+    animation: none !important;
+    background: #f0f0f0 !important;
+  }
+
+  :global(.dark) .skeleton-shimmer {
+    background: #2a2a2a !important;
+  }
+
+  .blur-placeholder,
+  .lazy-fade-in {
+    animation: none;
+    transition: opacity 50ms ease-out;
+  }
+
+  @keyframes shimmer {
+    0%, 100% {
+      background-position: 0% 0%;
+    }
+  }
+}
+
+.will-animate {
+  will-change: opacity, transform;
+}
+
+.animation-complete {
+  will-change: auto;
+}
