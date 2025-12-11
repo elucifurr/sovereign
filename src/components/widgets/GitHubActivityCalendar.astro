@@ -2,9 +2,9 @@
 type WeekdayIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 type GitHubActivityDay = {
-  date: string; // 'YYYY-MM-DD'
+  date: string;
   count: number;
-  level: number; // 0..4
+  level: number;
   color?: string;
 };
 
@@ -27,7 +27,6 @@ function isValid(date: Date): boolean {
 }
 
 function formatISO(date: Date): string {
-  // toISOString uses UTC; for calendar continuity, this is fine
   return date.toISOString().slice(0, 10);
 }
 
@@ -77,6 +76,7 @@ function eachDayOfInterval({ start, end }: { start: Date; end: Date }): Array<Da
 interface Props {
   username: string;
   year?: number | 'last';
+  repo?: string;
 }
 
 function range(n: number) {
@@ -102,8 +102,8 @@ async function fetchWithTimeout(
 async function fetchData(
   username: string,
   year: number | 'last',
+  repo?: string,
 ): Promise<GitHubActivityApiResponse> {
-  // Prefer GitHub GraphQL with token to include private contributions
   const token = getSecret('GITHUB_TOKEN') || import.meta.env.GITHUB_TOKEN;
   if (token) {
     const now = new Date();
@@ -116,6 +116,117 @@ async function fetchData(
       from = new Date(year, 0, 1);
       to = new Date(year, 11, 31, 23, 59, 59);
     }
+
+    if (repo) {
+      const [owner, name] = repo.split('/');
+      if (!owner || !name) {
+        throw new Error(`Invalid repo format: ${repo}. Expected "owner/repo"`);
+      }
+
+      const query = `
+        query($owner: String!, $name: String!, $since: GitTimestamp, $until: GitTimestamp) {
+          repository(owner: $owner, name: $name) {
+            defaultBranchRef {
+              target {
+                ... on Commit {
+                  history(first: 100, since: $since, until: $until) {
+                    edges {
+                      node {
+                        committedDate
+                        author {
+                          user {
+                            login
+                          }
+                        }
+                      }
+                    }
+                    pageInfo {
+                      hasNextPage
+                      endCursor
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `;
+
+      const commitsByDate = new Map<string, number>();
+      let hasNextPage = true;
+      let endCursor: string | null = null;
+
+      while (hasNextPage) {
+        const res = await fetchWithTimeout('https://api.github.com/graphql', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/vnd.github+json',
+            'User-Agent': 'iDiMi-GitHubActivityCalendar',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            query,
+            variables: {
+              owner,
+              name,
+              since: from.toISOString(),
+              until: to.toISOString(),
+            },
+          }),
+          timeoutMs: 6000,
+        });
+
+        const out = await res.json();
+        if (!res.ok || out.errors) {
+          const msg = out?.errors?.[0]?.message || 'GraphQL error';
+          throw new Error(`GitHub GraphQL failed: ${msg}`);
+        }
+
+        const history = out?.data?.repository?.defaultBranchRef?.target?.history;
+        if (!history) {
+          break;
+        }
+
+        for (const edge of history.edges as Array<any>) {
+          const commitDate = edge.node.committedDate;
+          const authorLogin = edge.node.author?.user?.login;
+
+          if (authorLogin === username) {
+            const date = String(commitDate).slice(0, 10);
+            commitsByDate.set(date, (commitsByDate.get(date) || 0) + 1);
+          }
+        }
+
+        hasNextPage = history.pageInfo.hasNextPage;
+        endCursor = history.pageInfo.endCursor;
+
+        if (!hasNextPage) break;
+      }
+
+      const days: Array<GitHubActivityDay> = [];
+      const allDays = eachDayOfInterval({ start: from, end: to });
+
+      for (const day of allDays) {
+        const date = formatISO(day);
+        const count = commitsByDate.get(date) || 0;
+        let level = 0;
+        if (count > 0) level = 1;
+        if (count >= 3) level = 2;
+        if (count >= 6) level = 3;
+        if (count >= 10) level = 4;
+
+        days.push({ date, count, level });
+      }
+
+      return {
+        contributions: days,
+        total: {
+          lastYear: days.reduce((s, a) => s + a.count, 0),
+        } as any,
+      };
+    }
+
     const query = `
       query($login: String!, $from: DateTime!, $to: DateTime!) {
         user(login: $login) {
@@ -141,7 +252,7 @@ async function fetchData(
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/vnd.github+json',
-        'User-Agent': 'iNote-GitHubActivityCalendar',
+        'User-Agent': 'iDiMi-GitHubActivityCalendar',
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
@@ -174,9 +285,7 @@ async function fetchData(
         days.push({ date, count, level: colorIndex(color), color });
       }
     }
-    // Ensure sorted by date
     days.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
-    // Validate
     if (days.length === 0) {
       throw new Error('No contributions returned by GitHub');
     }
@@ -216,7 +325,6 @@ async function fetchData(
   return data;
 }
 
-// Use GitHub-like green palette (level 0..4)
 function calcColorScale(): Array<string> {
   return ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'];
 }
@@ -244,17 +352,13 @@ function fillHoles(activities: Array<GitHubActivityDay>): Array<GitHubActivityDa
 
 function groupByWeeks(
   activities: Array<GitHubActivityDay>,
-  weekStart: WeekdayIndex = 0, // 0 = Sunday
+  weekStart: WeekdayIndex = 0,
 ): Array<GitHubActivityWeek> {
   const normalizedActivities = fillHoles(activities);
-  // Determine the first date of the calendar. If the first date is not the
-  // passed weekday, the respective weekday one week earlier is used.
   const firstActivity = normalizedActivities[0] as GitHubActivityDay;
   const firstDate = parseISO(firstActivity.date);
   const firstCalendarDate =
     getDay(firstDate) === weekStart ? firstDate : subWeeks(nextDay(firstDate, weekStart), 1);
-  // To correctly group activities by week, it is necessary to left-pad the list
-  // because the first date might not be set start weekday.
   const paddedActivities = [
     ...(Array(differenceInCalendarDays(firstDate, firstCalendarDate)).fill(
       undefined,
@@ -263,7 +367,6 @@ function groupByWeeks(
   ];
   const numberOfWeeks = Math.ceil(paddedActivities.length / 7);
 
-  // Finally, group activities by week
   return [...Array(numberOfWeeks).keys()].map((weekIndex) =>
     paddedActivities.slice(weekIndex * 7, weekIndex * 7 + 7),
   );
@@ -294,11 +397,9 @@ function getMonthLabels(
     }, [])
     .filter(({ weekIndex }, index, labels) => {
       const minWeeks = 3;
-      // Skip the first month label if there is not enough space to the next one.
       if (index === 0) {
         return labels[1] && labels[1].weekIndex - weekIndex >= minWeeks;
       }
-      // Skip the last month label if there is not enough data in that month
       if (index === labels.length - 1) {
         return weeks.slice(weekIndex).length >= minWeeks;
       }
@@ -306,10 +407,9 @@ function getMonthLabels(
     });
 }
 
-const { username, year = 'last' } = Astro.props;
+const { username, year = 'last', repo } = Astro.props;
 
-// Try to fetch data; if it fails (e.g., network blocked in CI),
-// fall back to an empty last-year calendar so builds don’t fail.
+
 function makeEmptyLastYear(): GitHubActivityApiResponse {
   const today = new Date();
   const start = subWeeks(today, 52);
@@ -326,9 +426,8 @@ function makeEmptyLastYear(): GitHubActivityApiResponse {
 
 let data: GitHubActivityApiResponse;
 try {
-  data = await fetchData(username, year);
+  data = await fetchData(username, year, repo);
 } catch (err) {
-  // Graceful degrade: log on server, render empty calendar
   console.warn('[GitHubActivityCalendar] fetch failed, using fallback:', err);
   data = makeEmptyLastYear();
 }
@@ -342,7 +441,7 @@ const fontSize = 14;
 const hideColorLegend = false;
 const hideMonthLabels = false;
 const hideTotalCount = false;
-const weekStart = 0; // 0 = Sunday, 1 = Monday, etc.
+const weekStart = 0;
 
 const colorScale = calcColorScale();
 const activities = data.contributions;
@@ -372,7 +471,6 @@ const height = labelHeight + (blockSize + blockMargin) * 7 - blockMargin;
   <div
     class="max-w-full overflow-x-auto pt-0.5"
     style={{
-      // Don't cover the calendar with the scrollbar.
       scrollbarGutter: 'stable',
     }}
   >
