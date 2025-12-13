@@ -4,7 +4,6 @@ import OptimizedPicture from '@/features/OptimizedPicture.astro';
 import ContentImage from '@/features/ContentImage.astro';
 import RelatedList from '@/widgets/RelatedList.astro';
 import PostLayout from '@/layouts/PostLayout.astro';
-import Prose from '@/features/Prose.astro';
 import type { Lang } from '@/utils/i18n';
 import { DEFAULT_LANG, SUPPORTED_LANGS, toAbsolute } from '@/utils/i18n';
 
@@ -80,6 +79,7 @@ const postLayoutProps = {
           fit="cover"
           position="center"
           class="h-auto w-full object-cover"
+          sizes="(max-width: 896px) 100vw, 896px"
         />
       </figure>
     )
