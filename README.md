@@ -40,7 +40,7 @@ Scores vary by content and network; treat as indicative.
 - ⚡ **Performance**: Link prefetching enabled (`prefetch.defaultStrategy = 'viewport'`).
 - 🔎 **Search**: `astro-pagefind` with `/[lang]/search`.
 - 📈 **SEO**: `astro-seo` + JSON‑LD; per‑language RSS at `/[lang]/rss.xml`; `robots.txt` and `@astrojs/sitemap`.
-- 🎨 **Styling & Components**: Tailwind CSS v4 (+ Typography); multiple cards/layouts; light/dark toggle and auto detect; icon system via `astro-icon` (Tabler/MDI sets included).
+- 🎨 **Styling & Components**: Tailwind CSS v4 (+ Typography); multiple cards/layouts; light/dark toggle and auto detect; icon system via `astro-icon` (Lucide sets included).
 - 📊 **Analytics‑ready**: Partytown integration forwarding `dataLayer.push` (no third‑party scripts enabled by default).
 - 🧩 **Built‑ins**: pagination; tags & categories pages; author page; 404 page.
 
