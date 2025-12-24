@@ -9,7 +9,6 @@ import { defineConfig } from 'astro/config';
 import { remarkModifiedTime } from './src/utils/remark-modified-time.mjs';
 
 export default defineConfig({
-  cacheDir: './.astro_cache',
   site: 'https://astrology-i18n.vercel.app',
   trailingSlash: 'always',
 
