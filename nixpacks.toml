@@ -1,20 +1,16 @@
 [phases.setup]
-# 必须使用 nodejs_23 以满足 Astro 5 / Vite 7 / Tailwind 4 的环境要求
-pkgs = ["nodejs_22", "npm"]
+pkgs = ["nodejs_23", "npm"]
 
 [phases.install]
-# 安装项目依赖和 EdgeOne 全局工具
-cmds = ["npm ci", "npm install -g edgeone"]
+# 去掉 -g，直接安装到项目本地目录更可靠，或者保留 -g 配合 npx 使用
+cmds = ["npm ci", "npm install edgeone"]
 
 [phases.build]
-# 步骤 1: 编译 Astro 静态文件到 /dist
-# 步骤 2: 直接通过 CLI 上传到 EdgeOne
-# 如果上传失败，构建会在这里直接中断并报错，方便排查
+# 使用 npx 来调用 edgeone，这能确保即使路径没在 $PATH 里也能找到该指令
 cmds = [
     "npm run build",
-    "edgeone pages deploy ./dist -n $EDGEONE_PROJECT_NAME -t $EDGEONE_API_TOKEN --force"
+    "npx edgeone pages deploy ./dist -n $EDGEONE_PROJECT_NAME -t $EDGEONE_API_TOKEN --force"
 ]
 
 [start]
-# 构建成功后，启动监控脚本占位，确保 Dokploy 显示 Running
 cmd = "node deploy-wrapper.cjs"
