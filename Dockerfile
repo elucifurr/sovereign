@@ -38,7 +38,7 @@ ENV PORT=3000
 EXPOSE 3000
 
 # 注入部署编排脚本 [cite: 41]
-COPY deploy-wrapper.js /app/deploy-wrapper.js
+COPY deploy-wrapper.cjs /app/deploy-wrapper.cjs
 
 # 启动 Node.js 包装脚本 [cite: 41]
-CMD ["node", "/app/deploy-wrapper.js"]
+CMD ["node", "/app/deploy-wrapper.cjs"]
