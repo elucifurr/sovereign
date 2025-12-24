@@ -22,7 +22,7 @@ RUN --mount=type=cache,target=/app/.astro_cache \
     npm run build
 
 # ==========================================
-# 阶段 2: 运行与增量上传阶段 (Runner)
+# 阶段 2: 运行与量上传阶段 (Runner)
 # ==========================================
 FROM node:22-alpine AS runner
 WORKDIR /app
