@@ -1,16 +1,21 @@
 [phases.setup]
+# 强制 Node 23 以适配最新的集成环境
 pkgs = ["nodejs_23", "npm"]
 
 [phases.install]
-# 去掉 -g，直接安装到项目本地目录更可靠，或者保留 -g 配合 npx 使用
-cmds = ["npm ci", "npm install edgeone"]
+# 直接 npm ci 即可，因为 edgeone 已经在 devDependencies 中
+cmds = ["npm ci"]
 
 [phases.build]
-# 使用 npx 来调用 edgeone，这能确保即使路径没在 $PATH 里也能找到该指令
+# 1. 执行 Astro 构建
+# 2. 拷贝 package.json 到 dist（EdgeOne 部署规范要求）
+# 3. 执行部署命令，使用环境变量注入
 cmds = [
     "npm run build",
+    "cp package.json ./dist/",
     "npx edgeone pages deploy ./dist -n $EDGEONE_PROJECT_NAME -t $EDGEONE_API_TOKEN --force"
 ]
 
 [start]
+# 构建成功后启动状态监控面板
 cmd = "node deploy-wrapper.cjs"
