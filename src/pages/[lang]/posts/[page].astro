@@ -17,7 +17,9 @@ export async function getStaticPaths({ paginate }: { paginate: any }) {
         params: { lang },
         props: { lang },
         pageSize: POSTS_PER_PAGE,
-      })
+      }).filter(({ props }: { props: { page: { currentPage: number } } }) =>
+        props.page.currentPage > 1
+      )
     )
   return paths
 }
@@ -27,6 +29,7 @@ const { lang, page } = Astro.props as {
   page: {
     data: Awaited<ReturnType<typeof getPostsForLocale>>
     currentPage: number
+    lastPage: number
     url: { prev?: string; next?: string }
   }
 }
@@ -57,7 +60,12 @@ const title = t(lang, "pages.posts.pageTitle", { page: page.currentPage })
     <Pagination
       prev={page.currentPage === 2 ? `/${lang}/posts/` : page.url.prev}
       next={page.url.next}
+      first={`/${lang}/posts/`}
+      last={page.currentPage < page.lastPage
+        ? `/${lang}/posts/${page.lastPage}/`
+        : undefined}
       currentPage={page.currentPage}
+      totalPages={page.lastPage}
     />
   </PageSection>
 </Layout>

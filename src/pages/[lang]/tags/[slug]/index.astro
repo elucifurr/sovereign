@@ -8,6 +8,7 @@ import Pagination from "@/components/navigation/Pagination.astro"
 import { LOCALES, type Locale } from "@/config/locales"
 import { TAXONOMY_POSTS_PER_PAGE } from "@/config/pagination"
 import { TAXONOMY, getTag } from "@/config/taxonomy"
+import { getPaginationLinks, getTotalPages } from "@/utils/pagination"
 import { getPostsByTag } from "@/utils/posts"
 import { t } from "@/utils/translations"
 
@@ -24,10 +25,13 @@ const { lang, slug } = Astro.props as { lang: Locale; slug: string }
 const tag = getTag(slug)
 const posts = await getPostsByTag(lang, slug)
 const pagePosts = posts.slice(0, TAXONOMY_POSTS_PER_PAGE)
-const nextPage =
-  posts.length > TAXONOMY_POSTS_PER_PAGE
-    ? `/${lang}/tags/${slug}/2/`
-    : undefined
+const totalPages = getTotalPages(posts.length, TAXONOMY_POSTS_PER_PAGE)
+const pagination = getPaginationLinks({
+  currentPage: 1,
+  totalPages,
+  buildPageUrl: (page) =>
+    page === 1 ? `/${lang}/tags/${slug}/` : `/${lang}/tags/${slug}/${page}/`,
+})
 ---
 
 <Layout
@@ -44,7 +48,14 @@ const nextPage =
       posts.length > 0 ? (
         <>
           <PostCardGrid posts={pagePosts} />
-          {nextPage && <Pagination next={nextPage} currentPage={1} />}
+          {totalPages > 1 && (
+            <Pagination
+              next={pagination.next}
+              last={pagination.last}
+              currentPage={1}
+              totalPages={totalPages}
+            />
+          )}
         </>
       ) : (
         <EmptyState message={t(lang, "pages.tags.noPosts")} />

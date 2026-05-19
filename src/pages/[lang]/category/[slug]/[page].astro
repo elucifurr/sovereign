@@ -20,7 +20,9 @@ export async function getStaticPaths({ paginate }: { paginate: any }) {
           params: { lang, slug: category.slug },
           props: { lang, slug: category.slug },
           pageSize: TAXONOMY_POSTS_PER_PAGE,
-        })
+        }).filter(({ props }: { props: { page: { currentPage: number } } }) =>
+          props.page.currentPage > 1
+        )
       )
   }
   return paths
@@ -32,6 +34,7 @@ const { lang, slug, page } = Astro.props as {
   page: {
     data: Awaited<ReturnType<typeof getPostsByCategory>>
     currentPage: number
+    lastPage: number
     url: { prev?: string; next?: string }
   }
 }
@@ -70,7 +73,12 @@ const relatedTagLinks = relatedTags.map((tag) => ({
         ? `/${lang}/category/${slug}/`
         : page.url.prev}
       next={page.url.next}
+      first={`/${lang}/category/${slug}/`}
+      last={page.currentPage < page.lastPage
+        ? `/${lang}/category/${slug}/${page.lastPage}/`
+        : undefined}
       currentPage={page.currentPage}
+      totalPages={page.lastPage}
     />
   </PageSection>
 </Layout>

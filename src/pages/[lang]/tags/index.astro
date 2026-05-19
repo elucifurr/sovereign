@@ -2,9 +2,16 @@
 import Layout from "@/layouts/main.astro"
 import PageHeader from "@/components/layout/PageHeader.astro"
 import PageSection from "@/components/layout/PageSection.astro"
+import Pagination from "@/components/navigation/Pagination.astro"
 import TaxonomyLinkGrid from "@/components/navigation/TaxonomyLinkGrid.astro"
 import { LOCALES, type Locale } from "@/config/locales"
+import { TAXONOMY_TERMS_PER_PAGE } from "@/config/pagination"
 import { TAXONOMY } from "@/config/taxonomy"
+import {
+  getPageSlice,
+  getPaginationLinks,
+  getTotalPages,
+} from "@/utils/pagination"
 import { getPostsForLocale } from "@/utils/posts"
 import { localePath } from "@/utils/routes"
 import { t } from "@/utils/translations"
@@ -41,6 +48,16 @@ const tagLinks = visibleTags.map((tag) => ({
   count: countByTag.get(tag.slug) ?? 0,
   description: tag.descriptionByLocale[lang],
 }))
+const totalPages = getTotalPages(tagLinks.length, TAXONOMY_TERMS_PER_PAGE)
+const pageLinks = getPageSlice(tagLinks, 1, TAXONOMY_TERMS_PER_PAGE)
+const pagination = getPaginationLinks({
+  currentPage: 1,
+  totalPages,
+  buildPageUrl: (page) =>
+    page === 1
+      ? localePath(lang, "/tags/")
+      : localePath(lang, `/tags/page/${page}/`),
+})
 const tagDescriptions = TAXONOMY.tags.map((tag) => ({
   label: tag.labelByLocale[lang],
   description: tag.descriptionByLocale[lang],
@@ -62,8 +79,16 @@ const title = t(lang, "pages.tags.title")
     />
     <TaxonomyLinkGrid
       title={t(lang, "pages.tags.h2")}
-      items={tagLinks}
+      items={pageLinks}
       descriptionItems={tagDescriptions}
     />
+    {totalPages > 1 && (
+      <Pagination
+        next={pagination.next}
+        last={pagination.last}
+        currentPage={1}
+        totalPages={totalPages}
+      />
+    )}
   </PageSection>
 </Layout>
