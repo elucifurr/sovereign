@@ -1,5 +1,6 @@
 import expressiveCode from "astro-expressive-code"
 import mdx from "@astrojs/mdx"
+import partytown from "@astrojs/partytown"
 import sitemap from "@astrojs/sitemap"
 import tailwindcss from "@tailwindcss/vite"
 import pagefind from "astro-pagefind"
@@ -15,6 +16,8 @@ const assetHost = (() => {
     return undefined
   }
 })()
+
+const googleTagManagerEnabled = process.env.PUBLIC_GTM_ENABLED === "true"
 
 export default defineConfig({
   output: "static",
@@ -51,6 +54,15 @@ export default defineConfig({
     },
   },
   integrations: [
+    ...(googleTagManagerEnabled
+      ? [
+          partytown({
+            config: {
+              forward: ["dataLayer.push"],
+            },
+          }),
+        ]
+      : []),
     icon({
       include: {
         lucide: [

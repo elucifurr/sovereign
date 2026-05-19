@@ -17,6 +17,7 @@ services, Cloudflare, or production credentials.
 - MDX content collections.
 - Pagefind search generated at build time.
 - `astro-icon` with the configured Lucide icon allowlist.
+- `@astrojs/partytown` for optional Google Tag Manager scripts.
 - Optional Cloudflare Workers Static Assets deployment.
 - Vitest for unit tests.
 
@@ -39,7 +40,7 @@ Use Node.js 24 or newer and pnpm 11. Do not add npm, yarn, or bun lockfiles.
 - `src/pages/`: Astro routes, localized pages, RSS, robots, llms endpoints.
 - `src/layouts/main.astro`: shared HTML shell, SEO, header/footer layout.
 - `src/components/`: UI components grouped by cards, layout, navigation,
-  search, islands, and icons.
+  search, islands, analytics, and icons.
 - `src/content/`: authors, pages, and posts.
 - `src/content.config.ts`: content collection schemas.
 - `src/config/`: site, locale, taxonomy, pagination, and asset configuration.
@@ -56,6 +57,9 @@ Use Node.js 24 or newer and pnpm 11. Do not add npm, yarn, or bun lockfiles.
   static site in `dist`.
 - Do not make Cloudflare mandatory. The Cloudflare path is static assets
   deployment only; do not add database-backed features by default.
+- Google Tag Manager must stay optional. Configure it through
+  `SITE_CONFIG.analytics.googleTagManager` and public env vars; do not scatter
+  tracking IDs through components.
 - Preserve Astro `trailingSlash: "always"` behavior and locale-prefixed routes.
 - Preserve RTL support for Arabic routes.
 - Keep configuration in `src/config/*`; do not scatter site-wide constants

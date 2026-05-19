@@ -127,6 +127,19 @@ Polyglow also includes an optional Cloudflare Workers deployment path:
 pnpm deploy
 ```
 
+### Google Tag Manager
+
+Google Tag Manager support is optional and disabled by default. When enabled,
+the GTM script is loaded through Partytown so analytics work is moved off the
+main thread.
+
+Configure it with public environment variables:
+
+```bash
+PUBLIC_GTM_ENABLED=true
+PUBLIC_GTM_ID=GTM-XXXXXXX
+```
+
 ## Feedback
 
 Questions, ideas, and bug reports go to [GitHub Issues](https://github.com/realriplab/Polyglow/issues).
