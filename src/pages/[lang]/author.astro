@@ -17,6 +17,12 @@ export async function getStaticPaths() {
 const { lang } = Astro.props as { lang: Locale }
 const author = await getAuthor(lang)
 const title = t(lang, "pages.author.title")
+const seoTitle =
+  lang === "en" ? "Polyglow Editorial Author Profile | Polyglow" : title
+const seoDescription =
+  lang === "en"
+    ? "Read the Polyglow editorial author profile, recent publishing activity, social links, and articles across building, investing, technology, and systems."
+    : author?.data.bio
 const writingActivityLabel = t(lang, "pages.author.writingActivity")
 const publishedText = t(lang, "post.publishedAt")
 const authorSlug = author?.data.slug ?? "default"
@@ -87,8 +93,8 @@ const recentPublishedPosts = authorPosts.slice(0, 6)
 <Layout
   lang={lang}
   path="/author/"
-  title={title}
-  description={author?.data.bio}
+  title={seoTitle}
+  description={seoDescription}
 >
   <PageSection class="py-8" pagefindIgnore={false}>
     <PageHeader title={title} subtitle={author?.data.bio} />
@@ -252,9 +258,9 @@ const recentPublishedPosts = authorPosts.slice(0, 6)
                   <span class="text-xs font-medium text-muted-foreground">
                     {publishedText}: {dateFormatter.format(post.data.pubDate)}
                   </span>
-                  <span class="font-semibold text-foreground">
+                  <h3 class="font-semibold text-foreground">
                     {post.data.title}
-                  </span>
+                  </h3>
                 </a>
               ))}
             </div>

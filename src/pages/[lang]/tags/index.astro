@@ -63,13 +63,19 @@ const tagDescriptions = TAXONOMY.tags.map((tag) => ({
   description: tag.descriptionByLocale[lang],
 }))
 const title = t(lang, "pages.tags.title")
+const seoTitle = lang === "en" ? "Content Tags and Research Topics | Polyglow" : title
+const seoDescription =
+  lang === "en"
+    ? "Browse Polyglow tags for strategy, risk, media, innovation, and related themes across essays, research notes, and long-term content archives."
+    : t(lang, "pages.tags.description")
+const overviewTitle = lang === "en" ? "Tag Overview" : t(lang, "pages.tags.title")
 ---
 
 <Layout
   lang={lang}
   path="/tags/"
-  title={title}
-  description={t(lang, "pages.tags.description")}
+  title={seoTitle}
+  description={seoDescription}
 >
   <PageSection class="py-8">
     <PageHeader
@@ -81,6 +87,7 @@ const title = t(lang, "pages.tags.title")
       title={t(lang, "pages.tags.h2")}
       items={pageLinks}
       descriptionItems={tagDescriptions}
+      overviewTitle={overviewTitle}
     />
     {totalPages > 1 && (
       <Pagination

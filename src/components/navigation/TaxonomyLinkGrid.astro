@@ -15,6 +15,7 @@ interface Props {
   title: string
   items: TaxonomyLink[]
   descriptionItems?: TaxonomyDescription[]
+  overviewTitle?: string
   class?: string
 }
 
@@ -22,6 +23,7 @@ const {
   title,
   items,
   descriptionItems = items,
+  overviewTitle,
   class: className = "",
 } = Astro.props
 const hiddenDescriptions = descriptionItems.filter((item) => item.description)
@@ -33,14 +35,35 @@ const hiddenDescriptions = descriptionItems.filter((item) => item.description)
     {
       items.map((item) => (
         <a class="taxonomy-link" href={item.href}>
-          <span>{item.label}</span>
+          <h3>{item.label}</h3>
           <span class="taxonomy-link__count">{item.count}</span>
         </a>
       ))
     }
   </div>
   {
-    hiddenDescriptions.length > 0 && (
+    overviewTitle && hiddenDescriptions.length > 0 && (
+      <section class="mt-8 grid gap-4" aria-labelledby="taxonomy-overview">
+        <h2 id="taxonomy-overview" class="text-lg font-semibold text-foreground">
+          {overviewTitle}
+        </h2>
+        <div class="grid gap-3 sm:grid-cols-2">
+          {hiddenDescriptions.map((item) => (
+            <article class="rounded-lg border border-border bg-background/70 p-4 dark:bg-white/[0.03]">
+              <h3 class="text-sm font-semibold text-foreground">
+                {item.label}
+              </h3>
+              <p class="mt-2 text-sm leading-6 text-muted-foreground">
+                {item.description}
+              </p>
+            </article>
+          ))}
+        </div>
+      </section>
+    )
+  }
+  {
+    hiddenDescriptions.length > 0 && !overviewTitle && (
       <div class="sr-only">
         {hiddenDescriptions.map((item) => (
           <p>

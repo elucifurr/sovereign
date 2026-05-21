@@ -148,6 +148,9 @@ function validateHtml(file) {
   const isEnglishTaxonomyPostList =
     locale === "en" &&
     /^dist\/en\/(category|tags)\/[^/]+\/(\d+\/)?index\.html$/.test(rel)
+  const isEnglishTaxonomyIndex =
+    locale === "en" && /^dist\/en\/(category|tags)\/index\.html$/.test(rel)
+  const isEnglishAuthorPage = locale === "en" && rel === "dist/en/author/index.html"
   const alternates = [...html.matchAll(/<link[^>]+rel="alternate"[^>]+>/gi)]
     .map((match) => match[0])
     .map((tag) => ({
@@ -204,6 +207,20 @@ function validateHtml(file) {
     }
     if (!/<h3\b/i.test(html)) {
       fail(`${rel}: taxonomy page missing h3 heading`)
+    }
+  }
+  if (isEnglishTaxonomyIndex || isEnglishAuthorPage) {
+    if (title && (title.length < 40 || title.length > 60)) {
+      fail(`${rel}: index page title length is outside 40-60 characters`)
+    }
+    if (descriptionContent.length < 140 || descriptionContent.length > 160) {
+      fail(`${rel}: index page meta description length is outside 140-160 characters`)
+    }
+    if ((html.match(/<h2\b/gi) ?? []).length < 2) {
+      fail(`${rel}: index page has fewer than two h2 headings`)
+    }
+    if (!/<h3\b/i.test(html)) {
+      fail(`${rel}: index page missing h3 heading`)
     }
   }
   if (!html.includes('name="twitter:site"')) {

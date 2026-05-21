@@ -48,16 +48,25 @@ const pagination = getPaginationLinks({
       : localePath(lang, `/category/page/${page}/`),
 })
 const categoryDescriptions = TAXONOMY.categories.map((category) => ({
+  label: category.labelByLocale[lang],
   description: category.descriptionByLocale[lang],
 }))
 const title = t(lang, "pages.categories.title")
+const seoTitle =
+  lang === "en" ? "Content Categories and Topic Groups | Polyglow" : title
+const seoDescription =
+  lang === "en"
+    ? "Browse Polyglow categories for build, invest, and life articles, with grouped paths into essays, research notes, and long-term content archives."
+    : t(lang, "pages.categories.description")
+const overviewTitle =
+  lang === "en" ? "Category Overview" : t(lang, "pages.categories.title")
 ---
 
 <Layout
   lang={lang}
   path="/category/"
-  title={title}
-  description={t(lang, "pages.categories.description")}
+  title={seoTitle}
+  description={seoDescription}
 >
   <PageSection class="py-8">
     <PageHeader
@@ -69,6 +78,7 @@ const title = t(lang, "pages.categories.title")
       title={t(lang, "pages.categories.h2")}
       items={pageLinks}
       descriptionItems={categoryDescriptions}
+      overviewTitle={overviewTitle}
     />
     {totalPages > 1 && (
       <Pagination
