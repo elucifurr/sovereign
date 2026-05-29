@@ -13,70 +13,48 @@ interface Props {
 }
 
 const { lang } = Astro.props
-const year = new Date().getFullYear()
 const primaryCategories = getPrimaryCategories()
+const year = new Date().getFullYear()
+const legalLinks = [
+  { href: localePath(lang, "/about/"), label: t(lang, "pages.about.title") },
+  {
+    href: localePath(lang, "/privacy-policy/"),
+    label: t(lang, "footer.privacyPolicy"),
+  },
+  {
+    href: localePath(lang, "/terms-of-service/"),
+    label: t(lang, "footer.termsOfService"),
+  },
+  {
+    href: localePath(lang, "/contact/"),
+    label: t(lang, "footer.contactUs"),
+  },
+]
 ---
 
-<footer class="w-full" data-pagefind-ignore>
+<footer class="w-full border-t border-border/60 bg-background" data-pagefind-ignore>
   <div
-    class="mx-auto grid max-w-6xl grid-cols-2 gap-10 px-4 py-12 text-sm text-muted-foreground sm:px-6 xl:grid-cols-[1.8fr_1fr_1fr_1fr_1fr]"
+    class="mx-auto grid max-w-6xl gap-12 px-4 py-14 text-sm text-muted-foreground sm:px-6 lg:grid-cols-[1.35fr_3fr] lg:gap-16 lg:py-16"
   >
-    {
-      primaryCategories.map((category) => (
-        <nav
-          class="grid content-start gap-3"
-          aria-label={category.labelByLocale[lang]}
-        >
-          <a
-            class="w-fit font-semibold text-foreground transition-colors hover:text-foreground/75"
-            href={localePath(lang, `/category/${category.slug}/`)}
-          >
-            {category.labelByLocale[lang]}
-          </a>
-          {getTagsForCategory(category.slug).map((tag) => (
-            <a
-              class="w-fit hover:text-foreground"
-              href={localePath(lang, `/tags/${tag.slug}/`)}
-            >
-              {tag.labelByLocale[lang]}
-            </a>
-          ))}
-        </nav>
-      ))
-    }
-    <nav class="grid content-start gap-3" aria-label={t(lang, "footer.more")}>
-      <p class="font-semibold text-foreground">{t(lang, "footer.more")}</p>
-      <a
-        class="w-fit hover:text-foreground"
-        href={localePath(lang, "/category/")}>{t(lang, "footer.categories")}</a
-      >
-      <a class="w-fit hover:text-foreground" href={localePath(lang, "/tags/")}
-        >{t(lang, "footer.tags")}</a
-      >
-      <a class="w-fit hover:text-foreground" href={localePath(lang, "/author/")}
-        >{t(lang, "footer.author")}</a
-      >
-    </nav>
-    <div class="col-span-2 flex flex-col gap-6 xl:order-first xl:col-span-1">
+    <div class="flex min-h-44 flex-col justify-between gap-10">
       <a
         href={localePath(lang, "/")}
-        class="flex w-fit items-center gap-2.5 text-lg font-semibold text-foreground"
+        class="flex w-fit items-center gap-2.5 text-xl font-semibold text-foreground"
       >
         <OptimizedPicture
           src={logo}
           alt={`${SITE_CONFIG.name} logo`}
-          width={24}
-          height={24}
-          widths={[24, 48]}
-          sizes="24px"
-          class="size-6"
+          variant="logo"
+          width={28}
+          height={28}
+          class="size-7"
           loading="lazy"
         />
         <span aria-hidden="true">{SITE_CONFIG.name}</span>
       </a>
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-3">
         <a
-          class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          class="inline-flex size-9 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
           href={SITE_CONFIG.repository}
           target="_blank"
           rel="noopener noreferrer"
@@ -85,7 +63,7 @@ const primaryCategories = getPrimaryCategories()
           <Icon name="github" class="size-4" dataIcon="inline-start" />
         </a>
         <a
-          class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          class="inline-flex size-9 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
           href={SITE_CONFIG.social.x}
           target="_blank"
           rel="noopener noreferrer"
@@ -94,14 +72,79 @@ const primaryCategories = getPrimaryCategories()
           <Icon name="x" class="size-4" dataIcon="inline-start" />
         </a>
         <a
-          class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          class="inline-flex size-9 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
           href={`/${lang}/rss.xml`}
           aria-label="RSS"
         >
           <Icon name="rss" class="size-4" dataIcon="inline-start" />
         </a>
       </div>
-      <p class="text-xs">© {year} {SITE_CONFIG.name}</p>
+    </div>
+    <div class="grid grid-cols-2 gap-x-10 gap-y-10 md:grid-cols-4">
+      {
+        primaryCategories.map((category) => (
+          <nav
+            class="grid content-start gap-4"
+            aria-label={category.labelByLocale[lang]}
+          >
+            <a
+              class="w-fit text-base font-semibold text-foreground transition-colors hover:text-foreground/75"
+              href={localePath(lang, `/category/${category.slug}/`)}
+            >
+              {category.labelByLocale[lang]}
+            </a>
+            {getTagsForCategory(category.slug).map((tag) => (
+              <a
+                class="w-fit text-[0.9375rem] leading-6 transition-colors hover:text-foreground"
+                href={localePath(lang, `/tags/${tag.slug}/`)}
+              >
+                {tag.labelByLocale[lang]}
+              </a>
+            ))}
+          </nav>
+        ))
+      }
+      <nav class="grid content-start gap-4" aria-label={t(lang, "footer.more")}>
+        <p class="text-base font-semibold text-foreground">
+          {t(lang, "footer.more")}
+        </p>
+        <a
+          class="w-fit text-[0.9375rem] leading-6 transition-colors hover:text-foreground"
+          href={localePath(lang, "/category/")}
+        >
+          {t(lang, "footer.categories")}
+        </a>
+        <a
+          class="w-fit text-[0.9375rem] leading-6 transition-colors hover:text-foreground"
+          href={localePath(lang, "/tags/")}
+        >
+          {t(lang, "footer.tags")}
+        </a>
+        <a
+          class="w-fit text-[0.9375rem] leading-6 transition-colors hover:text-foreground"
+          href={localePath(lang, "/author/")}
+        >
+          {t(lang, "footer.author")}
+        </a>
+      </nav>
+    </div>
+    <div
+      class="col-span-2 flex flex-col gap-5 border-t border-border/60 pt-8 text-sm font-medium sm:flex-row sm:items-center sm:justify-between lg:col-span-2"
+    >
+      <nav
+        class="flex flex-wrap items-center gap-x-5 gap-y-3"
+        aria-label={`${SITE_CONFIG.name} legal`}
+      >
+        {
+          legalLinks.map((link) => (
+            <a class="transition-colors hover:text-foreground" href={link.href}>
+              {link.label}
+            </a>
+          ))
+        }
+      </nav>
+      <p class="text-sm text-muted-foreground">© {year} {SITE_CONFIG.name}</p>
+    </div>
     </div>
   </div>
 </footer>
