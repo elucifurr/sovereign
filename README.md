@@ -2,14 +2,47 @@
 
 [中文说明](readme-zh.md)
 
-Polyglow is a static Astro 6 theme for multilingual editorial publishing. It
-ships locale-prefixed routes, content collections, category and tag archives,
+Polyglow is a static-first Astro 6 theme for multilingual editorial publishing.
+It ships locale-prefixed routes, content collections, category and tag archives,
 author pages, Pagefind search, RSS, sitemap output, SEO metadata through
 `astro-seo`, JSON-LD, Astro image optimization, light/dark themes, Astro view
 transitions, and optional Cloudflare Workers Static Assets deployment.
 
 The theme works without a database, private service, analytics account, ad
 account, wallet, or Cloudflare credentials.
+
+## Features
+
+- Static-first Astro 6 architecture with no required CMS, database, or private
+  runtime service.
+- Astro-native i18n with 11 locales, locale-prefixed routes, RTL support,
+  `hreflang`, and multilingual sitemap output.
+- Markdown and MDX content collections for posts, pages, authors, categories,
+  tags, and paginated archives.
+- Built-in RSS, sitemap, robots.txt, SEO metadata, JSON-LD, and agent-facing
+  discovery files.
+- Pagefind-powered static full-text search.
+- Tailwind CSS v4 design system with CSS-first tokens, light/dark themes, and
+  long-form typography.
+- Astro image optimization with responsive layouts and modern AVIF/WebP output.
+- Astro view transitions and hover-based link prefetching.
+- CJK-friendly typography with `text-autospace` support and Arabic RTL layout.
+- Expressive code blocks with light and dark syntax themes.
+- Optional Google AdSense and Google Tag Manager integration, with GTM loaded
+  through Partytown.
+- Optional x402 support through static metadata and a Cloudflare Worker gateway.
+- Agent-native publishing surface with `llms.txt`, `llms-full.txt`,
+  `openapi.json`, `auth.md`, robots.txt, and sitemap.
+- Author Writing Activity heatmap and image-led dynamic glass UI.
+
+## Verification Examples
+
+- A production article page has reached 100 scores across the four PageSpeed
+  Insights Lighthouse categories in lab testing:
+  [PageSpeed report](https://pagespeed.web.dev/analysis/https-polyglow-realrip-com-en-posts-20160901-acfun-stock/4kxuvzgck0?form_factor=mobile).
+- The agent-facing surface is designed for
+  [Is Your Site Agent-Ready?](https://isitagentready.com/) checks across
+  discoverability, content access, bot access, protocol discovery, and commerce.
 
 ## Requirements
 

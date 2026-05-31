@@ -2,9 +2,34 @@
 
 [English README](README.md)
 
-Polyglow 是一个基于 Astro 6 的多语言静态内容主题。项目内置语言前缀路由、内容集合、分类和标签归档、作者页、Pagefind 搜索、RSS、站点地图、基于 `astro-seo` 的 SEO 元数据、JSON-LD、Astro 图片优化、明暗主题、Astro 视图过渡，以及可选的 Cloudflare Workers Static Assets 部署。
+Polyglow 是一个静态优先的 Astro 6 多语言内容主题。项目内置语言前缀路由、内容集合、分类和标签归档、作者页、Pagefind 搜索、RSS、站点地图、基于 `astro-seo` 的 SEO 元数据、JSON-LD、Astro 图片优化、明暗主题、Astro 视图过渡，以及可选的 Cloudflare Workers Static Assets 部署。
 
 普通静态托管不需要数据库、私有服务、统计账号、广告账号、钱包或 Cloudflare 凭据。
+
+## 特性
+
+- 静态优先的 Astro 6 架构，不强制依赖 CMS、数据库或私有运行时服务。
+- Astro 原生 i18n，支持 11 种语言、语言前缀路由、RTL、`hreflang` 和多语言站点地图。
+- Markdown 和 MDX 内容集合，覆盖文章、页面、作者、分类、标签和分页归档。
+- 内置 RSS、站点地图、robots.txt、SEO 元数据、JSON-LD 和面向代理的发现文件。
+- 基于 Pagefind 的静态全文搜索。
+- Tailwind CSS v4 设计系统，使用 CSS-first 主题变量、明暗主题和长文排版。
+- Astro 图片优化，支持响应式布局和现代 AVIF/WebP 输出。
+- Astro 视图过渡和 hover 链接预获取。
+- 面向 CJK 的排版优化，支持 `text-autospace`，并支持阿拉伯语 RTL 布局。
+- 基于 Expressive Code 的代码高亮，支持明暗主题。
+- 可选 Google AdSense 和 Google Tag Manager，GTM 通过 Partytown 加载。
+- 可选 x402，包含静态元数据和 Cloudflare Worker 网关。
+- Agent-Native 发布界面，包含 `llms.txt`、`llms-full.txt`、`openapi.json`、`auth.md`、robots.txt 和站点地图。
+- 作者页 Writing Activity 热力图和以图片为核心的动态玻璃视觉。
+
+## 验证示例
+
+- 生产文章页曾在 PageSpeed Insights 实验室测试中达到 Lighthouse 四项 100 分：
+  [PageSpeed 报告](https://pagespeed.web.dev/analysis/https-polyglow-realrip-com-en-posts-20160901-acfun-stock/4kxuvzgck0?form_factor=mobile)。
+- 面向代理的发布界面按
+  [Is Your Site Agent-Ready?](https://isitagentready.com/)
+  的发现能力、内容访问、bot 访问、协议发现和商务检查设计。
 
 ## 环境要求
 
