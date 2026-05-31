@@ -11,6 +11,12 @@ transitions, and optional Cloudflare Workers Static Assets deployment.
 The theme works without a database, private service, analytics account, ad
 account, wallet, or Cloudflare credentials.
 
+## Scores
+
+| Lighthouse | Agent Readiness |
+| --- | --- |
+| [![Polyglow Lighthouse score](public/lighthouse-score---https---polyglow-realrip-com.svg)](https://pagespeed.web.dev/analysis?url=https%3A%2F%2Fpolyglow.realrip.com%2F) | [![Polyglow Agent Readiness score](public/agent-readiness-https---polyglow-realrip-com.avif)](https://isitagentready.com/) |
+
 ## Features
 
 - 🧱 Static-first Astro 6 architecture with no required CMS, database, or private
@@ -36,10 +42,6 @@ account, wallet, or Cloudflare credentials.
 - 📊 Author Writing Activity heatmap and image-led dynamic glass UI.
 
 ## Verification Examples
-
-| Lighthouse | Agent Readiness |
-| --- | --- |
-| [![Polyglow Lighthouse score](public/lighthouse-score---https---polyglow-realrip-com.svg)](https://pagespeed.web.dev/analysis?url=https%3A%2F%2Fpolyglow.realrip.com%2F) | [![Polyglow Agent Readiness score](public/agent-readiness-https---polyglow-realrip-com.avif)](https://isitagentready.com/) |
 
 - The production site has reached 100 scores across the four PageSpeed
   Insights Lighthouse categories in lab testing:
