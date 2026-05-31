@@ -17,7 +17,7 @@ assert.deepEqual(wrangler.compatibility_flags, ["nodejs_compat"])
 assert.equal(wrangler.assets.binding, "ASSETS")
 assert.ok(wrangler.assets.run_worker_first.includes("/api"))
 assert.ok(wrangler.assets.run_worker_first.includes("/en/posts/*"))
-assert.equal(wrangler.vars.X402_ENABLED, "false")
+assert.equal(wrangler.vars.X402_ENABLED, "true")
 assert.equal(wrangler.vars.X402_NETWORK, "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1")
 
 const worker = read("src/x402/cloudflare-worker.ts")
