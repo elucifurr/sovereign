@@ -15,7 +15,7 @@ account, wallet, or Cloudflare credentials.
 
 | Lighthouse | Agent Readiness |
 | --- | --- |
-| [![Polyglow Lighthouse score](public/lighthouse-score---https---polyglow-realrip-com.svg)](https://pagespeed.web.dev/analysis?url=https%3A%2F%2Fpolyglow.realrip.com%2F) | [![Polyglow Agent Readiness score](public/agent-readiness-https---polyglow-realrip-com.avif)](https://isitagentready.com/) |
+| [![Polyglow Lighthouse score](public/lighthouse-score---https---polyglow-realrip-com.svg)](https://pagespeed.web.dev/analysis?url=https%3A%2F%2Fpolyglow.realrip.com%2F) | [![Polyglow Agent Readiness score](public/agent-readiness-https---polyglow-realrip-com.avif)](https://isitagentready.com/polyglow.realrip.com) |
 
 ## Features
 
@@ -47,7 +47,7 @@ account, wallet, or Cloudflare credentials.
   Insights Lighthouse categories in lab testing:
   [PageSpeed Insights](https://pagespeed.web.dev/analysis?url=https%3A%2F%2Fpolyglow.realrip.com%2F).
 - The agent-facing surface is designed for
-  [Is Your Site Agent-Ready?](https://isitagentready.com/) checks across
+  [Is Your Site Agent-Ready?](https://isitagentready.com/polyglow.realrip.com) checks across
   discoverability, content access, bot access, protocol discovery, and commerce.
 
 ## Requirements

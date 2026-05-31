@@ -21,8 +21,6 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "verify:agent": "node scripts/verify-agent-readiness.mjs",
-    "verify:x402": "node scripts/verify-x402-gateway.mjs",
     "deploy": "pnpm build && wrangler deploy"
   },
   "dependencies": {
