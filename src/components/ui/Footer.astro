@@ -35,7 +35,7 @@ const legalLinks = [
     <div class="flex items-center justify-between gap-4 md:min-h-44 md:flex-col md:items-start md:gap-10">
       <a
         href={localePath(lang, "/")}
-        class="flex w-fit items-center gap-2.5 text-xl font-semibold text-foreground"
+        class="flex w-fit items-center gap-2.5 text-xl font-semibold text-foreground transition-opacity duration-300 hover:opacity-70"
       >
         <OptimizedPicture
           src={logo}
@@ -50,7 +50,7 @@ const legalLinks = [
       </a>
       <div class="flex items-center justify-end gap-3 md:justify-start">
         <a
-          class="inline-flex size-9 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+          class="inline-flex size-9 items-center justify-center text-muted-foreground transition-opacity duration-300 hover:opacity-70"
           href={SITE_CONFIG.repository}
           target="_blank"
           rel="noopener noreferrer"
@@ -59,7 +59,7 @@ const legalLinks = [
           <Icon name="github" class="size-4" dataIcon="inline-start" />
         </a>
         <a
-          class="inline-flex size-9 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+          class="inline-flex size-9 items-center justify-center text-muted-foreground transition-opacity duration-300 hover:opacity-70"
           href={SITE_CONFIG.social.x}
           target="_blank"
           rel="noopener noreferrer"
@@ -68,7 +68,7 @@ const legalLinks = [
           <Icon name="x" class="size-4" dataIcon="inline-start" />
         </a>
         <a
-          class="inline-flex size-9 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+          class="inline-flex size-9 items-center justify-center text-muted-foreground transition-opacity duration-300 hover:opacity-70"
           href={`/${lang}/rss.xml`}
           aria-label="RSS"
         >
@@ -84,14 +84,14 @@ const legalLinks = [
             aria-label={category.labelByLocale[lang]}
           >
             <a
-              class="text-base font-semibold text-foreground transition-colors hover:text-foreground/75"
+              class="text-base font-semibold text-foreground transition-opacity duration-300 hover:opacity-70"
               href={localePath(lang, `/category/${category.slug}/`)}
             >
               {category.labelByLocale[lang]}
             </a>
             {getTagsForCategory(category.slug).map((tag) => (
               <a
-                class="text-[0.9375rem] leading-6 transition-colors hover:text-foreground"
+                class="text-[0.9375rem] leading-6 transition-opacity duration-300 hover:opacity-70"
                 href={localePath(lang, `/tags/${tag.slug}/`)}
               >
                 {tag.labelByLocale[lang]}
@@ -108,19 +108,19 @@ const legalLinks = [
           {t(lang, "footer.more")}
         </p>
         <a
-          class="text-[0.9375rem] leading-6 transition-colors hover:text-foreground"
+          class="text-[0.9375rem] leading-6 transition-opacity duration-300 hover:opacity-70"
           href={localePath(lang, "/category/")}
         >
           {t(lang, "footer.categories")}
         </a>
         <a
-          class="text-[0.9375rem] leading-6 transition-colors hover:text-foreground"
+          class="text-[0.9375rem] leading-6 transition-opacity duration-300 hover:opacity-70"
           href={localePath(lang, "/tags/")}
         >
           {t(lang, "footer.tags")}
         </a>
         <a
-          class="text-[0.9375rem] leading-6 transition-colors hover:text-foreground"
+          class="text-[0.9375rem] leading-6 transition-opacity duration-300 hover:opacity-70"
           href={localePath(lang, "/author/")}
         >
           {t(lang, "footer.author")}
@@ -136,7 +136,7 @@ const legalLinks = [
       >
         {
           legalLinks.map((link) => (
-            <a class="transition-colors hover:text-foreground" href={link.href}>
+            <a class="transition-opacity duration-300 hover:opacity-70" href={link.href}>
               {link.label}
             </a>
           ))
