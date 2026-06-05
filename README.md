@@ -15,7 +15,7 @@ account, wallet, or Cloudflare credentials.
 
 | Lighthouse | Agent Readiness |
 | --- | --- |
-| [![Polyglow Lighthouse score](public/lighthouse-score---https---polyglow-realrip-com.svg)](https://pagespeed.web.dev/analysis?url=https%3A%2F%2Fpolyglow.realrip.com%2F) | [![Polyglow Agent Readiness score](public/agent-readiness-https---polyglow-realrip-com.avif)](https://isitagentready.com/polyglow.realrip.com) |
+| [![Polyglow Lighthouse score](public/lighthouse-score---https---polyglow-realrip-com.svg)](https://pagespeed.web.dev/analysis?url=https%3A%2F%2Fpolyglow.zbz.ai%2F) | [![Polyglow Agent Readiness score](public/agent-readiness-https---polyglow-realrip-com.avif)](https://isitagentready.com/polyglow.zbz.ai) |
 
 ## Features
 
@@ -45,9 +45,9 @@ account, wallet, or Cloudflare credentials.
 
 - The production site has reached 100 scores across the four PageSpeed
   Insights Lighthouse categories in lab testing:
-  [PageSpeed Insights](https://pagespeed.web.dev/analysis?url=https%3A%2F%2Fpolyglow.realrip.com%2F).
+  [PageSpeed Insights](https://pagespeed.web.dev/analysis?url=https%3A%2F%2Fpolyglow.zbz.ai%2F).
 - The agent-facing surface is designed for
-  [Is Your Site Agent-Ready?](https://isitagentready.com/polyglow.realrip.com) checks across
+  [Is Your Site Agent-Ready?](https://isitagentready.com/polyglow.zbz.ai) checks across
   discoverability, content access, bot access, protocol discovery, and commerce.
 
 ## Requirements
@@ -179,7 +179,7 @@ assets: {
       ? [{ protocol: "https", hostname: publicAssetHost }]
       : []),
     { protocol: "https", hostname: "*.unsplash.com" },
-    { protocol: "https", hostname: "*.realrip.com" },
+    { protocol: "https", hostname: "*.zbz.ai" },
   ],
 }
 ```
@@ -276,8 +276,8 @@ curl -i https://your-domain.example/api/v1
 
 Both requests should return `402 Payment Required` with a `payment-required`
 header when the gateway is enabled. For Polyglow production, this has been
-verified on `https://polyglow.realrip.com/api` and
-`https://polyglow.realrip.com/api/v1`.
+verified on `https://polyglow.zbz.ai/api` and
+`https://polyglow.zbz.ai/api/v1`.
 
 ## Agent API Discovery
 

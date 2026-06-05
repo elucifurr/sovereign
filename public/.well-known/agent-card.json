@@ -2,11 +2,11 @@
   "name": "Polyglow Content",
   "version": "1.0.0",
   "description": "Read-only public content discovery for Polyglow, a multilingual static editorial site.",
-  "url": "https://polyglow.realrip.com",
+  "url": "https://polyglow.zbz.ai",
   "supportedInterfaces": [
     {
       "transport": "https",
-      "url": "https://polyglow.realrip.com/llms.txt"
+      "url": "https://polyglow.zbz.ai/llms.txt"
     }
   ],
   "capabilities": {

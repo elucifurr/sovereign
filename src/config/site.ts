@@ -92,7 +92,7 @@ const socialXHandle = `@${
 export const SITE_CONFIG = {
   name: "Polyglow",
   url: (
-    readPublicEnv("PUBLIC_SITE_URL") ?? "https://polyglow.realrip.com"
+    readPublicEnv("PUBLIC_SITE_URL") ?? "https://polyglow.zbz.ai"
   ).replace(/\/$/, ""),
   description:
     "Pressing forward through the waves of startup, the fog of investing, and the ocean of life.",

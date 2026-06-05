@@ -22,18 +22,18 @@ Polyglow accepts anonymous agent discovery and x402-paid API access. No human ac
 
 Agents that require a registration document can use this file as the registration entrypoint.
 
-Registration endpoint: `https://polyglow.realrip.com/auth.md`
+Registration endpoint: `https://polyglow.zbz.ai/auth.md`
 
-register_uri: `https://polyglow.realrip.com/auth.md`
+register_uri: `https://polyglow.zbz.ai/auth.md`
 
 agent_auth metadata:
 
 ```json
 {
-  "skill": "https://polyglow.realrip.com/auth.md",
-  "register_uri": "https://polyglow.realrip.com/auth.md",
-  "claim_uri": "https://polyglow.realrip.com/api",
-  "revocation_uri": "https://polyglow.realrip.com/auth.md#revocation-uri",
+  "skill": "https://polyglow.zbz.ai/auth.md",
+  "register_uri": "https://polyglow.zbz.ai/auth.md",
+  "claim_uri": "https://polyglow.zbz.ai/api",
+  "revocation_uri": "https://polyglow.zbz.ai/auth.md#revocation-uri",
   "identity_types_supported": ["anonymous"],
   "anonymous": {
     "credential_types_supported": ["x402"]
@@ -52,12 +52,12 @@ Supported credential types:
 
 Credential claim URI:
 
-- `https://polyglow.realrip.com/api`
+- `https://polyglow.zbz.ai/api`
 
 Revocation URI:
 
 - Not applicable. Polyglow does not issue persistent bearer credentials.
-- `revocation_uri`: `https://polyglow.realrip.com/auth.md#revocation-uri`
+- `revocation_uri`: `https://polyglow.zbz.ai/auth.md#revocation-uri`
 
 Registration method:
 
@@ -87,7 +87,7 @@ Polyglow publishes static OAuth/OIDC discovery metadata so agents can distinguis
 
 Well-known metadata links:
 
-- OAuth Protected Resource Metadata: `https://polyglow.realrip.com/.well-known/oauth-protected-resource`
-- OAuth Authorization Server Metadata: `https://polyglow.realrip.com/.well-known/oauth-authorization-server`
+- OAuth Protected Resource Metadata: `https://polyglow.zbz.ai/.well-known/oauth-protected-resource`
+- OAuth Authorization Server Metadata: `https://polyglow.zbz.ai/.well-known/oauth-authorization-server`
 
 Use the x402 payment challenge on the protected API endpoints for paid access.
