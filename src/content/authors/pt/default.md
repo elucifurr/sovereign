@@ -4,6 +4,7 @@ name: "Equipe editorial Polyglow"
 bio: "Notas sobre construção de produtos, investimento, sistemas técnicos e sistemas de conteúdo duráveis."
 socials:
   - { label: "GitHub", url: "https://github.com/zbzailabs/Polyglow" }
+  - { label: "X", url: "https://x.com/zbzailabs" }
   - { label: "Website", url: "/pt/" }
   - { label: "RSS", url: "/pt/rss.xml" }
 locale: pt

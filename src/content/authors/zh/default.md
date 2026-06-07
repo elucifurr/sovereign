@@ -4,6 +4,7 @@ name: "Polyglow 编辑部"
 bio: "记录产品建设、投资思考、技术系统和内容站维护经验。"
 socials:
   - { label: "GitHub", url: "https://github.com/zbzailabs/Polyglow" }
+  - { label: "X", url: "https://x.com/zbzailabs" }
   - { label: "Website", url: "/zh/" }
   - { label: "RSS", url: "/zh/rss.xml" }
 locale: zh
