@@ -244,8 +244,16 @@
   box-shadow: var(--glass-shadow-hover);
 }
 
-.card-title {
+.card-title,
+.article-title {
   @apply text-4xl leading-tight font-semibold tracking-tight;
+}
+
+html:lang(zh) :where(.card-title, .article-title, .taxonomy-link__title),
+html:lang(ja) :where(.card-title, .article-title, .taxonomy-link__title),
+html:lang(ko) :where(.card-title, .article-title, .taxonomy-link__title),
+html:lang(ar) :where(.card-title, .article-title, .taxonomy-link__title) {
+  @apply leading-snug tracking-normal;
 }
 
 .article-hero__content.post-card__content {
