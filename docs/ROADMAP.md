@@ -95,6 +95,11 @@
 ### Fase 5 — Contenido Real ✅
 
 - [x] **Post inaugural**: "Sovereignty in Software" / "Soberanía en el software" (en/es, publicado, featured).
+- [x] **4 posts adicionales**:
+  - "Platform Risk" / "Riesgo de plataforma" — soberania (18 jun)
+  - "Linux and the Architecture of Autonomy" / "Linux y la arquitectura de la autonomía" — sistemas (22 jun)
+  - "Self-Hosting as Infrastructure" / "El autohosting como infraestructura" — entornos (25 jun)
+  - "The Protocol Layer" / "La capa de protocolos" — sistemas (29 jun)
 - [ ] Escribir siguientes posts.
 - [ ] Configurar dominio definitivo.
 - [ ] Despliegue y CI/CD.

@@ -1,0 +1,265 @@
+---
+title: "From macOS to Linux: A Practical Migration Guide"
+description: "A step-by-step guide to migrating from macOS to Linux for daily work, with tool comparisons, data migration, and adjustment strategies."
+category: "entornos"
+tags:
+  - "linux"
+  - "herramientas"
+  - "self-hosting"
+  - "workflow"
+pubDate: 2026-07-06
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1518770660439-4636190af475"
+heroImageAlt: "Circuit board symbolising the transition between operating systems"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+import OptimizedPicture from "@/components/features/OptimizedPicture.astro"
+
+## Why Migrate
+
+The decision to move from macOS to Linux is rarely about disliking Apple hardware. It is about control: what your operating system allows you to do, what it prevents, and who decides when those rules change.
+
+Recent macOS versions have made this tradeoff sharper. Locked boot processes, notarization requirements, declining third-party repair options, and increasing integration with cloud services you do not operate all move in one direction: away from user sovereignty.
+
+Linux offers the opposite trajectory, but it comes with a cost: you must learn the system. This guide covers the practical path.
+
+## Assessment
+
+Before touching anything, audit what you actually need.
+
+### Hardware Compatibility
+
+Most Intel Macs and Apple Silicon Macs running Asahi Linux work well for daily use. Check specific hardware support:
+
+- [Asahi Linux](https://asahilinux.org/) for Apple Silicon (M1–M3)
+- Standard x86\_64 distributions for Intel Macs and PC hardware
+
+What works reliably on both:
+- Web browsing, email, office documents, development, media playback
+- Printing, scanning, external displays
+- Wi-Fi, Bluetooth, audio (varies by chipset on Apple Silicon)
+
+What may not work:
+- Some Thunderbolt peripherals
+- Certain fingerprint readers
+- Apple-exclusive services (iMessage, FaceTime, Continuity)
+
+Be honest about which of these you actually use. In my case, the only missing piece was iMessage, and the tradeoff was worth it.
+
+<OptimizedPicture
+  src="https://images.unsplash.com/photo-1460925895917-afdab827c52f"
+  alt="Checklist and planning documents for system migration"
+  width={1200}
+  height={800}
+/>
+
+### Application Inventory
+
+Create a list of every application you use in a typical week. Map each one to a Linux equivalent:
+
+| macOS | Linux | Notes |
+|-------|-------|-------|
+| Safari / Chrome | Firefox (or Chromium) | Better privacy by default |
+| Mail | Thunderbird | Handles multiple accounts well |
+| iTerm2 | Kitty / Alacritty | GPU-accelerated terminals |
+| VS Code | VS Code (native) | Same editor, same config |
+| Sketch / Figma | Figma (web) / Inkscape | Figma works in browser |
+| 1Password | Bitwarden / pass | Self-hostable with Vaultwarden |
+| Alfred | Rofi / ulauncher | Different but equally fast |
+| Bear / Notes | Obsidian / Logseq | Markdown-native, local-first |
+| Finder | Nautilus / Thunar | Or just use the terminal |
+| Time Machine | Borg + Vorta / rsync | More flexible, scriptable |
+| Homebrew | Distribution package manager | Same concept, different tool |
+
+Most proprietary tools that do not have a Linux version either work through a browser or have a credible open-source alternative.
+
+## Data Migration
+
+### Files and Documents
+
+Copy your home directory. The cleanest method is `rsync` over a local network or external drive:
+
+```bash
+# On macOS
+rsync -avz --progress --exclude='Library/' --exclude='.Trash/' \
+  /Users/you/ user@linux-machine:/home/you/
+```
+
+Key items to preserve:
+- `~/Documents`, `~/Desktop`, `~/Downloads`
+- `~/.ssh/` (back up and verify permissions)
+- `~/.gnupg/`
+- Browser profiles (export or sync via Firefox account)
+- `~/Library/Application Support/` for specific app data you want to keep
+
+Some macOS file attributes (resource forks, extended attributes) do not transfer meaningfully. Plain files, code, and documents survive intact. Proprietary formats like `.pages` or `.key` should be exported to `.docx` or `.pdf` before migration.
+
+### Credentials
+
+Export your password manager data before wiping the old machine. Bitwarden, 1Password, and KeePass all have Linux clients. If you use SSH certificates or GPG keys, verify the key permissions after copying:
+
+```bash
+chmod 600 ~/.ssh/id_*
+chmod 644 ~/.ssh/*.pub
+chmod 700 ~/.ssh
+```
+
+### Browser Data
+
+Firefox and Chromium both support profile sync. Create a Firefox account, sync your bookmarks, passwords, and extensions, then sign in on the new machine. For Chromium users, Chrome sync works identically on Linux.
+
+Do not rely on browser sync as your only backup. Export bookmarks to HTML as a fallback.
+
+## Setting Up the System
+
+### Choose a Distribution
+
+The distribution choice matters less than the community and package ecosystem. For former macOS users, these are the most straightforward entry points:
+
+- **Fedora Workstation.** Vanilla GNOME, recent packages, strong SELinux defaults. Feels polished out of the box.
+- **Linux Mint.** Cinnamon desktop is familiar to macOS refugees. Stable, conservative updates.
+- **openSUSE Tumbleweed.** Rolling release with good testing. YaST gives you a control panel that reminds many of System Settings.
+- **Debian.** Rock solid. Older packages but the least surprising. Start with the non-free ISO if you need firmware.
+
+Avoid distributions that require extensive post-install configuration on a first attempt. Save Arch for later.
+
+### Essential Configuration
+
+After installation, configure these items before doing anything else:
+
+**Enable automatic security updates:**
+```bash
+# Fedora
+sudo dnf install dnf-automatic
+sudo systemctl enable --now dnf-automatic.timer
+
+# Debian/Ubuntu
+sudo dpkg-reconfigure --priority=low unattended-upgrades
+```
+
+**Set up full-disk encryption.** If the installer did not ask, reinstall. LUKS is the standard and works reliably.
+
+**Configure a firewall:**
+```bash
+sudo firewall-cmd --set-default-zone=drop
+sudo systemctl enable --now firewalld
+
+# Or use ufw on Debian derivatives
+sudo ufw default deny
+sudo ufw enable
+```
+
+**Set up regular backups:**
+```bash
+# Install Borg + Vorta for GUI, or use this minimal approach
+sudo dnf install borgmatic
+sudo borgmatic init --encryption keyfile-blake2
+# Add a systemd timer for daily backups
+```
+
+### Font Rendering
+
+This is the first thing macOS users notice. Linux font rendering defaults to different subpixel rendering and hinting. If text looks soft:
+
+```bash
+# Install better font configs
+sudo dnf install freetype-freeworld
+```
+
+Then create `~/.config/fontconfig/fonts.conf` with `hintstyle: hintslight` and `rgba: rgb`. Reboot and text clarity will improve significantly.
+
+## The Development Environment
+
+This is where Linux excels. Most of the tools you use as a developer are built on and for Linux.
+
+### Package Management
+
+Replace Homebrew with the distribution package manager:
+
+```bash
+# Homebrew analogy for Fedora
+sudo dnf install git python3 nodejs docker ripgrep fd-find
+
+# For tools not in the repos, use Flatpak for GUI apps
+flatpak install flathub com.visualstudio.code
+
+# Only use Homebrew on Linux if absolutely necessary
+# /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+### Containerisation
+
+Docker and Podman work natively on Linux — no Docker Desktop required. Podman is daemonless and rootless by default:
+
+```bash
+sudo dnf install podman podman-compose
+```
+
+For Docker compatibility:
+```bash
+alias docker=podman
+```
+
+### Dotfiles Management
+
+This is worth doing before migration. Store your configuration in a Git repository:
+
+```bash
+git init --bare ~/.dotfiles
+alias dotfiles='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+dotfiles add ~/.bashrc ~/.config/fish ~/.vimrc ~/.tmux.conf
+dotfiles commit -m "Initial dotfiles"
+dotfiles push
+```
+
+On the new machine, clone and checkout:
+```bash
+git clone --bare https://github.com/you/dotfiles.git ~/.dotfiles
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME checkout
+```
+
+This preserves your shell configuration, editor settings, and Git aliases across machines.
+
+## The First Week
+
+### Expected Friction Points
+
+- **Keyboard shortcuts.** Muscle memory for `Cmd+C` becomes `Ctrl+C`. GNOME and KDE both allow remapping modifiers: set `Caps Lock` to `Ctrl` and swap `Cmd`/`Alt` positions in keyboard settings. The transition takes about a week of deliberate practice.
+
+- **Trackpad gestures.** Linux trackpad support is good but not identical to macOS. Three-finger swipe for workspace switching works in GNOME and KDE. Pinch-to-zoom is less fluid. A mouse is genuinely easier during the adjustment period.
+
+- **Font rendering.** Already addressed above. This is a common reason people give up. The fix is configure, not tolerate.
+
+- **Missing notifications.** macOS notification centre is integrated with the system. Linux notification daemons (GNOME, KDE) work well but third-party integrations are thinner.
+
+### Tools That Help
+
+- **Plane / Linear / Todoist** — all have Linux clients or web apps
+- **Signal / Telegram / Slack** — all have native Linux desktop apps
+- **Syncthing** — replace iCloud Drive for file sync across machines
+- **KDE Connect** — phone integration (clipboard sync, notifications, file transfer)
+
+## What You Gain
+
+Beyond the philosophical argument about control, there are concrete advantages:
+
+- **Reproducible environments.** Your development setup is declarative and version-controlled. When a machine fails, you are back to full productivity in hours, not days.
+- **No forced upgrades.** You decide when to update the operating system. No "update tonight or lose security patches" ultimatums.
+- **Resource efficiency.** The same hardware runs noticeably faster. macOS reserves significant resources for window compositing and background services. Linux gives you a choice about what runs.
+- **Hardware lifespan.** Macs stop receiving updates after 5–7 years. Linux runs on anything with x86\_64 or aarch64 silicon. A 2012 ThinkPad runs modern Fedora perfectly.
+
+## The Escape Route
+
+Keep the old Mac in a drawer for three months before wiping it. You will likely find you do not need it. But having the option reduces anxiety and makes the transition a choice rather than a gamble.
+
+If after three months you genuinely miss more than one or two things, the question is not whether macOS is better. The question is whether those things are worth the sovereignty you trade for them.
+
+- Category: entornos
+- Tags: linux, herramientas, workflow, self-hosting
+- Next: hardening your Linux desktop for privacy and security

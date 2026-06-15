@@ -1,0 +1,265 @@
+---
+title: "De macOS a Linux: guía práctica de migración"
+description: "Guía paso a paso para migrar de macOS a Linux como sistema de trabajo diario, con comparativa de herramientas, migración de datos y estrategias de adaptación."
+category: "entornos"
+tags:
+  - "linux"
+  - "herramientas"
+  - "self-hosting"
+  - "workflow"
+pubDate: 2026-07-06
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1518770660439-4636190af475"
+heroImageAlt: "Placa de circuito simbolizando la transición entre sistemas operativos"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: es
+draft: false
+featured: false
+---
+
+import OptimizedPicture from "@/components/features/OptimizedPicture.astro"
+
+## Por qué migrar
+
+La decisión de pasar de macOS a Linux rara vez tiene que ver con no gustar el hardware de Apple. Tiene que ver con el control: qué te permite hacer tu sistema operativo, qué te impide, y quién decide cuándo cambian esas reglas.
+
+Las versiones recientes de macOS han hecho este tradeoff más marcado. Procesos de arranque bloqueados, requisitos de notarización, opciones de reparación de terceros cada vez más limitadas, e integración creciente con servicios cloud que no operas. Todo avanza en una dirección: lejos de la soberanía del usuario.
+
+Linux ofrece la trayectoria opuesta, pero tiene un coste: debes aprender el sistema. Esta guía cubre el camino práctico.
+
+## Evaluación
+
+Antes de tocar nada, audita lo que realmente necesitas.
+
+### Compatibilidad de hardware
+
+La mayoría de los Mac con Intel y los Mac con Apple Silicon ejecutando Asahi Linux funcionan bien para uso diario. Verifica soporte específico:
+
+- [Asahi Linux](https://asahilinux.org/) para Apple Silicon (M1–M3)
+- Distribuciones x86\_64 estándar para Mac Intel y hardware PC
+
+Lo que funciona de forma fiable en ambos:
+- Navegación web, correo, documentos ofimáticos, desarrollo, reproducción multimedia
+- Impresión, escaneo, monitores externos
+- Wi-Fi, Bluetooth, audio (varía según el chipset en Apple Silicon)
+
+Lo que puede no funcionar:
+- Algunos periféricos Thunderbolt
+- Ciertos lectores de huellas
+- Servicios exclusivos de Apple (iMessage, FaceTime, Continuity)
+
+Sé honesto sobre cuáles de estos usas realmente. En mi caso, lo único que perdí fue iMessage, y el tradeoff mereció la pena.
+
+<OptimizedPicture
+  src="https://images.unsplash.com/photo-1460925895917-afdab827c52f"
+  alt="Lista de verificación y documentos de planificación para la migración del sistema"
+  width={1200}
+  height={800}
+/>
+
+### Inventario de aplicaciones
+
+Haz una lista de cada aplicación que usas en una semana típica. Asigna a cada una un equivalente en Linux:
+
+| macOS | Linux | Notas |
+|-------|-------|-------|
+| Safari / Chrome | Firefox (o Chromium) | Mejor privacidad por defecto |
+| Mail | Thunderbird | Gestiona múltiples cuentas bien |
+| iTerm2 | Kitty / Alacritty | Terminales con aceleración GPU |
+| VS Code | VS Code (nativo) | Mismo editor, misma configuración |
+| Sketch / Figma | Figma (web) / Inkscape | Figma funciona en navegador |
+| 1Password | Bitwarden / pass | Autoalojable con Vaultwarden |
+| Alfred | Rofi / ulauncher | Diferentes pero igual de rápidos |
+| Bear / Notes | Obsidian / Logseq | Markdown nativo, local-first |
+| Finder | Nautilus / Thunar | O usa directamente la terminal |
+| Time Machine | Borg + Vorta / rsync | Más flexible, automatizable |
+| Homebrew | Gestor de paquetes de la distro | Mismo concepto, herramienta distinta |
+
+La mayoría de herramientas propietarias que no tienen versión nativa para Linux funcionan mediante navegador o tienen alternativas libres creíbles.
+
+## Migración de datos
+
+### Archivos y documentos
+
+Copia tu directorio personal. El método más limpio es `rsync` a través de red local o disco externo:
+
+```bash
+# En macOS
+rsync -avz --progress --exclude='Library/' --exclude='.Trash/' \
+  /Users/tu/ usuario@maquina-linux:/home/tu/
+```
+
+Elementos clave a preservar:
+- `~/Documents`, `~/Desktop`, `~/Downloads`
+- `~/.ssh/` (copia y verifica permisos después)
+- `~/.gnupg/`
+- Perfiles del navegador (exporta o sincroniza con cuenta de Firefox)
+- `~/Library/Application Support/` para datos de apps concretas
+
+Algunos atributos de archivos de macOS (resource forks, atributos extendidos) no se transfieren de forma útil. Los archivos de texto, código y documentos sobreviven intactos. Los formatos propietarios como `.pages` o `.key` deben exportarse a `.docx` o `.pdf` antes de migrar.
+
+### Credenciales
+
+Exporta los datos de tu gestor de contraseñas antes de borrar la máquina antigua. Bitwarden, 1Password y KeePass tienen clientes para Linux. Si usas certificados SSH o claves GPG, verifica los permisos después de copiar:
+
+```bash
+chmod 600 ~/.ssh/id_*
+chmod 644 ~/.ssh/*.pub
+chmod 700 ~/.ssh
+```
+
+### Datos del navegador
+
+Firefox y Chromium soportan sincronización de perfiles. Crea una cuenta de Firefox, sincroniza marcadores, contraseñas y extensiones, luego inicia sesión en la máquina nueva. Para usuarios de Chromium, la sincronización de Chrome funciona igual en Linux.
+
+No confíes en la sincronización del navegador como tu única copia de seguridad. Exporta los marcadores a HTML como respaldo.
+
+## Configuración del sistema
+
+### Elegir una distribución
+
+La elección de distribución importa menos que la comunidad y el ecosistema de paquetes. Para antiguos usuarios de macOS, estos son los puntos de entrada más directos:
+
+- **Fedora Workstation.** GNOME puro, paquetes recientes, SELinux por defecto. Se siente pulido desde el primer momento.
+- **Linux Mint.** El escritorio Cinnamon es familiar para refugiados de macOS. Actualizaciones estables y conservadoras.
+- **openSUSE Tumbleweed.** Rolling release con buen testing. YaST ofrece un panel de control que recuerda a Ajustes del Sistema.
+- **Debian.** Sólido como una roca. Paquetes más antiguos pero menos sorpresas. Empieza con la ISO non-free si necesitas firmware.
+
+Evita distribuciones que requieran configuración post-instalación extensa en el primer intento. Deja Arch para más adelante.
+
+### Configuración esencial
+
+Después de la instalación, configura estos elementos antes de hacer cualquier otra cosa:
+
+**Activar actualizaciones automáticas de seguridad:**
+```bash
+# Fedora
+sudo dnf install dnf-automatic
+sudo systemctl enable --now dnf-automatic.timer
+
+# Debian/Ubuntu
+sudo dpkg-reconfigure --priority=low unattended-upgrades
+```
+
+**Cifrado de disco completo.** Si el instalador no lo preguntó, reinstala. LUKS es el estándar y funciona de forma fiable.
+
+**Configurar un cortafuegos:**
+```bash
+sudo firewall-cmd --set-default-zone=drop
+sudo systemctl enable --now firewalld
+
+# O usa ufw en derivados de Debian
+sudo ufw default deny
+sudo ufw enable
+```
+
+**Copias de seguridad automáticas:**
+```bash
+# Instala Borg + Vorta para interfaz gráfica, o este enfoque mínimo
+sudo dnf install borgmatic
+sudo borgmatic init --encryption keyfile-blake2
+# Añade un timer systemd para copias diarias
+```
+
+### Renderizado de fuentes
+
+Esto es lo primero que notan los usuarios de macOS. El renderizado por defecto de Linux usa diferente antialiasing y hinting. Si el texto se ve suave:
+
+```bash
+# Instalar mejor configuración de fuentes
+sudo dnf install freetype-freeworld
+```
+
+Luego crea `~/.config/fontconfig/fonts.conf` con `hintstyle: hintslight` y `rgba: rgb`. Reinicia y la claridad del texto mejorará significativamente.
+
+## El entorno de desarrollo
+
+Aquí es donde Linux sobresale. La mayoría de herramientas que usas como desarrollador están construidas sobre y para Linux.
+
+### Gestión de paquetes
+
+Reemplaza Homebrew por el gestor de paquetes de la distribución:
+
+```bash
+# Analogía de Homebrew para Fedora
+sudo dnf install git python3 nodejs docker ripgrep fd-find
+
+# Para herramientas que no están en los repos, usa Flatpak para apps GUI
+flatpak install flathub com.visualstudio.code
+
+# Solo usa Homebrew en Linux si es absolutamente necesario
+# /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+### Contenerización
+
+Docker y Podman funcionan de forma nativa en Linux — no necesitas Docker Desktop. Podman no necesita demonio y es rootless por defecto:
+
+```bash
+sudo dnf install podman podman-compose
+```
+
+Para compatibilidad con Docker:
+```bash
+alias docker=podman
+```
+
+### Gestión de dotfiles
+
+Vale la pena hacer esto antes de la migración. Almacena tu configuración en un repositorio Git:
+
+```bash
+git init --bare ~/.dotfiles
+alias dotfiles='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+dotfiles add ~/.bashrc ~/.config/fish ~/.vimrc ~/.tmux.conf
+dotfiles commit -m "Dotfiles iniciales"
+dotfiles push
+```
+
+En la máquina nueva, clona y despliega:
+```bash
+git clone --bare https://github.com/tu/dotfiles.git ~/.dotfiles
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME checkout
+```
+
+Esto preserva la configuración del intérprete, la del editor y los alias de Git entre máquinas.
+
+## La primera semana
+
+### Puntos de fricción esperados
+
+- **Atajos de teclado.** La memoria muscular de `Cmd+C` se convierte en `Ctrl+C`. GNOME y KDE permiten reasignar modificadores: configura `Caps Lock` como `Ctrl` e intercambia `Cmd`/`Alt` en ajustes de teclado. La transición lleva aproximadamente una semana de práctica deliberada.
+
+- **Gestos del trackpad.** El soporte de trackpad en Linux es bueno pero no idéntico al de macOS. El deslizamiento de tres dedos para cambiar de espacio de trabajo funciona en GNOME y KDE. El pellizco para zoom es menos fluido. Un ratón ayuda genuinamente durante el periodo de adaptación.
+
+- **Renderizado de fuentes.** Ya se ha tratado arriba. Es una razón común por la que la gente abandona. La solución es configurar, no tolerar.
+
+- **Notificaciones.** El centro de notificaciones de macOS está integrado con el sistema. Los demonios de notificaciones de Linux (GNOME, KDE) funcionan bien pero las integraciones de terceros son más limitadas.
+
+### Herramientas que ayudan
+
+- **Plane / Linear / Todoist** — todos tienen clientes Linux o app web
+- **Signal / Telegram / Slack** — todos tienen aplicaciones nativas de escritorio para Linux
+- **Syncthing** — reemplaza iCloud Drive para sincronizar archivos entre máquinas
+- **KDE Connect** — integración con el teléfono (sincronización de portapapeles, notificaciones, transferencia de archivos)
+
+## Lo que ganas
+
+Más allá del argumento filosófico sobre el control, hay ventajas concretas:
+
+- **Entornos reproducibles.** Tu configuración de desarrollo es declarativa y está bajo control de versiones. Cuando una máquina falla, vuelves a productividad plena en horas, no en días.
+- **Sin actualizaciones forzadas.** Decides cuándo actualizar el sistema operativo. Sin ultimátums de "actualiza esta noche o pierde los parches de seguridad".
+- **Eficiencia de recursos.** El mismo hardware funciona notablemente más rápido. macOS reserva recursos significativos para la composición de ventanas y servicios en segundo plano. Linux te da la opción de elegir qué se ejecuta.
+- **Vida útil del hardware.** Los Mac dejan de recibir actualizaciones a los 5–7 años. Linux funciona en cualquier cosa con x86\_64 o aarch64. Un ThinkPad de 2012 ejecuta Fedora moderno perfectamente.
+
+## La ruta de escape
+
+Guarda el Mac viejo en un cajón durante tres meses antes de borrarlo. Probablemente descubras que no lo necesitas. Pero tener la opción reduce la ansiedad y convierte la transición en una elección, no en una apuesta.
+
+Si después de tres meses echas de menos genuinamente más de una o dos cosas, la pregunta no es si macOS es mejor. La pregunta es si esas cosas merecen la soberanía que intercambias por ellas.
+
+- Categoría: entornos
+- Marcadores: linux, herramientas, workflow, self-hosting
+- Siguiente: endurecer tu escritorio Linux para privacidad y seguridad
