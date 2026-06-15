@@ -100,8 +100,14 @@
   - "Linux and the Architecture of Autonomy" / "Linux y la arquitectura de la autonomía" — sistemas (22 jun)
   - "Self-Hosting as Infrastructure" / "El autohosting como infraestructura" — entornos (25 jun)
   - "The Protocol Layer" / "La capa de protocolos" — sistemas (29 jun)
+- [x] **Guía práctica**: "From macOS to Linux" / "De macOS a Linux" (en/es, tutorial completo con tablas y comandos).
 - [ ] Escribir siguientes posts.
-- [ ] Configurar dominio definitivo.
+- [x] **x402**: desactivado (`X402_ENABLED=false`). Wrangler config mínima, sin worker ni vars.
+- [x] **GitHub Actions**: workflow `deploy.yml` creado (build + deploy automático en push a main).
+- [ ] Registrarse en Cloudflare y generar API token ✅ (hecho por el usuario)
+- [ ] Añadir `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID` a GitHub Secrets ✅ (hecho por el usuario)
+- [ ] Hacer primer push a main para trigger deploy automático.
+- [ ] Configurar dominio definitivo (opcional, comprar en Cloudflare).
 - [ ] Despliegue y CI/CD.
 
 ---
