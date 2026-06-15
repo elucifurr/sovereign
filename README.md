@@ -1,9 +1,7 @@
-# sovereign
+# Sovereign
 
 Personal blog of **M. Segundo** about how software design, infrastructure, and
 regulation affect personal autonomy.
-
-Built from the [Polyglow](https://github.com/zbzailabs/Polyglow) Astro 6 theme.
 
 ## Stack
 
@@ -53,4 +51,4 @@ Authors live in `src/content/authors/<locale>/`.
 
 ## License
 
-MIT
+© 2026 M. Segundo. All rights reserved.
