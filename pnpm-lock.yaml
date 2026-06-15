@@ -42,7 +42,7 @@ importers:
         version: 4.3.0(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.8.4))
       '@x402/core':
         specifier: ^2.14.0
-        version: 2.14.0
+        version: 2.15.0
       '@x402/hono':
         specifier: ^2.14.0
         version: 2.14.0(bufferutil@4.1.0)(hono@4.12.23)(typescript@6.0.3)(utf-8-validate@5.0.10)
@@ -1665,6 +1665,9 @@ packages:
 
   '@x402/core@2.14.0':
     resolution: {integrity: sha512-+xTM6hfGduYvFcQ7QwKvCwommL6+zqzqmr5IuPojbt+RZjo4QUjSkHW+arMtPoIKRLxWAI+e6P4UJMMblwG+Dw==}
+
+  '@x402/core@2.15.0':
+    resolution: {integrity: sha512-Hwop1cu80sf3H4dpNdiMJt7ay30Jf7JUjgx7dXHxQm/nYqOjTcm71FC/ZhpnIpeg6RSAUt7EI/rFTXx/lafHhw==}
 
   '@x402/extensions@2.14.0':
     resolution: {integrity: sha512-2zu8hxf0j4BRvSWNPRKziQLdubnQpzzmU9xopKK5ZyXa434hvmGEUPMBOA2NIYvaTkyZjQH3JZ3GPDyzjBvFqA==}
@@ -4854,6 +4857,10 @@ snapshots:
   '@vscode/l10n@0.0.18': {}
 
   '@x402/core@2.14.0':
+    dependencies:
+      zod: 3.25.76
+
+  '@x402/core@2.15.0':
     dependencies:
       zod: 3.25.76
 
