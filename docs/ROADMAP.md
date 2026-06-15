@@ -92,9 +92,10 @@
 - [x] **public/lighthouse-score-*.svg**: Eliminar.
 - [x] **public/agent-readiness-*.avif**: Eliminar.
 
-### Fase 5 — Contenido Real
+### Fase 5 — Contenido Real ✅
 
-- [ ] Escribir primeros posts del autor.
+- [x] **Post inaugural**: "Sovereignty in Software" / "Soberanía en el software" (en/es, publicado, featured).
+- [ ] Escribir siguientes posts.
 - [ ] Configurar dominio definitivo.
 - [ ] Despliegue y CI/CD.
 
