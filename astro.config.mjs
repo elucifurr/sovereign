@@ -1,5 +1,4 @@
 import mdx from "@astrojs/mdx"
-import partytown from "@astrojs/partytown"
 import sitemap from "@astrojs/sitemap"
 import { satteri } from "@astrojs/markdown-satteri"
 import tailwindcss from "@tailwindcss/vite"
@@ -8,9 +7,6 @@ import icon from "astro-icon"
 import pagefind from "./src/integrations/pagefind.ts"
 import { SITE_CONFIG } from "./src/config/site.ts"
 
-const googleTagManagerEnabled =
-  process.env.PUBLIC_GTM_ENABLED === "true" &&
-  /^GTM-[A-Z0-9]+$/i.test(process.env.PUBLIC_GTM_ID ?? "")
 const sitemapLocaleMap = {
   en: "en-US",
   es: "es-ES",
@@ -74,15 +70,6 @@ export default defineConfig({
     }),
   },
   integrations: [
-    ...(googleTagManagerEnabled
-      ? [
-          partytown({
-            config: {
-              forward: ["dataLayer.push"],
-            },
-          }),
-        ]
-      : []),
     icon({
       include: {
         lucide: [

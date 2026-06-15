@@ -266,7 +266,7 @@ dropdown items use 8px, regular cards use 10px to 14px, image cards use 24px to
 - **Taxonomy pages:** compact link grids, pills, and paginated post grids.
 - **Search:** Pagefind controls follow background, foreground, border, ring,
   and radius tokens.
-- **Widgets:** GTM, AdSense, and x402 remain visually silent unless enabled by
+- **Widgets:** all widgets remain visually silent unless enabled by
   configuration.
 - **Icons:** use `src/components/ui/Icon.astro` and the Lucide allowlist in
   `astro.config.mjs`.

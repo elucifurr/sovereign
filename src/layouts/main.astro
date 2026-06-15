@@ -11,9 +11,6 @@ import { webPageJsonLd, webSiteJsonLd } from "@/utils/structured-data"
 import Header from "@/components/ui/Header.astro"
 import Footer from "@/components/ui/Footer.astro"
 import DynamicGlass from "@/components/features/DynamicGlass.astro"
-import GTMHead from "@/components/widgets/GTMHead.astro"
-import GTMBody from "@/components/widgets/GTMBody.astro"
-import Adsense from "@/components/widgets/Adsense.astro"
 
 interface Props {
   lang: Locale
@@ -208,11 +205,8 @@ const alternateOgLocales = LOCALES.filter((locale) => locale !== lang).map(
         })
       })()
     </script>
-    <GTMHead />
-    <Adsense />
   </head>
   <body>
-    <GTMBody />
     <Header lang={lang} path={path} />
     <main class="flex-1">
       <slot />
