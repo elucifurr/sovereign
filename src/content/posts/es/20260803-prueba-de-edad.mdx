@@ -1,0 +1,88 @@
+---
+title: "Prueba de edad"
+description: "Cómo funciona el sistema armonizado de verificación de edad de la UE, por qué importan las pruebas de conocimiento cero, y dónde se desdibuja la línea entre privacidad e identificación."
+category: "soberania"
+tags:
+  - "regulacion"
+  - "privacidad"
+  - "protocolos"
+  - "infraestructura"
+pubDate: 2026-08-03
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1633265486064-086b219458ec"
+heroImageAlt: "Interfaz de verificación de identidad digital mostrando validación de edad"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: es
+draft: false
+featured: false
+---
+
+Para diciembre de 2026, se espera que todos los estados miembros de la UE ofrezcan una solución de verificación de edad digital a sus ciudadanos. El sistema permite demostrar que eres mayor de 18 años — o de 15, o de 21, o cualquier umbral — sin revelar tu nombre, tu fecha de nacimiento exacta ni ningún otro dato personal. Usa criptografía de conocimiento cero para hacerlo posible.
+
+Esto suena como una victoria para la privacidad. En cierto sentido lo es. Pero la arquitectura técnica revela tensiones que merece la pena examinar antes de que el sistema se convierta en infraestructura obligatoria.
+
+## Por qué verificación de edad ahora
+
+La Ley de Servicios Digitales (Artículo 28) exige que las plataformas accesibles a menores implementen medidas apropiadas para protegerlos. Esto incluye la verificación de edad. El problema: hasta ahora, verificar la edad significaba o mostrar un documento de identidad — que revela mucho más de lo necesario — o confiar en la autodeclaración del usuario.
+
+El enfoque de la UE es construir una capa estandarizada y respetuosa con la privacidad que cualquier servicio pueda usar. La Comisión Europea publicó el Blueprint de Verificación de Edad en julio de 2025, lo completó funcionalmente en abril de 2026, y ahora está pilotándolo con siete estados miembros: Francia, Dinamarca, Grecia, Italia, España, Chipre e Irlanda.
+
+La recomendación adoptada en abril de 2026 pide a los estados miembros que tengan la verificación de edad disponible antes del 31 de diciembre de 2026.
+
+## La arquitectura técnica
+
+El sistema puede funcionar como una app independiente — el "mini-wallet" — o integrarse en la Cartera de Identidad Digital Europea (EUDI Wallet) exigida por eIDAS 2.
+
+### Atestaciones, no identidades
+
+Cuando pruebas tu edad, tu dispositivo presenta una atestación criptográfica: una declaración firmada por un emisor de confianza que confirma que estás por encima de un umbral específico. La atestación no contiene nombre, ni fecha de nacimiento, ni identificador. Solo dice "el titular es mayor de X años."
+
+Esto se implementa como una Atestación Electrónica de Atributos (EAA) bajo el marco eIDAS 2. Las atestaciones cualificadas (QEAA) tienen mayor peso legal y requieren que el emisor verifique tu identidad con un nivel de garantía alto antes de la emisión.
+
+### Pruebas de conocimiento cero
+
+El mecanismo criptográfico clave es la prueba de conocimiento cero. Tienes una credencial emitida por una autoridad de confianza — por ejemplo, tu autoridad de identidad nacional — que contiene tu fecha de nacimiento exacta. Cuando un servicio pregunta "¿eres mayor de 18?", tu cartera genera una prueba que satisface la desigualdad (fecha actual - fecha de nacimiento >= 18 años) sin revelar la fecha de nacimiento en sí.
+
+El protocolo utiliza interfaces estandarizadas: OpenID4VCI para la emisión de credenciales, OpenID4VP para la presentación, W3C Digital Credentials API para la integración con navegadores. El modelo de datos sigue ISO/IEC 18013-5 (carnet de conducir móvil) e ISO/IEC 23220-2 (codificación genérica de eID).
+
+### No vinculabilidad
+
+Cada presentación genera una prueba única que no puede correlacionarse con pruebas anteriores o futuras de la misma cartera. Esto evita que los servicios construyan un perfil de qué sitios visitas y cuándo. La no vinculabilidad se aplica criptográficamente, no mediante procedimientos.
+
+## Integración con la cartera EUDI
+
+El sistema de verificación de edad está diseñado para ser una funcionalidad de la Cartera de Identidad Digital Europea. La cartera ya almacena tus PID (Datos de Identificación Personal) y cualquier atestación que tengas. La prueba de edad es simplemente un tipo de atestación.
+
+Esta integración crea eficiencias — no necesitas una app separada — pero también dependencias. Si la cartera se vuelve obligatoria para acceder a ciertos servicios, la verificación de edad también se vuelve obligatoria, incluso para servicios donde antes interactuabas de forma anónima.
+
+## La brecha entre privacidad técnica y práctica
+
+La criptografía es sólida. Una prueba de conocimiento cero correctamente implementada no revela nada más allá del umbral de edad. Pero tres factores estrechan la brecha entre el diseño técnico y la privacidad práctica.
+
+### Conocimiento del emisor
+
+La autoridad que emitió tu atestación de prueba de edad sabe quién eres. Si el emisor es tu autoridad de identidad nacional — y probablemente lo será — conoce tu identidad, tu edad y el hecho de que solicitaste una atestación de edad. Este es un punto único de conocimiento sobre tus actividades verificadas por edad.
+
+### Registro de relying parties
+
+Los servicios que aceptan atestaciones de edad deben registrarse como Relying Parties, declarando qué atributos pretenden solicitar. Este registro es público. Por tanto, una lista de qué servicios verifican la edad está disponible, aunque las transacciones individuales sean no vinculables.
+
+### El límite de lo voluntario
+
+La arquitectura respeta la privacidad cuando la verificación de edad es opcional. Cuando se vuelve obligatoria — ya sea por regulación (Artículo 28 del DSA) o por política de la plataforma — el usuario no tiene más opción que presentar una atestación. La ganancia en privacidad respecto a mostrar un documento de identidad es real, pero la pérdida respecto al acceso anónimo también lo es.
+
+## Verificación de edad obligatoria y anonimato
+
+Esta es la tensión central. El sistema de la UE es el sistema de verificación de edad masivo más respetuoso con la privacidad jamás diseñado. Revela menos información que mostrar un pasaporte y usa criptografía para evitar el rastreo entre servicios.
+
+Pero el sistema también crea una infraestructura técnica donde la verificación de edad es fácil, estandarizada y, con el tiempo, esperada. La Ley de Servicios Digitales ya exige que las plataformas protejan a los menores. Una vez que existe una interfaz estándar de verificación de edad, el camino de "debería verificar" a "debe verificar" se acorta.
+
+La consecuencia para el anonimato: servicios que antes aceptaban participación anónima — foros, plataformas de mensajería, comunidades de contenido — pueden adoptar la verificación de edad incluso cuando no es estrictamente necesaria, porque la barrera técnica se ha reducido a casi cero. La decisión de verificar se convierte en un estado por defecto en lugar de una decisión deliberada.
+
+## Trade-offs
+
+El sistema de verificación de edad de la UE está técnicamente bien diseñado. Es más privado que cualquier alternativa práctica a escala. Pero sigue siendo un sistema donde demostrar que tienes edad suficiente para acceder a un servicio requiere interacción con una autoridad de confianza, una credencial criptográfica y una relying party que ha registrado su intención. Esa es una relación diferente con el servicio que presentarse sin credenciales en absoluto.
+
+La pregunta relevante no es si este sistema es mejor que mostrar el DNI. Lo es. La pregunta es si la infraestructura de edad verificable, una vez construida, crea presión hacia la verificación que reduce los espacios donde la participación anónima es posible.

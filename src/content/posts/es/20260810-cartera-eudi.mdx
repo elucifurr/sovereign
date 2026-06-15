@@ -1,0 +1,123 @@
+---
+title: "La Cartera de Identidad Digital Europea"
+description: "Qué es la Cartera EUDI, cómo funciona, su modelo de gobernanza y por qué puede convertirse en la infraestructura digital más trascendente que Europa construye."
+category: "soberania"
+tags:
+  - "regulacion"
+  - "privacidad"
+  - "protocolos"
+  - "infraestructura"
+pubDate: 2026-08-10
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1614064641938-3bbee52942c7"
+heroImageAlt: "Interfaz de cartera digital en un smartphone mostrando credenciales de identificación"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: es
+draft: false
+featured: false
+---
+
+La Cartera de Identidad Digital Europea — EUDI Wallet, por sus siglas en inglés — es la capa de infraestructura que subyace a todo lo demás en esta serie. Es el protocolo común para atestaciones de identidad, edad y cualificaciones. Entender cómo funciona es necesario para comprender qué limitaciones impone, qué permite y dónde están los trade-offs de diseño.
+
+## El mandato legal
+
+El Reglamento eIDAS 2 (Reglamento (UE) 2024/1183) entró en vigor el 20 de mayo de 2024. Sustituye al Reglamento eIDAS original de 2014 e introduce un cambio fundamental: los estados miembros deben ofrecer carteras de identidad digital a sus ciudadanos. El mandato no es opcional.
+
+Fechas clave:
+- Los estados miembros deben notificar sus soluciones de cartera antes del 21 de noviembre de 2026
+- La Comisión debe establecer un Toolbox común de la Unión antes del 21 de noviembre de 2025
+- Las relying parties deben aceptar las notificaciones de la Cartera EUDI a partir del 20 de mayo de 2027
+
+El reglamento usa el término "Cartera de Identidad Digital Europea" cuidadosamente. No es nacional — es europea. Una cartera emitida por cualquier estado miembro debe ser reconocida por todos los demás estados miembros. El objetivo es la interoperabilidad por regulación.
+
+## Arquitectura
+
+### La instancia de cartera
+
+La Cartera EUDI es una aplicación de software — una app móvil o de escritorio — que almacena claves criptográficas, credenciales y atestaciones. No es un servicio en la nube. Las claves se generan en el dispositivo. Las credenciales se almacenan en el dispositivo. El usuario controla lo que se comparte.
+
+La cartera implementa dos protocolos principales:
+- **OpenID4VCI** (Emisión de Credenciales Verificables): para obtener credenciales de emisores
+- **OpenID4VP** (Presentación de Credenciales Verificables): para presentar credenciales a relying parties
+
+Ambos protocolos funcionan sobre TLS mutuamente autenticado. La cartera demuestra su identidad al emisor mediante certificados de cliente mTLS o atestación de hardware.
+
+### Datos de Identificación Personal (PID)
+
+Toda cartera contiene un conjunto de atributos llamados Datos de Identificación Personal. Estos incluyen:
+- Nombre y apellidos
+- Fecha de nacimiento
+- Nacionalidad
+- Un identificador único y persistente (el identificador PID eIDAS)
+
+El PID es el conjunto mínimo de atributos que toda cartera debe contener. Es esencialmente el equivalente digital de un DNI.
+
+### Atestaciones Electrónicas de Atributos (EAA)
+
+Más allá del PID, la cartera puede contener EAA — declaraciones firmadas por emisores de confianza sobre cualquier atributo. Atestaciones de edad, cualificaciones profesionales, títulos académicos, permisos de residencia y más.
+
+Las EAA Cualificadas (QEAA) tienen la máxima garantía legal y se tratan como equivalentes a documentos físicos.
+
+### La instancia de cartera y el proveedor de PID
+
+La arquitectura separa el software de cartera (la instancia de cartera) del proveedor del PID (el PID Provider). La instancia de cartera podría ser una app de tu gobierno nacional, pero también podría ser una app de terceros certificada por el estado miembro.
+
+El PID Provider, por el contrario, es siempre una autoridad pública o una entidad que actúa en su nombre. Esta separación evita el bloqueo: puedes cambiar de app de cartera conservando tu PID.
+
+## Seguridad y certificación
+
+Las carteras deben certificarse según las normas de ciberseguridad de la UE. La certificación cubre:
+- Generación y almacenamiento seguro de claves (respaldado por hardware, protegido con biometría)
+- Canales seguros (mTLS, certificate pinning)
+- Autenticación de usuario (biometría, PIN)
+- Funcionalidades de privacidad (presentaciones no vinculables, divulgación selectiva)
+- Resistencia a clonación, manipulación y ataques de canal lateral
+
+La certificación sigue la metodología Common Criteria (ISO/IEC 15408) y debe ser realizada por un organismo acreditado.
+
+## El despliegue
+
+A agosto de 2026, el despliegue está avanzado. Varios estados miembros han publicado sus aplicaciones de cartera:
+
+- **Francia**: France Identité Wallet (basado en la infraestructura Tchap)
+- **Alemania**: extensión de cartera basada en eID de la existente AusweisApp2
+- **España**: Cartera Digital (integrada con Cl@ve)
+- **Italia**: IT Wallet (integración con app IO)
+- **Dinamarca**: MitID Wallet (asociación con proveedor comercial)
+- **Bélgica**: cartera itsme® (modelo PPP)
+
+La Comisión ha publicado implementaciones de referencia — la EUDI Wallet Reference Implementation (WRI) — en varios lenguajes de programación. La implementación de referencia está disponible bajo licencia EUPL.
+
+## Privacidad y trazabilidad
+
+### Divulgación mínima
+
+La cartera soporta divulgación selectiva. Una consulta de prueba de edad revela solo la condición de edad, no la fecha de nacimiento. Una consulta de prueba de nacionalidad revela solo la nacionalidad, no el nombre. Los atributos del PID pueden divulgarse uno a la vez.
+
+### No vinculabilidad
+
+La cartera genera claves públicas efímeras para cada presentación. La relying party recibe una prueba vinculada a una clave que nunca ha visto antes y que no volverá a ver. Esto evita la correlación entre servicios.
+
+Pero la no vinculabilidad tiene un límite: el propio PID contiene un identificador único y persistente. Si un servicio exige el PID — y algunos lo harán — el identificador puede usarse para vincular transacciones dentro de ese servicio. La arquitectura evita la vinculación entre servicios, no dentro del servicio.
+
+### El factor usuario
+
+La Comisión Europea ha publicado análisis de privacidad detallados. La Cartera es, en muchos sentidos, el sistema de identidad nacional más respetuoso con la privacidad jamás diseñado. Pero "el usuario" sigue siendo la persona que debe autenticarse en la cartera, aprobar cada divulgación, entender qué hace cada atributo. El usuario es la capa más débil del modelo de seguridad.
+
+## Requisitos para relying parties
+
+Los servicios que aceptan atestaciones de la Cartera EUDI deben registrarse como Relying Parties. El registro incluye:
+- Identidad del proveedor del servicio
+- Lista de atributos solicitados
+- Propósito y base legal
+- Política de retención de datos
+
+Las relying parties están obligadas a solicitar solo los atributos mínimos necesarios para el servicio. Esto refleja el principio de minimización de datos del GDPR.
+
+## Lo que crea
+
+La Cartera EUDI es infraestructura. Crea un protocolo estandarizado para probar atributos sobre ti mismo que funciona en todos los estados miembros, todos los sectores y todos los servicios. Antes de la Cartera, demostrar que eras un profesional cualificado en otro país de la UE requería apostillas, traducciones y notarización. Después de la Cartera, significa una atestación firmada verificada en milisegundos.
+
+Pero la misma infraestructura que reduce la fricción para usos legítimos también crea un canal para la verificación sin fricción. La Cartera no determina qué atributos se solicitan, por quién y bajo qué base legal. El marco de gobernanza que la rodea es lo que lo determina.

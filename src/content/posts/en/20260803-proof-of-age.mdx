@@ -1,0 +1,88 @@
+---
+title: "Proof of Age"
+description: "How the EU's harmonised age verification system works, why zero-knowledge proofs matter, and where the line between privacy and identification blurs."
+category: "soberania"
+tags:
+  - "regulacion"
+  - "privacidad"
+  - "protocolos"
+  - "infraestructura"
+pubDate: 2026-08-03
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1633265486064-086b219458ec"
+heroImageAlt: "Digital identity verification interface showing age validation"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+By December 2026, every EU member state is expected to offer a digital age verification solution to its citizens. The system lets you prove you are over 18 — or 15, or 21, or any threshold — without revealing your name, your exact birth date, or any other personal information. It uses zero-knowledge cryptography to make that possible.
+
+This sounds like a privacy win. In some ways it is. But the technical architecture reveals tensions worth examining before the system becomes mandatory infrastructure.
+
+## Why Age Verification Now
+
+The Digital Services Act (Article 28) requires platforms accessible to minors to implement appropriate measures to protect them. This includes age verification. The problem: until now, age verification meant either showing an ID — which reveals far more than intended — or trusting the user's self-declaration.
+
+The EU's approach is to build a standardised, privacy-preserving layer that any service can use. The European Commission released the Age Verification Blueprint in July 2025, made it feature-ready in April 2026, and is now piloting it with seven member states: France, Denmark, Greece, Italy, Spain, Cyprus, and Ireland.
+
+The recommendation adopted in April 2026 asks member states to make age verification available by December 31, 2026.
+
+## The Technical Architecture
+
+The system can run as a standalone app — the "mini-wallet" — or be integrated into the EU Digital Identity Wallet mandated by eIDAS 2.
+
+### Attestations, Not Identities
+
+When you prove your age, your device presents a cryptographic attestation: a signed statement from a trusted issuer confirming that you are above a specific threshold. The attestation contains no name, no date of birth, no identifier. It only says "holder is over X years old."
+
+This is implemented as an Electronic Attestation of Attributes (EAA) under the eIDAS 2 framework. Qualified attestations (QEAAs) carry higher legal weight and require the issuer to verify your identity to a high assurance level before issuance.
+
+### Zero-Knowledge Proofs
+
+The key cryptographic mechanism is the zero-knowledge proof. You hold a credential issued by a trusted authority — say, your national identity authority — that contains your exact date of birth. When a service asks "are you over 18?", your wallet generates a proof that satisfies the inequality (current date - birth date >= 18 years) without revealing the birth date itself.
+
+The protocol uses standardised interfaces: OpenID4VCI for credential issuance, OpenID4VP for presentation, W3C Digital Credentials API for browser integration. The data model follows ISO/IEC 18013-5 (mobile driving licence) and ISO/IEC 23220-2 (generic eID encoding).
+
+### Unlinkability
+
+Each presentation generates a unique proof that cannot be correlated with previous or future proofs from the same wallet. This prevents services from building a profile of which sites you visit and when. The unlinkability is enforced cryptographically, not procedurally.
+
+## Integration with the EUDI Wallet
+
+The age verification system is designed to be a feature of the broader European Digital Identity Wallet. The wallet already stores your PID (Person Identification Data) and any attestations you have. The age proof is simply one type of attestation.
+
+This integration creates efficiencies — you do not need a separate app — but also dependencies. If the wallet becomes mandatory for accessing certain services, age verification becomes mandatory too, even for services where you previously interacted anonymously.
+
+## The Gap Between Technical and Practical Privacy
+
+The cryptography is sound. A properly implemented zero-knowledge proof reveals nothing beyond the age threshold. But three factors narrow the gap between the technical design and practical privacy.
+
+### Issuer Knowledge
+
+The authority that issued your proof-of-age attestation knows who you are. If the issuer is your national identity authority — and it likely will be — it knows your identity, your age, and the fact that you requested an age attestation. This is a single point of knowledge about your age-verified activities.
+
+### Relying Party Registration
+
+Services that accept age attestations must register as Relying Parties, declaring which attributes they intend to request. This registration is public. A list of which services verify age is therefore available, even if the individual transactions are unlinkable.
+
+### The Voluntary Boundary
+
+The architecture is privacy-preserving when age verification is optional. When it becomes mandatory — either through regulation (DSA Article 28) or through platform policy — the user has no choice but to present an attestation. The privacy gain over showing an ID is real, but the loss compared to anonymous access is also real.
+
+## Mandatory Age Verification and Anonymity
+
+This is the central tension. The EU's system is the most privacy-respecting mass age verification system ever designed. It reveals less information than showing a passport, and it uses cryptography to prevent tracking across services.
+
+But the system also creates a technical infrastructure where age verification is easy, standardised, and eventually expected. The Digital Services Act already requires platforms to protect minors. Once a standard age verification interface exists, the path from "should verify" to "must verify" becomes short.
+
+The consequence for anonymity: services that previously accepted anonymous participation — forums, messaging platforms, content communities — may adopt age verification even when not strictly required, because the technical barrier has been lowered to near zero. The choice to verify becomes a default rather than a deliberate decision.
+
+## Trade-offs
+
+The EU age verification system is technically well-designed. It is more private than any practical alternative at scale. But it is still a system where proving you are old enough to access a service requires interaction with a trusted authority, a cryptographic credential, and a relying party that has registered its intent. That is a different relationship to the service than showing up without credentials at all.
+
+The relevant question is not whether this system is better than showing ID. It is. The question is whether the infrastructure of verifiable age, once built, creates pressure toward verification that reduces the spaces where anonymous participation is possible.

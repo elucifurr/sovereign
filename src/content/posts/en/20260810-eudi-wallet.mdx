@@ -1,0 +1,123 @@
+---
+title: "The European Digital Identity Wallet"
+description: "What the EUDI Wallet is, how it works, its governance model, and why it may become the most consequential digital infrastructure Europe builds."
+category: "soberania"
+tags:
+  - "regulacion"
+  - "privacidad"
+  - "protocolos"
+  - "infraestructura"
+pubDate: 2026-08-10
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1614064641938-3bbee52942c7"
+heroImageAlt: "Digital wallet interface on a smartphone showing identification credentials"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+The European Digital Identity Wallet — EUDI Wallet for short — is the infrastructure layer underneath everything else in this series. It is the common protocol for identity, age, and qualification attestations. Understanding how it works is necessary to understand what constraints it imposes, what it enables, and where the design trade-offs are.
+
+## The Legal Mandate
+
+The eIDAS 2 Regulation (Regulation (EU) 2024/1183) entered into force on May 20, 2024. It replaces the original eIDAS Regulation from 2014 and introduces a fundamental change: member states must offer digital identity wallets to their citizens. The mandate is not optional.
+
+Key deadlines:
+- Member states must notify their wallet solutions by November 21, 2026
+- The Commission must establish a common Union Toolbox by November 21, 2025
+- Relying parties must accept EUDI Wallet notifications from May 20, 2027
+
+The regulation uses the term "European Digital Identity Wallet" carefully. It is not national — it is European. A wallet issued by any member state must be recognised by all other member states. The goal is interoperability by regulation.
+
+## Architecture
+
+### The Wallet Instance
+
+The EUDI Wallet is a software application — a mobile app or a desktop application — that stores cryptographic keys, credentials, and attestations. It is not a cloud service. Keys are generated on-device. Credentials are stored on-device. The user controls what is shared.
+
+The wallet implements two core protocols:
+- **OpenID4VCI** (Verifiable Credential Issuance): for obtaining credentials from issuers
+- **OpenID4VP** (Verifiable Credential Presentation): for presenting credentials to relying parties
+
+Both protocols run over mutually authenticated TLS. The wallet proves its identity to the issuer through mTLS client certificates or hardware attestation.
+
+### Person Identification Data (PID)
+
+Every wallet holds a set of attributes called Person Identification Data. These include:
+- First name and family name
+- Date of birth
+- Nationality
+- A unique, persistent identifier (the eIDAS PID identifier)
+
+The PID is the minimum set of attributes every wallet must contain. It is essentially the digital equivalent of a national ID card.
+
+### Electronic Attestations of Attributes (EAAs)
+
+Beyond the PID, the wallet can hold EAAs — signed statements from trusted issuers about any attribute. Age attestations, professional qualifications, academic degrees, residence permits, and more.
+
+Qualified EAAs (QEAAs) have the highest legal assurance and are treated as equivalent to physical documents.
+
+### The Wallet Instance and the PID Provider
+
+The architecture separates the wallet software (the wallet instance) from the provider of the PID (the PID Provider). The wallet instance could be an app from your national government, but it could also be a third-party app certified by the member state.
+
+The PID Provider, by contrast, is always a public authority or an entity acting on its behalf. This separation prevents lock-in: you can switch wallet apps while retaining your PID.
+
+## Security and Certification
+
+Wallets must be certified under EU cybersecurity rules. The certification covers:
+- Secure key generation and storage (hardware-backed, biometric-protected)
+- Secure channels (mTLS, certificate pinning)
+- User authentication (biometrics, PIN)
+- Privacy features (unlinkable presentations, selective disclosure)
+- Resistance to cloning, tampering, and side-channel attacks
+
+The certification follows the Common Criteria methodology (ISO/IEC 15408) and must be performed by an accredited body.
+
+## The Rollout
+
+As of August 2026, the rollout is well underway. Several member states have published their wallet applications:
+
+- **France**: France Identité Wallet (based on the Tchap infrastructure)
+- **Germany**: eID-based wallet extension of the existing AusweisApp2
+- **Spain**: Cartera Digital (integrated with Cl@ve)
+- **Italy**: IT Wallet (IO app integration)
+- **Denmark**: MitID Wallet (commercial provider partnership)
+- **Belgium**: itsme® wallet (PPP model)
+
+The Commission has published reference implementations — the EUDI Wallet Reference Implementation (WRI) — in several programming languages. The reference implementation is available under EUPL license.
+
+## Privacy and Traceability
+
+### Minimal Disclosure
+
+The wallet supports selective disclosure. A proof-of-age query reveals only the age condition, not the birth date. A proof-of-nationality query reveals only the nationality, not the name. The PID attributes can be disclosed one at a time.
+
+### Unlinkability
+
+The wallet generates ephemeral public keys for each presentation. The relying party receives a proof linked to a key it has never seen before and will never see again. This prevents correlation across services.
+
+But unlinkability has a limit: the PID itself contains a unique, persistent identifier. If a service demands the PID — and some services will — the identifier can be used to link transactions across that service. The architecture prevents cross-service linking, not within-service linking.
+
+### The User Attribute
+
+The European Commission has published detailed privacy analyses. The Wallet is, in many ways, the most privacy-preserving national identity system ever designed. But "the user" is still the person who must authenticate to the wallet, must approve each disclosure, must understand what each attribute does. The user is the weakest layer in the security model.
+
+## Requirements on Relying Parties
+
+Services that accept EUDI Wallet attestations must register as Relying Parties. Registration includes:
+- Identity of the service provider
+- List of attributes requested
+- Purpose and legal basis
+- Data retention policy
+
+Relying parties are bound by the obligation to request only the minimum attributes necessary for the service. This mirrors the data minimisation principle of GDPR.
+
+## What It Creates
+
+The EUDI Wallet is infrastructure. It creates a standardised protocol for proving attributes about yourself that works across all member states, all sectors, and all services. Before the Wallet, proving you are a qualified professional in another EU country meant document apostilles, translation, notarisation. After the Wallet, it means a signed attestation verified in milliseconds.
+
+But the same infrastructure that reduces friction for legitimate use also creates a channel for frictionless verification. The Wallet does not determine what attributes are requested, by whom, and under what legal basis. The governance framework around it does.

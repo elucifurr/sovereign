@@ -1,0 +1,117 @@
+---
+title: "The Regulatory Stack"
+description: "How three separate EU digital regulations — eIDAS 2, DSA, and CSAM — form a coherent regulatory stack, and why the whole may be greater than the sum of its parts."
+category: "soberania"
+tags:
+  - "regulacion"
+  - "privacidad"
+  - "protocolos"
+  - "infraestructura"
+pubDate: 2026-08-17
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31"
+heroImageAlt: "Server rack infrastructure representing stacked regulatory layers"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+This series has covered three separate regulatory developments: client-side scanning for CSAM detection, harmonised age verification, and the European Digital Identity Wallet. They originate from different legislative processes, target different problems, and operate under different legal frameworks. But they are not independent.
+
+They form a regulatory stack: a layered set of rules and technical protocols that, taken together, constitute a new infrastructure for verifying who people are, what they are doing, and whether they are allowed to do it.
+
+This article brings the three threads together and examines the stack as a whole.
+
+## The Layers
+
+Each layer of the stack addresses a different question:
+
+| Layer | Question | Legal basis | Technology |
+|-------|----------|-------------|------------|
+| Wallet | Who are you? | eIDAS 2 | EUDI Wallet, PID, EAAs |
+| Age verification | How old are you? | DSA Art. 28, eIDAS 2 | Mini-wallet, ZK proofs |
+| Client-side scanning | What are you doing? | Proposed CSAM Reg | Perceptual hashing, AI |
+
+The wallet establishes identity. Age verification establishes an attribute (age) that is useful in many contexts. Client-side scanning establishes surveillance of user content.
+
+Each layer is justified on its own terms. Each layer has its own legislative history, its own stakeholder coalitions, and its own privacy debates. But the layers interact in ways that are not visible when examining them individually.
+
+## The Stacking Effect
+
+### Identity as a Prerequisite
+
+The age verification system depends on the wallet infrastructure. To obtain an age attestation, you need an issuer that has verified your identity. That issuer is likely to be the same authority that issues your wallet PID. The wallet is the default path to the age attestation.
+
+This means the wallet's adoption rate determines the reach of age verification. If most people have wallets, age verification becomes practical for most services. If wallet adoption is low, age verification remains niche. The Commission's strategy is clear: mandate the wallet, and age verification follows.
+
+### Verification Creates a Channel for More Verification
+
+Once the wallet and age verification infrastructure exist, the technical cost of adding additional attestation requirements drops to near zero. A platform that already checks age can check nationality, residency, professional status, or any other attribute with a few lines of integration code.
+
+This is efficient. It is also a channel for attribute creep. The infrastructure does not prevent platforms from requesting more information than they need. The GDPR and the eIDAS 2 framework prohibit excessive data requests, but enforcement depends on regulatory oversight, not technical constraint.
+
+### Client-Side Scanning and Identity
+
+Client-side scanning does not require identity verification. The CSAM proposal is designed to detect illegal content before it is shared, without identifying the uploader. But in practice, the combination is powerful.
+
+If a platform deploys client-side scanning and identifies a match, it needs to report it. To whom? Under the current proposal, to Europol. But Europol cannot act on a report without knowing who uploaded the content. The report must include some form of identification.
+
+The scanning layer detects the behaviour. The wallet layer provides the identity. Together, they create an enforcement chain that neither layer achieves alone.
+
+## The Threshold Problem
+
+The regulatory stack creates a problem that is not fully addressed: at what threshold should a person be required to present a verifiable credential?
+
+Currently, identity verification is required for specific regulated activities — opening a bank account, crossing a border, signing a contract. The stack expands the range of activities that can require verification, even when the legal basis is age protection or content moderation.
+
+The expansion is incremental. First, age verification for adult content. Then for social media. Then for messaging platforms that allow file sharing. Each step is justified by a specific harm. But the infrastructure makes each subsequent step technically trivial.
+
+This is not a conspiracy. It is the normal operation of infrastructure that lowers transaction costs. The same phenomenon occurs in every domain: when something becomes cheap and standardised, usage increases.
+
+## The Voluntariness Spectrum
+
+| Type | Example | Verification | Anonymity |
+|------|---------|-------------|-----------|
+| Anonymous access | Reading a blog | None | Full |
+| Age-gated access | Adult website | Age only (ZK) | Pseudonymous |
+| Identity-verified access | Banking portal | Full identity | None |
+| Behavioural monitoring | Messaging app | Passive scanning | None |
+
+The stack moves activities from the top of this spectrum toward the bottom. Not by mandate — each service chooses where to position itself. But the infrastructure makes lower positions technically feasible and legally safer for platforms.
+
+## Architectural Patterns Across the Stack
+
+### Centralisation of Trust
+
+Both the wallet and age verification systems rely on trusted issuers — government authorities that attest to attributes. Client-side scanning relies on a trusted database (the hash list). The stack centralises trust in a way that the decentralised internet did not.
+
+### Cryptographic Privacy as a Release Valve
+
+All three systems use cryptography to limit the privacy impact. The wallet uses selective disclosure and unlinkable presentations. Age verification uses zero-knowledge proofs. Client-side scanning (in some proposed versions) uses private set intersection and secure aggregation.
+
+The cryptographic privacy measures are genuine improvements over earlier proposals. But they serve a political function too: they make the stack acceptable to privacy advocates and EU institutions. The cryptography is the release valve that permits the expansion of verification infrastructure.
+
+### Enforcement Dependency
+
+Each layer depends on the layers below it for enforcement. The wallet cannot enforce age verification. Age verification cannot enforce content rules. Client-side scanning cannot identify violators without the wallet.
+
+This dependency creates a lock-in mechanism. Once the lower layers are deployed, the upper layers become enforceable in ways they were not before. The political difficulty of deploying each layer separately is lower than the difficulty of deploying the full stack, because each layer is evaluated on its own terms.
+
+## Diverging Paths
+
+The regulatory stack is not a single coherent plan. It is the emergent result of three separate legislative processes with different timelines, different political dynamics, and different degrees of contestation.
+
+The wallet had broad political support. It is seen as sovereignty-enhancing — a European infrastructure that reduces dependence on US and Chinese identity providers. Age verification had moderate support, bundled with child protection. Client-side scanning is deeply contested.
+
+The divergence matters because the contested layer determines the credibility of the entire stack. If client-side scanning is struck down by the Court of Justice or abandoned by the Commission, the remaining stack still exists. But the combination of identity verification and content monitoring is what makes the stack transformative.
+
+## The Question the Stack Poses
+
+The regulatory stack enables a type of digital environment that did not exist before: one where every participant can be required to present a state-issued credential, where every credential can be verified against the identity of the person presenting it, and where some forms of content are monitored before they are shared.
+
+The stack is not inevitable. Each layer requires implementation by member states, adoption by users, and acceptance by platforms. But the infrastructure is being built. The protocols are being standardised. The legal mandates are in place.
+
+The question the stack poses is not whether any individual regulation is justified — each has its merits — but whether the sum of these layers creates a digital environment that is recognisably different from the one it replaces. And whether that difference is what we want.

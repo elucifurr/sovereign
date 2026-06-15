@@ -1,0 +1,85 @@
+---
+title: "Escaneo del lado del cliente"
+description: "Cómo funciona la regulación Chat Control de la UE, qué significa realmente el escaneo local para el cifrado y por qué el debate técnico no va de romper criptografía."
+category: "soberania"
+tags:
+  - "regulacion"
+  - "privacidad"
+  - "protocolos"
+pubDate: 2026-07-27
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1518186285589-2f7649de83e0"
+heroImageAlt: "Candado digital y flujos de datos representando cifrado y vigilancia"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: es
+draft: false
+featured: false
+---
+
+La propuesta de Regulación contra el Abuso Sexual Infantil de la UE — conocida como Chat Control — lleva más de cuatro años en negociación. La derogación temporal que permitía el escaneo voluntario expiró el 3 de abril de 2026, cuando el Parlamento Europeo votó 311-228 en contra de su extensión. Pero la regulación permanente, que obligaría al escaneo de comunicaciones privadas, sigue en negociaciones de trilogo con un acuerdo político previsto para julio de 2026.
+
+Este artículo explica la arquitectura técnica en el centro del debate, qué significa realmente para el cifrado, y por qué los argumentos de ambos lados son más matizados de lo que los titulares sugieren.
+
+## Qué regula Chat Control
+
+La regulación se dirige a dos tipos de contenido: material de abuso sexual infantil (CSAM) y grooming — patrones de comunicación que pueden indicar que un adulto prepara a un menor para el abuso.
+
+La propuesta original de la Comisión (COM/2022/0209) exigía a los proveedores detectar ambos tipos de contenido en todas las comunicaciones. Tras años de proceso legislativo, el borrador actual ha pasado de órdenes de detección obligatorias a un marco de evaluación de riesgos. Los proveedores categorizados como de alto riesgo deben implementar medidas de mitigación, que pueden incluir escaneo del lado del cliente.
+
+El cambio clave: en lugar de ordenar a las plataformas que escaneen, la regulación crea condiciones donde no escanear se convierte en la opción más arriesgada. Los críticos lo llaman "obligatorio por incentivo."
+
+## Cómo funciona el escaneo del lado del cliente
+
+El escaneo del lado del cliente examina el contenido en el dispositivo del usuario antes de que se cifre y transmita. Hay tres enfoques técnicos.
+
+### Hash Matching
+
+Se distribuye a los dispositivos una base de datos de hashes perceptuales de CSAM conocido. Cuando el usuario comparte una imagen, el cliente calcula su hash perceptual y lo compara contra la base de datos. Si coincide, la imagen se marca.
+
+Es el enfoque más antiguo y limitado. Solo detecta material ya presente en la base de datos. El material nuevo o modificado pasa inadvertido. Los hashes perceptuales también son vulnerables a colisiones — imágenes diferentes que producen el mismo hash — y a modificaciones adversariales simples como recortes o cambios de color.
+
+### Neural Hash Matching
+
+Apple propuso esto en 2021 y lo retiró tras demostrarse colisiones en cuestión de días. Una red neuronal genera hashes más robustos frente a modificaciones, pero el problema de las colisiones es inherente al hashing perceptual. Si dos imágenes diferentes pueden producir el mismo hash, el sistema no puede distinguir entre un falso positivo y una detección real a escala.
+
+### Clasificadores de Machine Learning
+
+Un modelo de red neuronal clasifica imágenes o texto directamente. Para imágenes, estima la probabilidad de que un contenido sea CSAM. Para texto, busca patrones asociados con grooming.
+
+Este enfoque puede detectar material nuevo, pero tiene tasas de falso positivo significativas. En una plataforma que procesa miles de millones de mensajes al día, incluso una tasa de falso positivo del 0.01% genera cientos de miles de avisos diarios que requieren revisión humana. A ese volumen, los equipos de revisión se convierten en el cuello de botella, y la tasa de error de revisores humanos bajo presión introduce una segunda capa de falsos positivos.
+
+## La cuestión del cifrado
+
+La afirmación técnica central de los defensores de la regulación: el escaneo ocurre antes del cifrado, por lo que el cifrado extremo a extremo permanece intacto. El mensaje cifrado en tránsito sigue siendo ilegible para el servidor.
+
+Esto es técnicamente cierto y prácticamente irrelevante. Si tu dispositivo está obligado a inspeccionar el texto plano de cada mensaje antes de enviarlo, la presencia de cifrado posterior no cambia el hecho de que tu comunicación privada fue leída por un sistema de vigilancia. La promesa del cifrado extremo a extremo es que ningún tercero puede acceder al contenido. El escaneo del lado del cliente inserta a un tercero en el punto de composición, antes de que ocurra el cifrado.
+
+Los criptógrafos son unánimes en este punto. El debate no es sobre si el algoritmo de cifrado está roto — no lo está. Es sobre para qué sirve el cifrado. Si su propósito es proteger la confidencialidad de la comunicación, el escaneo del lado del cliente elude esa protección independientemente de la integridad matemática del cifrado.
+
+## El problema de función-creep
+
+Una vez que la infraestructura de escaneo del lado del cliente existe en cada dispositivo, su alcance se determina por enmienda legislativa, no por capacidad técnica. Un sistema construido para detectar hashes de CSAM puede extenderse para detectar cualquier contenido cuyo hash se añada a la base de datos. Un clasificador entrenado para detectar grooming puede reentrenarse para detectar cualquier patrón lingüístico.
+
+Esto no es hipotético. Varios estados miembros de la UE ya han propuesto ampliar la regulación para cubrir contenido terrorista, discurso de odio e infracción de derechos de autor. Cada ampliación se debate por sus propios méritos, pero la infraestructura técnica no necesita reconstruirse para cada nueva categoría.
+
+La pregunta relevante no es si la propuesta actual es proporcionada. Es si crear una infraestructura universal de escaneo del lado del cliente es una decisión que puede revisarse después.
+
+## Detección de grooming y análisis de texto
+
+La detección de grooming representa una escalada técnica significativa sobre el escaneo de imágenes. El texto es contextual. Una frase que es inocente entre adultos puede ser parte de un patrón de grooming entre un adulto y un menor. Un clasificador de machine learning debe hacer esta distinción sin acceso al contexto completo, y sin conocer la relación entre los participantes.
+
+La definición de qué patrones de texto constituyen grooming es inherentemente normativa. Codifica decisiones sobre el habla aceptable que deberían tomarse mediante deliberación democrática, no mediante datos de entrenamiento. Una vez codificadas en un clasificador, esas decisiones se vuelven opacas, difíciles de auditar y más difíciles de revertir.
+
+## Estado actual (julio 2026)
+
+Mientras escribo esto, las negociaciones de trilogo se acercan a su fase final. La posición del Parlamento excluye los servicios cifrados extremo a extremo de los requisitos de escaneo y exige órdenes judiciales para cualquier orden de detección. La posición del Consejo permite el escaneo voluntario e incluye verificación de edad obligatoria. La Comisión sigue presionando por detección obligatoria en todas las plataformas.
+
+El resultado es incierto. Pero independientemente de qué versión se apruebe, la arquitectura que se está negociando sentará un precedente sobre cómo Europa equilibra la privacidad de las comunicaciones con la regulación de contenido durante décadas.
+
+## Trade-offs
+
+La protección infantil es un objetivo de interés público legítimo. La cuestión no es si perseguirlo, sino si los medios propuestos son técnicamente sólidos, proporcionados y reversibles. El escaneo del lado del cliente es técnicamente viable pero conlleva costes — en falsos positivos, en riesgo de función-creep, en la neutralización efectiva del cifrado para las plataformas que lo implementan. Una regulación que reconociera estos costes y construyera salvaguardas contra ellos sería más duradera que una que finge que no existen.
+
+El debate sobre el cifrado se ha enmarcado como una elección entre seguridad y privacidad. La realidad técnica es más específica: es una elección entre vigilancia automatizada y confidencialidad de las comunicaciones, mediada por software que se ejecuta en tu dispositivo.

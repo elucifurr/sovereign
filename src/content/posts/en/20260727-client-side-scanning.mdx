@@ -1,0 +1,85 @@
+---
+title: "Client-Side Scanning"
+description: "How the EU's Chat Control regulation works, what client-side scanning actually means for encryption, and why the technical debate is not about breaking crypto."
+category: "soberania"
+tags:
+  - "regulacion"
+  - "privacidad"
+  - "protocolos"
+pubDate: 2026-07-27
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1518186285589-2f7649de83e0"
+heroImageAlt: "Digital lock and data streams representing encryption and surveillance"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+The EU's proposed Child Sexual Abuse Regulation — commonly called Chat Control — has been in negotiation for over four years. The temporary derogation that allowed voluntary scanning expired on April 3, 2026, when the European Parliament voted 311-228 against extending it. But the permanent regulation, which would mandate scanning of private communications, is still in trilogue negotiations with a political deal targeted for July 2026.
+
+This article explains the technical architecture at the centre of the debate, what it actually means for encryption, and why the arguments on both sides are more nuanced than the headlines suggest.
+
+## What Chat Control Regulates
+
+The regulation targets two types of content: child sexual abuse material (CSAM) and grooming — communication patterns that may indicate an adult preparing a child for abuse.
+
+The original Commission proposal (COM/2022/0209) required providers to detect both types of content across all communications. After years of legislative process, the current draft has shifted from mandatory detection orders to a risk-assessment framework. Providers categorised as high-risk must implement mitigation measures, which can include client-side scanning.
+
+The key shift: instead of ordering platforms to scan, the regulation creates conditions where not scanning becomes the riskier option. Critics call this "mandatory by incentive."
+
+## How Client-Side Scanning Works
+
+Client-side scanning examines content on the user's device before it is encrypted and transmitted. There are three technical approaches.
+
+### Hash Matching
+
+A database of perceptual hashes of known CSAM is distributed to devices. When the user shares an image, the client computes its perceptual hash and compares it against the database. If it matches, the image is flagged.
+
+This is the oldest and most constrained approach. It only detects material already in the database. Novel or modified material passes through. Perceptual hashes are also vulnerable to collisions — different images that produce the same hash — and to simple adversarial modifications like cropping or colour shifting.
+
+### Neural Hash Matching
+
+Apple proposed this in 2021 and withdrew it after security researchers demonstrated collisions within days. A neural network generates hashes that are more robust against modifications, but the collision problem is inherent to perceptual hashing. If two different images can produce the same hash, the system cannot distinguish between a false positive and a true detection at scale.
+
+### Machine Learning Classifiers
+
+A neural network model classifies images or text directly. For images, it estimates the probability that content is CSAM. For text, it looks for patterns associated with grooming.
+
+This approach can detect novel material, but it has significant false-positive rates. On a platform processing billions of messages daily, even a 0.01% false-positive rate generates hundreds of thousands of flags per day that require human review. At that volume, review teams become the bottleneck, and the error rate of human reviewers under pressure introduces a second layer of false positives.
+
+## The Encryption Question
+
+The central technical claim from the regulation's supporters: scanning happens before encryption, so end-to-end encryption remains intact. The encrypted message in transit is still unreadable by the server.
+
+This is technically true and practically irrelevant. If your device is required to inspect the plaintext of every message before sending it, the presence of encryption afterwards does not change the fact that your private communication was read by a surveillance system. The promise of end-to-end encryption is that no third party can access the content. Client-side scanning inserts a third party at the point of composition, before encryption occurs.
+
+Cryptographers are unanimous on this point. The argument is not about whether the encryption algorithm is broken — it is not. The argument is about what encryption is for. If its purpose is to protect the confidentiality of communication, client-side scanning circumvents that protection regardless of the mathematical integrity of the cipher.
+
+## The Function-Creep Problem
+
+Once client-side scanning infrastructure exists on every device, its scope is determined by legislative amendment, not technical capability. A system built to detect CSAM hashes can be extended to detect any content whose hash is added to the database. A classifier trained to detect grooming can be retrained to detect any linguistic pattern.
+
+This is not a hypothetical. Several EU member states have already proposed expanding the regulation to cover terrorist content, hate speech, and copyright infringement. Each expansion is debated on its own merits, but the technical infrastructure does not need to be rebuilt for each new category.
+
+The relevant question is not whether the current proposal is proportionate. It is whether creating a universal client-side scanning infrastructure is a decision that can be revisited later.
+
+## Grooming Detection and Text Analysis
+
+The detection of grooming represents a significant technical escalation over image scanning. Text is contextual. A phrase that is innocent between adults may be part of a grooming pattern between an adult and a child. A machine learning classifier must make this distinction without access to the full context, and without knowing the relationship between the participants.
+
+The definition of which text patterns constitute grooming is inherently normative. It encodes decisions about acceptable speech that are better made through democratic deliberation than through training data. Once encoded in a classifier, those decisions become opaque, hard to audit, and harder to reverse.
+
+## State of Play (July 2026)
+
+As of this writing, the trilogue negotiations are approaching their final stage. The Parliament's position excludes end-to-end encrypted services from scanning requirements and demands judicial warrants for any detection order. The Council's position allows voluntary scanning and includes mandatory age verification. The Commission continues to push for mandatory detection on all platforms.
+
+The outcome is uncertain. But regardless of which version passes, the architecture being negotiated will set a precedent for how Europe balances communications privacy against content regulation for decades.
+
+## Trade-offs
+
+Child protection is a legitimate public interest objective. The question is not whether to pursue it, but whether the means being proposed are technically sound, proportionate, and reversible. Client-side scanning is technically feasible but carries costs — in false positives, in function-creep risk, in the effective neutralisation of encryption for the platforms that implement it. A regulation that acknowledged these costs and built safeguards against them would be more durable than one that pretends they do not exist.
+
+The encryption debate has been framed as a choice between safety and privacy. The technical reality is more specific: it is a choice between automated surveillance and communications confidentiality, mediated by software that runs on your device.
