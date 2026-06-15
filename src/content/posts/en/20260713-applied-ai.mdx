@@ -1,0 +1,151 @@
+---
+title: "Applied AI and Personal Autonomy"
+description: "How to use AI tools without trading sovereignty for convenience — local models, intentional workflows, and the difference between assistance and dependency."
+category: "entornos"
+tags:
+  - "ia-aplicada"
+  - "herramientas"
+  - "workflow"
+pubDate: 2026-07-13
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1677442136019-21780ecad995"
+heroImageAlt: "Abstract neural network representation illustrating artificial intelligence"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+import OptimizedPicture from "@/components/features/OptimizedPicture.astro"
+
+## The Autonomy Question
+
+Every AI tool embeds a tradeoff. You gain capability — faster code, better prose, insights from large data — and you lose something in return. What you lose depends on how the tool is built and who controls it.
+
+The autonomy question is not whether AI is useful. It is whether the tool increases or decreases your ability to make independent decisions about your own systems.
+
+A hosted LLM API gives you intelligence on demand but creates a dependency on a specific provider, their pricing, their data policies, and their continued existence. A locally running model gives you less raw capability but preserves your ability to operate without permission.
+
+This post is about navigating that tradeoff deliberately.
+
+## The Dependency Spectrum
+
+It helps to place AI tools along a spectrum of autonomy:
+
+| Tool Type | Example | Autonomy Level |
+|-----------|---------|---------------|
+| Cloud API (proprietary) | GPT-4, Claude API | Low |
+| Cloud API (open weights) | Llama via Groq, Together | Medium |
+| Self-hosted small model | Llama 3B via Ollama | High |
+| Self-hosted large model | Llama 70B via Ollama + GPU | Highest (but expensive) |
+| Local tooling with AI features | Copilot with local model backend | Medium-High |
+| AI-assisted workflows you control | Custom pipelines with local inference | Highest |
+
+The pattern is clear: autonomy correlates with how much infrastructure you control.
+
+<OptimizedPicture
+  src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31"
+  alt="Server room infrastructure representing the hardware choices behind AI"
+  width={1200}
+  height={800}
+/>
+
+## Practical Local AI
+
+Local AI has improved dramatically. What was impractical six months ago is now a daily driver.
+
+### Code Assistance
+
+The most impactful use case for most developers is AI-assisted coding. The question is whether the assistant reports to you or to a cloud provider.
+
+**Continue.dev** is an open-source code assistant that connects to any backend. You can pair it with:
+
+```bash
+# Run a local model via Ollama
+ollama run codellama:7b-instruct
+
+# Or use a larger model if you have the hardware
+ollama run deepseek-coder:33b
+```
+
+The experience is not identical to GitHub Copilot — completion speed and suggestion quality vary — but the data never leaves your machine. For many tasks, the difference is negligible.
+
+For heavier tasks like refactoring across files or generating boilerplate, a local 7B parameter model handles most of what a developer needs. The latency is higher than cloud, but the ceiling (no rate limits, no cost, no logging) makes up for it.
+
+### Writing and Research
+
+For prose, local models are further behind cloud models, but catching up. A local Llama 3 8B or Mistral 7B produces usable drafts for technical writing, email, and documentation.
+
+The workflow I use:
+
+1. Write a rough outline manually
+2. Ask the local model to expand a section
+3. Edit heavily — the model is a drafting partner, not an author
+4. Run a local grammar check (LanguageTool via self-hosted server)
+
+Each step keeps me in control of the final output. The AI accelerates the mechanical parts; the structure, voice, and decisions remain mine.
+
+**The important heuristic:** if you cannot explain what an AI-generated paragraph says, you should not publish it. Understanding is the price of ownership.
+
+### Knowledge Work
+
+Local retrieval-augmented generation (RAG) is where self-hosted AI shines. Tools like **Ollama + AnythingLLM** or **LocalAI** let you index your own documents — technical manuals, project notes, book highlights — and query them without sending data anywhere.
+
+```bash
+# Minimal RAG setup with Ollama
+ollama pull nomic-embed-text
+ollama pull llama3:8b
+
+# Use AnythingLLM or a custom pipeline
+# to embed and query your local documents
+```
+
+This is genuinely better than cloud alternatives for sensitive or specialised knowledge. Your internal documentation, personal wiki, or codebase stays private. The model answers in your context, not someone else's.
+
+## When Cloud Makes Sense
+
+There are legitimate reasons to use cloud AI. The key is choosing them deliberately rather than by default:
+
+- **Hardware-limited tasks.** Training or fine-tuning large models requires GPUs most individuals do not own. Using cloud compute for specific, bounded tasks is rational — as long as you control the data lifecycle.
+- **Prototyping.** When exploring a new domain, cloud APIs let you test hypotheses before committing to local infrastructure.
+- **Single-shot tasks.** Translating a document, summarising an article, or generating a one-off script. If the data is not sensitive and the task is transient, cloud is pragmatically fine.
+
+The rule: use cloud AI as a tool you pick up and put down, not as infrastructure you build on.
+
+## Red Flags
+
+Certain patterns indicate the tool is undermining your autonomy:
+
+- **No export.** If you cannot take your conversations, fine-tuned models, or usage data elsewhere, you are locked in.
+- **API dependency.** If your workflow breaks entirely when a provider goes down or changes pricing, you have a single point of failure.
+- **Data training.** If the provider trains on your inputs, every prompt you write becomes part of their product. Assume they do unless proven otherwise.
+- **Opacity.** If you cannot tell why the model produced a given output, you cannot audit it. In systems that affect decisions, auditability is not optional.
+
+## Building Your Stack
+
+A sovereignty-preserving AI stack looks like this, from most to least important:
+
+1. **A local fallback.** Even if you use cloud APIs for heavy tasks, maintain a local model that can handle your core workflow. Ollama with a 7B parameter model runs on any machine with 8 GB RAM.
+2. **Open weights.** Prefer models with published weights (Llama, Mistral, DeepSeek, Qwen) over opaque APIs. Weights mean you can run the model yourself and verify its behaviour.
+3. **Local context.** Keep your data local. Use RAG pipelines that index your files without uploading them.
+4. **Standard interfaces.** Use tools that support OpenAI-compatible APIs so you can switch backends without changing your tooling.
+
+```bash
+# A simple test: can you do your AI-assisted work
+# with no internet access for a day?
+# If not, your stack has a dependency problem.
+```
+
+## Conclusion
+
+Applied AI is not inherently at odds with personal autonomy. The conflict is between intentional use and passive consumption, between local control and remote dependency, between tools you operate and tools that operate you.
+
+The same principle applies here as in every other layer of the stack: know what you are depending on, and ensure the dependency is a choice rather than a default.
+
+Start with a local model. Understand its limits. Add cloud services only when the tradeoff is clear and reversible. The goal is not to reject AI but to use it on terms you set.
+
+- Category: entornos
+- Tags: ia-aplicada, herramientas, workflow
+- Next: GrapheneOS as a mobile sovereignty platform

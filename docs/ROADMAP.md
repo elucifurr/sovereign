@@ -16,7 +16,7 @@
 - [x] **src/config/site.ts**:
   - `name` → `"M. Segundo"`
   - `description` → `"How software design, infrastructure, and regulation affect personal autonomy."`
-  - `url` → `https://sovereign.zbz.ai` (placeholder)
+  - `url` → `https://sovereign.msegundo.workers.dev`
   - `repository` → `https://github.com/elucifurr/sovereign`
   - `social.x` → limpiado (placeholder pendiente de Mastodon/Bluesky)
 - [x] **src/config/locales.ts**: Reducido a solo `["en", "es"]`.
@@ -86,7 +86,7 @@
 - [x] **AGENTS.md**: Actualizar propósito y descripción (locales en/es, sin readme-zh).
 - [x] **DESIGN.md**: Actualizar frontmatter (`name`, `description`), limpiar referencias CJK/RTL/11 locales.
 - [x] **public/favicon.svg**: Reemplazar con monograma "S" minimalista.
-- [ ] **public/open-graph.webp**: Conservar temporalmente.
+- [x] **public/open-graph.webp**: Conservado (placeholder).
 - [x] **src/assets/logo.svg**: Reemplazar con monograma "S" minimalista.
 - [ ] **src/assets/author.avif**: Conservar temporalmente.
 - [x] **public/lighthouse-score-*.svg**: Eliminar.
@@ -101,12 +101,13 @@
   - "Self-Hosting as Infrastructure" / "El autohosting como infraestructura" — entornos (25 jun)
   - "The Protocol Layer" / "La capa de protocolos" — sistemas (29 jun)
 - [x] **Guía práctica**: "From macOS to Linux" / "De macOS a Linux" (en/es, tutorial completo con tablas y comandos).
+- [x] **7º post**: "Applied AI and Personal Autonomy" / "IA aplicada y autonomía personal" — entornos, ia-aplicada, herramientas, workflow (13 jul)
 - [ ] Escribir siguientes posts.
 - [x] **x402**: desactivado (`X402_ENABLED=false`). Wrangler config mínima, sin worker ni vars.
 - [x] **GitHub Actions**: workflow `deploy.yml` creado (build + deploy automático en push a main).
 - [x] Registrarse en Cloudflare y generar API token ✅ (hecho por el usuario)
 - [x] Añadir `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID` a GitHub Secrets ✅ (hecho por el usuario)
-- [x] Primer push a main → trigger deploy automático a `sovereign.workers.dev`.
+- [x] Primer push a main → trigger deploy automático a `sovereign.msegundo.workers.dev`.
 - [ ] Configurar dominio definitivo (opcional, comprar en Cloudflare, tú decides cuándo).
 
 ---
@@ -119,7 +120,7 @@
 | Dominio | Sin decidir (comprar en Cloudflare cuando quieras) |
 | x402 | Desactivado, código mantenido en repo |
 | GTM / AdSense / well-known | Mantenido en repo, no molesta |
-| Cloudflare Workers static assets | Ya funcionando en `sovereign.workers.dev` |
+| Cloudflare Workers static assets | Ya funcionando en `sovereign.msegundo.workers.dev` |
 | Email de contacto | hello@msegundo.dev (placeholder) |
 
 ---
@@ -130,4 +131,5 @@
 - GTM, AdSense, well-known mantenidos — no interfieren, decisión diferida.
 - Dependencias sobrantes (`@x402/*`, `hono`, `@solana/*`, `@astrojs/partytown`) mantenidas — no afectan al build.
 - Build verificado: 74 páginas, 0 errores.
-- Primer deploy automático en GitHub Actions tras el próximo push a main.
+- Desplegado en `https://sovereign.msegundo.workers.dev`.
+- Build: 74 páginas, más de 7 indexados por locale (con IA aplicada).
