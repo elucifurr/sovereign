@@ -30,7 +30,7 @@
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.2",
     "@iconify-json/lucide": "^1.2.106",
-    "@solana/kit": "^5.5.1",
+    "@solana/kit": "^6.0.0",
     "@solana/sysvars": "5.5.1",
     "@tailwindcss/vite": "^4.2.1",
     "@x402/core": "^2.14.0",
