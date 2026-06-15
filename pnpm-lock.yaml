@@ -48,7 +48,7 @@ importers:
         version: 2.14.0(bufferutil@4.1.0)(hono@4.12.23)(typescript@6.0.3)(utf-8-validate@5.0.10)
       '@x402/svm':
         specifier: ^2.14.0
-        version: 2.14.0(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@6.0.3)(utf-8-validate@5.0.10))(@solana/sysvars@5.5.1(typescript@6.0.3))
+        version: 2.15.0(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@6.0.3)(utf-8-validate@5.0.10))(@solana/sysvars@5.5.1(typescript@6.0.3))
       astro:
         specifier: ^6.4.2
         version: 6.4.2(@types/node@25.9.1)(idb-keyval@6.2.4)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.4)(yaml@2.8.4)
@@ -1666,6 +1666,9 @@ packages:
   '@x402/core@2.14.0':
     resolution: {integrity: sha512-+xTM6hfGduYvFcQ7QwKvCwommL6+zqzqmr5IuPojbt+RZjo4QUjSkHW+arMtPoIKRLxWAI+e6P4UJMMblwG+Dw==}
 
+  '@x402/core@2.15.0':
+    resolution: {integrity: sha512-Hwop1cu80sf3H4dpNdiMJt7ay30Jf7JUjgx7dXHxQm/nYqOjTcm71FC/ZhpnIpeg6RSAUt7EI/rFTXx/lafHhw==}
+
   '@x402/extensions@2.14.0':
     resolution: {integrity: sha512-2zu8hxf0j4BRvSWNPRKziQLdubnQpzzmU9xopKK5ZyXa434hvmGEUPMBOA2NIYvaTkyZjQH3JZ3GPDyzjBvFqA==}
 
@@ -1678,8 +1681,8 @@ packages:
       '@x402/paywall':
         optional: true
 
-  '@x402/svm@2.14.0':
-    resolution: {integrity: sha512-doMYoY5hLpD+CowihYDOi0IJfcCIG2BTDe89a0v4GAvpF3mFn5ewIPgsz6VE249sK2vgBEp3nTtb98kswC2nZw==}
+  '@x402/svm@2.15.0':
+    resolution: {integrity: sha512-8qQJKx0o+wsMSImbiB3sb4fazBGff7/12JsV9mn5K+UDElqkx5wGcvoXCDGWcpu5loKs4Z7iocsnccJLAbQRsQ==}
     peerDependencies:
       '@solana/kit': '>=5.1.0'
 
@@ -4857,6 +4860,10 @@ snapshots:
     dependencies:
       zod: 3.25.76
 
+  '@x402/core@2.15.0':
+    dependencies:
+      zod: 3.25.76
+
   '@x402/extensions@2.14.0(bufferutil@4.1.0)(typescript@6.0.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@noble/curves': 1.9.7
@@ -4885,13 +4892,13 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@x402/svm@2.14.0(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@6.0.3)(utf-8-validate@5.0.10))(@solana/sysvars@5.5.1(typescript@6.0.3))':
+  '@x402/svm@2.15.0(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@6.0.3)(utf-8-validate@5.0.10))(@solana/sysvars@5.5.1(typescript@6.0.3))':
     dependencies:
       '@solana-program/compute-budget': 0.11.0(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@6.0.3)(utf-8-validate@5.0.10))
       '@solana-program/token': 0.9.0(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@6.0.3)(utf-8-validate@5.0.10))
       '@solana-program/token-2022': 0.6.1(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@6.0.3)(utf-8-validate@5.0.10))(@solana/sysvars@5.5.1(typescript@6.0.3))
       '@solana/kit': 5.5.1(bufferutil@4.1.0)(typescript@6.0.3)(utf-8-validate@5.0.10)
-      '@x402/core': 2.14.0
+      '@x402/core': 2.15.0
     transitivePeerDependencies:
       - '@solana/sysvars'
 
