@@ -1,0 +1,119 @@
+---
+title: "Dos semanas con GrapheneOS"
+description: "Qué pasó cuando instalé un sistema operativo privado en un Pixel y traté de vivir con él."
+category: "entornos"
+tags:
+  - "grapheneos"
+  - "privacidad"
+  - "herramientas"
+pubDate: 2026-07-20
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1598327105666-5b89351aff97"
+heroImageAlt: "Teléfono inteligente en la mano representando tecnología móvil y autonomía digital"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: es
+draft: false
+featured: false
+---
+
+Un Pixel 9 de segunda mano llegó un martes. El miércoles por la noche ya tenía GrapheneOS instalado, y el viernes me quedaba mirando el porcentaje de batería a las 7 de la tarde preguntándome si el medidor estaba roto.
+
+No esperaba importarme tanto el sistema operativo de un teléfono. Y aquí estamos.
+
+## Por qué lo hice
+
+El argumento a favor de GrapheneOS es sencillo: tu teléfono es el dispositivo más vigilado que posees. Lleva tu ubicación, tus conversaciones, tu banco, tus fotos, tu salud, tu historial de navegación y un registro permanente de con quién hablas y cuándo. El Android de serie y iOS se benefician de esos datos — directamente con publicidad, indirectamente con el bloqueo del ecosistema.
+
+GrapheneOS elimina Google de Android por completo. No desactivando unos ajustes, sino a nivel de kernel. Sin Play Services como componente del sistema. Sin cuenta de Google obligatoria. Sin telemetría.
+
+El intercambio: solo funciona en Google Pixels (la ironía es intencionada — el hardware Pixel tiene la mejor cadena de arranque verificado fuera de iOS). Y algunas apps se rompen.
+
+Quería saber cuánta rotura experimentaría una persona normal en 2026.
+
+## La instalación
+
+El instalador web oficial es una revelación. Conectas el Pixel a un ordenador, abres una pestaña del navegador y sigues un flujo guiado. Desbloquear bootloader. Flashear. Bloquear bootloader. Reiniciar.
+
+Llevó quince minutos.
+
+Me quedé esperando que algo saliera mal — un error de terminal, un problema de drivers, un momento en el que tuviera que buscar un arreglo críptico en Google. Nunca llegó. El instalador te muestra lo que ocurre en cada paso, explica por qué y termina sin drama.
+
+Lo más difícil fue acordarme de comprar un cable USB-C que realmente transfiera datos, no solo electricidad.
+
+## Primer arranque
+
+GrapheneOS arranca en una pantalla de configuración que parece Android de serie pero más limpia. Sin inicio de sesión de Google. Sin "restaurar desde copia de seguridad". Sin términos de servicio que te obliguen a entregar tus datos. Solo un PIN, una huella y una pantalla de inicio vacía.
+
+La ausencia de Google es inmediatamente visible. No hay feed de Discover a la izquierda de la pantalla principal. No hay sugerencias de noticias, ni clima, ni notificaciones de "oye, configura tu dispositivo". El teléfono no pide nada.
+
+Esto me resultó inquietante durante aproximadamente una hora. Luego me resultó liberador.
+
+## La caza de apps
+
+Sin la Play Store, necesitas fuentes alternativas. El stack estándar:
+
+- **F-Droid** para apps de código abierto
+- **Aurora Store** para acceso anónimo al catálogo de Play Store
+- **Obtainium** para descargar APKs directamente desde GitHub
+
+Instalé Sandboxed Google Play — la función estrella de GrapheneOS. Play Services se ejecuta como una app normal, aislada del sistema, con los mismos controles de permisos que cualquier otra. Las apps que necesitan Play (banca, mensajería, transporte) funcionan con normalidad. Las que no lo necesitan no pueden llamar a casa.
+
+Creé un perfil separado para las pocas apps que no me inspiran confianza: mi app bancaria que insiste en telemetría completa, una app de comida a domicilio, Slack para notificaciones del trabajo. En ese perfil, Play Services tienen vía libre. En mi perfil principal, no existen.
+
+La compatibilidad de apps en 2026 es excelente. Todas las apps bancarias que uso funcionan. Signal funciona. WhatsApp funciona. Spotify, Netflix, YouTube, todo funciona. La baja principal es Google Pay — los pagos NFC requieren Play Services con privilegios, así que pagas con la tarjeta física.
+
+También perdí Android Auto. Esto sí dolió. Todavía estoy buscando un solución.
+
+## Lo de la batería
+
+Día tres, 6 de la tarde, miré la batería: 63%.
+
+Volví a mirar una hora después: 59%.
+
+En mi antiguo teléfono, a esta hora estaría al 30%, habiéndolo cargado a mediodía. La diferencia es Google Play Services — cuando se ejecuta como componente del sistema, está constantemente llamando a casa. Comprobaciones de ubicación, actualizaciones de apps, sincronizaciones, analíticas, copias de seguridad. Todo eso drena la batería incluso cuando no estás usando el teléfono.
+
+Elimina esa capa y el teléfono vuelve a ser lo que debería haber sido: un dispositivo que duerme cuando no lo estás tocando.
+
+Al final de la primera semana, cargaba el teléfono cada dos días.
+
+## El silencio
+
+El efecto más inesperado fue conductual. Sin el feed de Discover, sin recomendaciones de YouTube metiéndose en mi atención periférica, sin el teléfono intentando venderme algo cada vez que lo desbloqueaba, lo consultaba menos.
+
+No deliberadamente. Simplemente había menos razón para cogerlo.
+
+Me di cuenta el día cuatro, cuando alcancé el teléfono por costumbre, lo desbloqueé y no tenía nada que hacer. Sin notificaciones esperando. Sin feed algorítmico. Lo dejé otra vez.
+
+El teléfono volvió a ser una herramienta. Lo uso para mensajear, navegar, hacer fotos, revisar el correo y pagar. No me distrae de esos propósitos porque no fue diseñado para hacerlo.
+
+## Lo que se rompe
+
+Siendo honesto sobre la fricción:
+
+Google Pay no funciona. Usas la tarjeta física.
+
+Android Auto no funciona. Este es el problema más grande si conduces.
+
+Algunas apps necesitan activar el modo de compatibilidad Exploit Protection — un cambio de cinco segundos en los ajustes, pero necesitas saber que existe.
+
+La mensajería RCS solo funciona con Google Messages, que requiere Play Services. Signal cubre el hueco, pero no todo el mundo usa Signal.
+
+La app de cámara integrada es funcional pero no tan pulida como la cámara del Pixel de serie. Puedes instalar la Google Camera APK original por separado, pero requiere Play Services para algunas funciones.
+
+Ninguna de estas fue un impedimento para mí. Pero no recomendaría GrapheneOS a alguien que no esté dispuesto a solucionar problemas de vez en cuando. No es difícil. Pero no requiere cero esfuerzo.
+
+## La pregunta de la soberanía
+
+Después de dos semanas, volví a mi teléfono antiguo por un día para comparar. La experiencia fue chocante de una forma que no esperaba. No porque el teléfono antiguo fuera malo, sino porque había olvidado cuánto de su comportamiento estaba diseñado para beneficiar a otro.
+
+Los anuncios dirigidos volvieron. La batería bajaba más rápido. El teléfono vibraba con notificaciones de apps que había instalado una vez y olvidado. La pantalla de inicio intentaba venderme cosas.
+
+Volví al Pixel esa misma noche.
+
+GrapheneOS no es perfecto. El ecosistema de apps tiene huecos, y algunos de esos huecos son genuinamente incómodos. Pero el intercambio central es claro: renuncias a algunas comodidades, y a cambio obtienes un teléfono que te pertenece.
+
+Para un blog sobre soberanía, ese intercambio es difícil de rechazar.
+
+Un Pixel 8 o 9 de segunda mano cuesta unos 300 EUR. La instalación lleva quince minutos. La primera semana requiere adaptación. Después, la pregunta no es si puedes vivir sin Google — es si recuerdas por qué lo necesitabas.

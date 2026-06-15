@@ -1,0 +1,119 @@
+---
+title: "Two Weeks with GrapheneOS"
+description: "What happened when I put a privacy OS on a Pixel and tried to live with it."
+category: "entornos"
+tags:
+  - "grapheneos"
+  - "privacidad"
+  - "herramientas"
+pubDate: 2026-07-20
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1598327105666-5b89351aff97"
+heroImageAlt: "Smartphone held in hand representing mobile technology and digital autonomy"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+A used Pixel 9 arrived on a Tuesday. By Wednesday evening it was running GrapheneOS, and by Friday I was staring at my battery percentage at 7 PM wondering if the meter was broken.
+
+I did not expect to care this much about a phone OS. But here we are.
+
+## Why I Did It
+
+The argument for GrapheneOS is simple: your phone is the most surveilled device you own. It carries your location, your conversations, your banking, your photos, your health data, your browsing history, and a permanent record of who you talk to and when. Stock Android and iOS both profit from that data — directly through advertising, indirectly through ecosystem lock-in.
+
+GrapheneOS removes Google from Android entirely. Not by disabling a few settings, but at the kernel level. No Play Services as a system component. No Google account required. No telemetry.
+
+The tradeoff: it only runs on Google Pixels (the irony is intentional — Pixel hardware has the best verified boot chain outside of iOS). And some apps break.
+
+I wanted to know how much breakage a normal person would actually experience in 2026.
+
+## The Install
+
+The official web installer is a revelation. You plug the Pixel into a computer, open a browser tab, and click through a guided flow. Unlock bootloader. Flash. Lock bootloader. Reboot.
+
+It took fifteen minutes.
+
+I kept waiting for something to go wrong — a terminal error, a driver issue, a moment where I would need to Google an arcane fix. It never came. The installer shows you what is happening at each step, explains why, and completes without drama.
+
+The hardest part was remembering to buy a USB-C cable that actually transfers data, not just power.
+
+## First Boot
+
+GrapheneOS boots into a setup screen that looks like stock Android but cleaner. No Google sign-in. No "restore from backup." No terms of service that require you to surrender your data. Just a PIN, a fingerprint, and a blank home screen.
+
+The absence of Google is immediately visible. There is no Discover feed to the left of the home screen. No news suggestions, no weather, no "hey set up your device" notifications. The phone asks for nothing.
+
+I found this unsettling for about an hour. Then I found it liberating.
+
+## The App Hunt
+
+Without the Play Store, you need alternative sources. The standard stack:
+
+- **F-Droid** for open-source apps
+- **Aurora Store** for anonymous access to the Play Store catalogue
+- **Obtainium** for direct APK downloads from GitHub releases
+
+I installed Sandboxed Google Play — this is GrapheneOS's killer feature. Play Services run as a regular app, isolated from the system, with the same permission controls as anything else. Apps that need Play (banking, messaging, rideshare) work normally. Apps that do not need it cannot phone home.
+
+I set up a separate profile for the handful of apps I do not trust: my banking app that insists on full telemetry, a food delivery app, Slack for work notifications. In this profile, Play Services have free rein. In my main profile, they do not exist.
+
+The app compatibility in 2026 is excellent. Every banking app I use works. Signal works. WhatsApp works. Spotify, Netflix, YouTube all work. The main casualty is Google Pay — NFC payments require privileged Play Services, so you pay with the physical card instead.
+
+I also lost Android Auto. This one hurt. I am still looking for a workaround.
+
+## The Battery Thing
+
+Day three, 6 PM, I looked at my battery: 63%.
+
+I checked again an hour later: 59%.
+
+On my old phone, I would be at 30% by this point, having charged it at lunch. The difference is Google Play Services — when it runs as a system component, it is constantly phoning home. Location checks, app updates, syncs, analytics, backup. All of it drains the battery even when you are not using the phone.
+
+Remove that layer and the phone goes back to being what it should have been: a device that sleeps when you are not touching it.
+
+By the end of week one, I was charging every other day.
+
+## The Quiet
+
+The most unexpected effect was behavioural. Without the Discover feed, without YouTube recommendations pushing into my peripheral attention, without the phone trying to sell me something every time I unlocked it, I checked it less.
+
+Not deliberately. There was simply less reason to pick it up.
+
+I noticed this on day four when I reached for my phone out of habit, unlocked it, and had nothing to do. No notifications waiting. No algorithmically curated feed. I put it back down.
+
+The phone became a tool again. I use it to message people, navigate, take photos, check email, and pay for things. It does not distract me from those purposes because it was not designed to.
+
+## What Breaks
+
+Being honest about the friction:
+
+Google Pay does not work. You use the physical card.
+
+Android Auto does not work. This is the single biggest problem if you drive.
+
+Some apps need the Exploit Protection compatibility mode toggled on — a five-second settings change, but you need to know it exists.
+
+RCS messaging works only with Google Messages, which requires Play Services. Signal fills the gap, but not everyone you know uses Signal.
+
+The built-in camera app is functional but not as polished as the stock Pixel camera. You can install the original Google Camera APK separately, but it requires Play Services for some features.
+
+None of these were dealbreakers for me. But I would not recommend GrapheneOS to someone who is unwilling to troubleshoot even occasionally. It is not hard. But it is not zero-effort either.
+
+## The Sovereignty Question
+
+After two weeks, I switched back to my old phone for a day to compare. The experience was jarring in a way I did not expect. Not because the old phone was bad, but because I had forgotten how much of its behaviour was designed for someone else's benefit.
+
+The targeted ads came back. The battery dropped faster. The phone buzzed with notifications from apps I had installed once and forgotten about. The home screen tried to sell me things.
+
+I switched back to the Pixel the same evening.
+
+GrapheneOS is not perfect. The app ecosystem has gaps, and some of those gaps are genuinely inconvenient. But the core trade is clear: you give up a few conveniences, and in return you get a phone that belongs to you.
+
+For a blog about sovereignty, that trade is hard to refuse.
+
+A used Pixel 8 or 9 costs about 300 EUR. The install takes fifteen minutes. The first week requires adjustment. After that, the question is not whether you can live without Google — it is whether you remember why you needed it in the first place.
