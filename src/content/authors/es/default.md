@@ -4,6 +4,7 @@ name: "Mario Segundo"
 bio: "Ingeniero de software y sistemas. Escribo sobre cómo el diseño de software, la infraestructura y la regulación afectan a la autonomía personal."
 socials:
   - { label: "GitHub", url: "https://github.com/elucifurr" }
+  - { label: "Mastodon", url: "https://mastodon.social" }
   - { label: "RSS", url: "/es/rss.xml" }
 locale: es
 draft: false

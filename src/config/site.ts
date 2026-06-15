@@ -84,10 +84,7 @@ const x402ChargeMode = normalizeX402ChargeMode(
 const x402BotScoreThreshold = normalizeBotScoreThreshold(
   readPublicEnv("PUBLIC_X402_BOT_SCORE_THRESHOLD")
 )
-const socialXUrl = ""
-const socialXHandle = `@${
-  new URL(socialXUrl || "https://x.com/placeholder").pathname.split("/").filter(Boolean)[0] ?? "sovereign"
-}`
+const socialMastodonUrl = "https://mastodon.social"
 
 export const SITE_CONFIG = {
   name: "M. Segundo",
@@ -98,8 +95,7 @@ export const SITE_CONFIG = {
     "How software design, infrastructure, and regulation affect personal autonomy.",
   repository: "https://github.com/elucifurr/sovereign",
   social: {
-    x: socialXUrl,
-    xHandle: socialXHandle,
+    mastodon: socialMastodonUrl,
   },
   defaultOgImage: "/open-graph.webp",
   assets: {
