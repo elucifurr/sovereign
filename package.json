@@ -1,5 +1,5 @@
 {
-  "name": "polyglow",
+  "name": "sovereign",
   "type": "module",
   "version": "6.0.0",
   "packageManager": "pnpm@10.11.1",
@@ -9,12 +9,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zbzailabs/Polyglow.git"
+    "url": "git+https://github.com/elucifurr/sovereign.git"
   },
   "bugs": {
-    "url": "https://github.com/zbzailabs/Polyglow/issues"
+    "url": "https://github.com/elucifurr/sovereign/issues"
   },
-  "homepage": "https://github.com/zbzailabs/Polyglow#readme",
+  "homepage": "https://github.com/elucifurr/sovereign#readme",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",

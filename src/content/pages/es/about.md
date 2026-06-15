@@ -1,11 +1,16 @@
 ---
-title: "Polyglow"
-description: "Un sitio de contenido estático multilingüe en Astro para publicar ensayos, notas e investigación con una experiencia de lectura cuidada."
+title: "Acerca de"
+description: "Ingeniero de software y sistemas, escribiendo sobre autonomía digital, privacidad e infraestructura."
 locale: es
-slug: "about"
 draft: false
 ---
 
-Polyglow es un sitio de publicación estático y multilingüe creado para ensayos, notas e investigación. Se centra en URL estables, superficies de lectura claras, metadatos completos y un sistema visual que sostiene trabajo de contenido a largo plazo sin depender de un CMS ni de un runtime de servidor.
+Soy Mario Segundo, ingeniero de software y sistemas.
 
-El proyecto usa Astro como capa principal de renderizado, con interacciones concretas gestionadas mediante pequeños scripts inline en componentes Astro. El contenido vive en Markdown y MDX, lo que facilita bifurcar, revisar, versionar y desplegar el sitio.
+Este blog es un espacio personal donde escribo sobre la intersección entre tecnología y autonomía personal. Creo que las decisiones arquitectónicas que tomamos — en software, infraestructura y regulación — tienen un impacto directo en cuánto control tienen las personas sobre su vida digital.
+
+Los temas que trato incluyen Linux, self-hosting, privacidad, protocolos abiertos, DevOps, automatización y los marcos regulatorios que moldean nuestro panorama tecnológico. Mi perspectiva es técnica, reflexiva y pragmática: me importa lo que funciona, lo que se rompe y lo que significa para las personas que usan estos sistemas.
+
+No pretendo tener todas las respuestas, pero sí creo que entender cómo funcionan las cosas es el primer paso para construir sistemas que respeten la autonomía humana.
+
+Si quieres ponerte en contacto, no dudes en escribir a través de la página de contacto.

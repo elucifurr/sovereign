@@ -1,14 +1,12 @@
 ---
 slug: default
-name: "Polyglow Editorial"
-bio: "Notes on building, investing, technology, and durable content systems."
+name: "Mario Segundo"
+bio: "Software & systems engineer. Writing about how software design, infrastructure, and regulation shape personal autonomy."
 socials:
-  - { label: "GitHub", url: "https://github.com/zbzailabs/Polyglow" }
-  - { label: "X", url: "https://x.com/zbzailabs" }
-  - { label: "Website", url: "/en/" }
+  - { label: "GitHub", url: "https://github.com/elucifurr" }
   - { label: "RSS", url: "/en/rss.xml" }
 locale: en
 draft: false
 ---
 
-Polyglow Editorial publishes notes on product building, investment thinking, technical systems, and the craft of maintaining a multilingual static content site.
+Mario Segundo is a software & systems engineer interested in privacy, security, and digital autonomy. This site explores how the decisions we make in software architecture, infrastructure, and regulation affect people's ability to control their own digital lives.

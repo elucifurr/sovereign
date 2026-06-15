@@ -1,44 +1,44 @@
 ---
 title: "Política de privacidad"
-description: "How Polyglow handles data for blog reading, advertising, and analytics."
+description: "Cómo M. Segundo gestiona los datos en este blog."
 locale: es
 draft: false
 ---
 
-**Effective date: 2026-05-25**
+**Fecha de entrada en vigor: 2026-06-15**
 
-Polyglow is a public blog website. It provides article reading, on-site search, RSS feeds, and basic page browsing only. It does not provide accounts, memberships, online transactions, or user content hosting.
+Este sitio es un blog personal. Proporciona lectura de artículos, búsqueda interna, feeds RSS y navegación básica. No proporciona cuentas, membresías, transacciones online ni alojamiento de contenido de usuarios.
 
-## Information We Process
+## Información que procesamos
 
-When you visit the site, servers and browsers may generate technical information such as IP address, browser type, device information, access time, referrer, pages visited, and basic error logs. This information is used to operate the site, investigate security issues, and measure traffic.
+Cuando visitas el sitio, los servidores y navegadores pueden generar información técnica como dirección IP, tipo de navegador, información del dispositivo, hora de acceso, referente, páginas visitadas y registros de error básicos. Esta información se utiliza para operar el sitio, investigar problemas de seguridad y medir el tráfico.
 
-If you contact us by email, your email address, message, and related communication records are used to respond to your request.
+Si me contactas por correo electrónico, tu dirección de email, mensaje y registros de comunicación relacionados se utilizan para responder a tu solicitud.
 
-## Cookies, Ads, and Analytics
+## Cookies, anuncios y analítica
 
-Polyglow uses Google AdSense to display ads. Google and its advertising partners may use cookies, device identifiers, or similar technologies to serve ads, limit ad frequency, measure performance, and process data under their own policies.
+Este sitio no sirve anuncios ni utiliza analítica de terceros en la actualidad. Si esto cambia en el futuro, esta política se actualizará en consecuencia.
 
-Polyglow uses Google Tag Manager to load Google Analytics and Microsoft Clarity. Google Analytics measures page views, traffic sources, devices, and browsing behavior. Microsoft Clarity helps understand page interactions such as clicks, scrolling, and site usage. We use this data to improve the reading experience and do not use it to identify specific individuals.
+## Compartición de datos
 
-You can manage or block cookies in your browser settings. The articles remain readable if cookies are blocked, but ads and analytics may be affected.
+No vendo información personal. Los datos pueden ser procesados por proveedores de alojamiento y proveedores necesarios de seguridad u operaciones.
 
-## Data Sharing
+## Retención y seguridad
 
-We do not sell personal information. Data may be processed by Google AdSense, Google Analytics, Google Tag Manager, Microsoft Clarity, hosting providers, and necessary security or operations providers.
+Los registros del servidor se conservan temporalmente para operaciones y revisión de seguridad. Las comunicaciones por email se conservan según sea necesario para la correspondencia. Se utilizan medidas técnicas estándar para proteger los datos en tránsito y en reposo.
 
-## Retention and Security
+## Enlaces a terceros
 
-We retain data only for as long as needed for the purposes above and use reasonable safeguards. No internet transmission or storage method is completely risk-free.
+Los artículos y páginas pueden enlazar a sitios externos. Esta política no se aplica a esos sitios.
 
-## Your Choices
+## Tus derechos
 
-You can stop using the site, clear browser cookies, use browser privacy controls, or contact us to request access, correction, or deletion of contact records related to you.
+Dependiendo de tu jurisdicción, puedes tener derecho a acceder, corregir, eliminar o restringir el procesamiento de tus datos. Para ejercer estos derechos, contáctame en hello@msegundo.dev.
 
-## Updates
+## Cambios
 
-This policy may be updated when the site, advertising tools, analytics tools, or legal requirements change. The latest version is published on this page.
+Si esta política cambia, la fecha de entrada en vigor al inicio de esta página se actualizará.
 
-## Contact
+## Contacto
 
-Privacy questions can be sent to hi@mail.polyglow.com.
+Preguntas sobre esta política pueden enviarse a hello@msegundo.dev.

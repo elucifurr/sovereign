@@ -84,19 +84,19 @@ const x402ChargeMode = normalizeX402ChargeMode(
 const x402BotScoreThreshold = normalizeBotScoreThreshold(
   readPublicEnv("PUBLIC_X402_BOT_SCORE_THRESHOLD")
 )
-const socialXUrl = "https://x.com/zbzailabs"
+const socialXUrl = ""
 const socialXHandle = `@${
-  new URL(socialXUrl).pathname.split("/").filter(Boolean)[0] ?? "polyglow"
+  new URL(socialXUrl || "https://x.com/placeholder").pathname.split("/").filter(Boolean)[0] ?? "sovereign"
 }`
 
 export const SITE_CONFIG = {
-  name: "Polyglow",
+  name: "M. Segundo",
   url: (
-    readPublicEnv("PUBLIC_SITE_URL") ?? "https://polyglow.zbz.ai"
+    readPublicEnv("PUBLIC_SITE_URL") ?? "https://sovereign.zbz.ai"
   ).replace(/\/$/, ""),
   description:
-    "Pressing forward through the waves of startup, the fog of investing, and the ocean of life.",
-  repository: "https://github.com/zbzailabs/Polyglow",
+    "How software design, infrastructure, and regulation affect personal autonomy.",
+  repository: "https://github.com/elucifurr/sovereign",
   social: {
     x: socialXUrl,
     xHandle: socialXHandle,

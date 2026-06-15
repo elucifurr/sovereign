@@ -1,20 +1,17 @@
 ---
 title: "Contacto"
-description: "How to contact Polyglow and what the contact channel is for."
+description: "Cómo ponerse en contacto."
 locale: es
 draft: false
 ---
 
-Polyglow is a public blog website that provides article reading only.
+Puedes escribirme a hello@msegundo.dev.
 
-To contact the site owner, email hi@mail.polyglow.com.
+Motivos apropiados para contactar:
 
-Appropriate contact topics include:
+- Correcciones o sugerencias sobre el contenido
+- Problemas de derechos de autor o atribución
+- Solicitudes de privacidad
+- Discusiones técnicas
 
-- Content corrections
-- Copyright or attribution issues
-- Privacy requests
-- Site access problems
-- Ad display issues
-
-Polyglow does not provide investment consulting, business consulting, legal advice, or personal technical support.
+Hago lo posible por responder, pero no puedo garantizar una respuesta a todos los mensajes.

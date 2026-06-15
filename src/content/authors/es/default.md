@@ -1,14 +1,12 @@
 ---
 slug: default
-name: "Equipo editorial de Polyglow"
-bio: "Notas sobre creación de productos, inversión, sistemas técnicos y sistemas de contenido duraderos."
+name: "Mario Segundo"
+bio: "Ingeniero de software y sistemas. Escribo sobre cómo el diseño de software, la infraestructura y la regulación afectan a la autonomía personal."
 socials:
-  - { label: "GitHub", url: "https://github.com/zbzailabs/Polyglow" }
-  - { label: "X", url: "https://x.com/zbzailabs" }
-  - { label: "Website", url: "/es/" }
+  - { label: "GitHub", url: "https://github.com/elucifurr" }
   - { label: "RSS", url: "/es/rss.xml" }
 locale: es
 draft: false
 ---
 
-El equipo editorial de Polyglow publica notas sobre creación de productos, pensamiento de inversión, sistemas técnicos y el trabajo de mantener un sitio de contenido estático multilingüe.
+Mario Segundo es ingeniero de software y sistemas, interesado en privacidad, seguridad y autonomía digital. Este sitio explora cómo las decisiones en arquitectura de software, infraestructura y regulación afectan la capacidad de las personas para controlar su propia vida digital.

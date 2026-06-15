@@ -1,20 +1,17 @@
 ---
 title: "Contact"
-description: "How to contact Polyglow and what the contact channel is for."
+description: "How to get in touch."
 locale: en
 draft: false
 ---
 
-Polyglow is a public blog website that provides article reading only.
-
-To contact the site owner, email hi@mail.polyglow.com.
+You can reach me at hello@msegundo.dev.
 
 Appropriate contact topics include:
 
-- Content corrections
+- Content corrections or suggestions
 - Copyright or attribution issues
 - Privacy requests
-- Site access problems
-- Ad display issues
+- Technical discussions
 
-Polyglow does not provide investment consulting, business consulting, legal advice, or personal technical support.
+I do my best to respond, but can't guarantee a reply to every message.

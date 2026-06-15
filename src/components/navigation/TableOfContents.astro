@@ -10,17 +10,8 @@ interface Props {
 const { lang, headings } = Astro.props
 
 const titleByLocale: Record<Locale, string> = {
-  zh: "目录",
   en: "Contents",
-  fr: "Sommaire",
   es: "Índice",
-  ru: "Содержание",
-  ja: "目次",
-  ko: "목차",
-  pt: "Sumário",
-  de: "Inhalt",
-  id: "Daftar Isi",
-  ar: "المحتويات",
 }
 
 const title = titleByLocale[lang]

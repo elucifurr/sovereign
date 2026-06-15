@@ -1,42 +1,42 @@
 ---
 title: "Términos de servicio"
-description: "Basic terms for accessing and using Polyglow blog content."
+description: "Términos básicos para acceder y usar este blog."
 locale: es
 draft: false
 ---
 
-**Effective date: 2026-05-25**
+**Fecha de entrada en vigor: 2026-06-15**
 
-By accessing or using Polyglow, you accept these Terms of Service.
+Al acceder o usar este sitio, aceptas estos Términos de servicio.
 
-## Service Scope
+## Alcance del servicio
 
-Polyglow is a public blog website that provides article reading, on-site search, RSS feeds, and basic page browsing only. It does not provide accounts, memberships, online transactions, investment advice, legal advice, medical advice, or other professional services.
+Este sitio es un blog personal que proporciona lectura de artículos, búsqueda interna, feeds RSS y navegación básica. No proporciona cuentas, membresías, transacciones online, asesoramiento de inversión, asesoramiento legal, asesoramiento médico ni otros servicios profesionales.
 
-## Content Nature
+## Naturaleza del contenido
 
-Articles reflect the author's personal observations and records. They are not investment advice, business advice, legal advice, or a promise of any outcome. You are responsible for decisions and actions based on the content.
+Los artículos reflejan las observaciones y opiniones personales del autor. No son consejos de inversión, consejos empresariales, consejos legales ni una promesa de ningún resultado. Eres responsable de las decisiones y acciones basadas en el contenido.
 
-## Advertising and Third-Party Services
+## Propiedad intelectual
 
-Polyglow displays ads through Google AdSense and uses Google Tag Manager to load Google Analytics and Microsoft Clarity for traffic and experience measurement. Third-party services process data under their own policies. See the [Privacy Policy](/es/privacy-policy/).
+Salvo que se indique lo contrario, el texto, la estructura del sitio, las páginas y los recursos son propiedad del autor. Puedes acceder al contenido para lectura personal, citas y uso compartido. La republicación, adaptación, extracción masiva o uso comercial debe preservar la atribución.
 
-## Intellectual Property
+## Uso prohibido
 
-Unless otherwise stated, text, site structure, pages, and assets are reserved by Polyglow or their respective owners. You may access the content for personal reading, citation, and sharing. Reposting, adaptation, bulk scraping, or commercial use must follow the applicable license and preserve attribution.
+No puedes atacar, interferir, hacer crawling abusivo, eludir controles de acceso ni realizar cargas irrazonables sobre el sitio. No puedes usar el sitio para distribuir código malicioso, material ilegal o contenido que viole los derechos de otros.
 
-## Prohibited Use
+## Exención de responsabilidad
 
-You may not attack, interfere with, abuse crawling, bypass access controls, or place unreasonable load on the site. You may not use the site to distribute malicious code, unlawful material, or content that violates others' rights.
+El sitio y su contenido se proporcionan "tal cual" sin garantías de ningún tipo. El autor no es responsable de los daños derivados del uso de este sitio.
 
-## Disclaimer
+## Legislación aplicable
 
-The site is provided as is. Polyglow works to keep content accurate and available but does not guarantee completeness, continuous availability, or fitness for a particular purpose.
+Estos términos se rigen por la legislación aplicable. Si alguna disposición se considera inaplicable, las disposiciones restantes permanecen en vigor.
 
-## Updates
+## Cambios
 
-These terms may be updated. The latest version is published on this page and takes effect when posted.
+Estos términos pueden actualizarse. El uso continuado después de los cambios constituye la aceptación de los nuevos términos.
 
-## Contact
+## Contacto
 
-Terms questions can be sent to hi@mail.polyglow.com.
+Las preguntas sobre estos términos pueden enviarse a hello@msegundo.dev.
