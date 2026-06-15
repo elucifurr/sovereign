@@ -1,6 +1,6 @@
-# Sovereign
+# M2
 
-Personal blog of **M. Segundo** about how software design, infrastructure, and
+Personal blog of **Mario Segundo** about how software design, infrastructure, and
 regulation affect personal autonomy.
 
 ## Stack
@@ -51,4 +51,4 @@ Authors live in `src/content/authors/<locale>/`.
 
 ## License
 
-© 2026 M. Segundo. All rights reserved.
+© 2026 Mario Segundo. All rights reserved.

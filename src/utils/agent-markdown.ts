@@ -39,7 +39,7 @@ export function renderLlmsTxt(posts: readonly PostEntry[]): string {
     "## Content endpoints",
     "",
     `- [English RSS](${SITE_CONFIG.url}/en/rss.xml)`,
-    `- [Chinese RSS](${SITE_CONFIG.url}/zh/rss.xml)`,
+    `- [Spanish RSS](${SITE_CONFIG.url}/es/rss.xml)`,
     `- [Sitemap](${SITE_CONFIG.url}/sitemap-index.xml)`,
     `- [Robots](${SITE_CONFIG.url}/robots.txt)`,
     "",
@@ -55,7 +55,7 @@ export function renderLlmsTxt(posts: readonly PostEntry[]): string {
 
 export function renderLlmsFullTxt(posts: readonly PostEntry[]): string {
   const lines = [
-    "# Polyglow llms-full.txt",
+    "# M2 llms-full.txt",
     "",
     `Site: ${SITE_CONFIG.url}`,
     `Generated from ${posts.length} published posts.`,

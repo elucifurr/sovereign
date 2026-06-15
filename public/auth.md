@@ -1,6 +1,6 @@
-# auth.md - Polyglow Agent Authentication
+# auth.md - M2 Agent Authentication
 
-Polyglow publishes public editorial pages and optional x402 protected API probes.
+M2 publishes public editorial pages and optional x402 protected API probes.
 
 ## Current Access Model
 
@@ -18,22 +18,22 @@ Polyglow publishes public editorial pages and optional x402 protected API probes
 
 ## Agent Registration
 
-Polyglow accepts anonymous agent discovery and x402-paid API access. No human account, dashboard account, or pre-registration is required for read-only content discovery.
+M2 accepts anonymous agent discovery and x402-paid API access. No human account, dashboard account, or pre-registration is required for read-only content discovery.
 
 Agents that require a registration document can use this file as the registration entrypoint.
 
-Registration endpoint: `https://polyglow.zbz.ai/auth.md`
+Registration endpoint: `https://m2by.me/auth.md`
 
-register_uri: `https://polyglow.zbz.ai/auth.md`
+register_uri: `https://m2by.me/auth.md`
 
 agent_auth metadata:
 
 ```json
 {
-  "skill": "https://polyglow.zbz.ai/auth.md",
-  "register_uri": "https://polyglow.zbz.ai/auth.md",
-  "claim_uri": "https://polyglow.zbz.ai/api",
-  "revocation_uri": "https://polyglow.zbz.ai/auth.md#revocation-uri",
+  "skill": "https://m2by.me/auth.md",
+  "register_uri": "https://m2by.me/auth.md",
+  "claim_uri": "https://m2by.me/api",
+  "revocation_uri": "https://m2by.me/auth.md#revocation-uri",
   "identity_types_supported": ["anonymous"],
   "anonymous": {
     "credential_types_supported": ["x402"]
@@ -52,16 +52,16 @@ Supported credential types:
 
 Credential claim URI:
 
-- `https://polyglow.zbz.ai/api`
+- `https://m2by.me/api`
 
 Revocation URI:
 
-- Not applicable. Polyglow does not issue persistent bearer credentials.
-- `revocation_uri`: `https://polyglow.zbz.ai/auth.md#revocation-uri`
+- Not applicable. M2 does not issue persistent bearer credentials.
+- `revocation_uri`: `https://m2by.me/auth.md#revocation-uri`
 
 Registration method:
 
-- `POST /agent/auth`: Not available for this deployment. Polyglow does not create user accounts or issue persistent API keys.
+- `POST /agent/auth`: Not available for this deployment. M2 does not create user accounts or issue persistent API keys.
 - Agents register for paid access by completing the x402 challenge returned by `/api` or `/api/v1`.
 
 Protected API probes:
@@ -83,11 +83,11 @@ How agents register:
 
 ## OAuth and OIDC Discovery
 
-Polyglow publishes static OAuth/OIDC discovery metadata so agents can distinguish OAuth discovery from x402 payment discovery. The current public deployment does not issue bearer tokens for content access.
+M2 publishes static OAuth/OIDC discovery metadata so agents can distinguish OAuth discovery from x402 payment discovery. The current public deployment does not issue bearer tokens for content access.
 
 Well-known metadata links:
 
-- OAuth Protected Resource Metadata: `https://polyglow.zbz.ai/.well-known/oauth-protected-resource`
-- OAuth Authorization Server Metadata: `https://polyglow.zbz.ai/.well-known/oauth-authorization-server`
+- OAuth Protected Resource Metadata: `https://m2by.me/.well-known/oauth-protected-resource`
+- OAuth Authorization Server Metadata: `https://m2by.me/.well-known/oauth-authorization-server`
 
 Use the x402 payment challenge on the protected API endpoints for paid access.

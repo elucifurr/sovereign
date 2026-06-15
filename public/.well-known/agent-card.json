@@ -1,12 +1,12 @@
 {
-  "name": "Polyglow Content",
+  "name": "M2 Content",
   "version": "1.0.0",
-  "description": "Read-only public content discovery for Polyglow, a multilingual static editorial site.",
-  "url": "https://polyglow.zbz.ai",
+  "description": "Read-only public content discovery for M2, a personal blog about digital sovereignty.",
+  "url": "https://m2by.me",
   "supportedInterfaces": [
     {
       "transport": "https",
-      "url": "https://polyglow.zbz.ai/llms.txt"
+      "url": "https://m2by.me/llms.txt"
     }
   ],
   "capabilities": {
@@ -16,8 +16,8 @@
   },
   "skills": [
     {
-      "id": "polyglow-content",
-      "name": "Polyglow Content Discovery",
+      "id": "m2-content",
+      "name": "M2 Content Discovery",
       "description": "Find public posts, locale routes, RSS feeds, and machine-readable content indexes."
     }
   ]

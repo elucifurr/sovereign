@@ -1,11 +1,11 @@
 ---
-name: polyglow-content
-description: Use this skill to discover and read Polyglow's public multilingual editorial content.
+name: m2-content
+description: Use this skill to discover and read M2's public multilingual editorial content.
 ---
 
-# Polyglow Content
+# M2 Content
 
-Polyglow is a static multilingual editorial site covering startup, investing, and life notes.
+M2 is a personal blog about digital sovereignty, systems, and environments.
 
 ## Entry Points
 

@@ -5,6 +5,7 @@ bio: "Ingeniero de software y sistemas. Escribo sobre cómo el diseño de softwa
 socials:
   - { label: "GitHub", url: "https://github.com/elucifurr" }
   - { label: "Mastodon", url: "https://mastodon.social" }
+  - { label: "Bluesky", url: "https://bsky.app" }
   - { label: "RSS", url: "/es/rss.xml" }
 locale: es
 draft: false

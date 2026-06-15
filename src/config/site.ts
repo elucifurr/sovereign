@@ -73,7 +73,7 @@ const x402Price = normalizePublicString(
 )
 const x402Description = normalizePublicString(
   readPublicEnv("PUBLIC_X402_DESCRIPTION") ??
-    "Voluntary x402 payment support for Polyglow content."
+    "Voluntary x402 payment support for M2 content."
 )
 const x402FacilitatorUrl = normalizePublicString(
   readPublicEnv("PUBLIC_X402_FACILITATOR_URL")
@@ -87,15 +87,17 @@ const x402BotScoreThreshold = normalizeBotScoreThreshold(
 const socialMastodonUrl = "https://mastodon.social"
 
 export const SITE_CONFIG = {
-  name: "M. Segundo",
+  name: "Mario Segundo",
   url: (
-    readPublicEnv("PUBLIC_SITE_URL") ?? "https://sovereign.zbz.ai"
+    readPublicEnv("PUBLIC_SITE_URL") ?? "https://m2by.me"
   ).replace(/\/$/, ""),
   description:
     "How software design, infrastructure, and regulation affect personal autonomy.",
   repository: "https://github.com/elucifurr/sovereign",
   social: {
     mastodon: socialMastodonUrl,
+    bluesky: "https://bsky.app",
+    github: "https://github.com/elucifurr",
   },
   defaultOgImage: "/open-graph.webp",
   assets: {

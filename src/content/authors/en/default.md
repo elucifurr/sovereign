@@ -5,6 +5,7 @@ bio: "Software & systems engineer. Writing about how software design, infrastruc
 socials:
   - { label: "GitHub", url: "https://github.com/elucifurr" }
   - { label: "Mastodon", url: "https://mastodon.social" }
+  - { label: "Bluesky", url: "https://bsky.app" }
   - { label: "RSS", url: "/en/rss.xml" }
 locale: en
 draft: false

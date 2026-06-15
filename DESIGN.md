@@ -1,6 +1,6 @@
 ---
 version: "alpha"
-name: "Sovereign"
+name: "M2"
 description: "A personal blog with neutral surfaces, image-led glass cards, compact archives, dark mode, Astro view transitions, Pagefind search, and long-form typography."
 colors:
   background: "#FFFFFF"
@@ -167,7 +167,7 @@ components:
 
 ## Overview
 
-Sovereign is a personal blog built on Astro static output. The live visual
+M2 is a personal blog built on Astro static output. The live visual
 system is implemented in `src/styles/global.css`; this file records the same
 system as tokens and design rules so later UI work keeps the current theme
 intact.

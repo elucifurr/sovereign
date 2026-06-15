@@ -1,4 +1,4 @@
-# Sovereign Agent Guide
+# M2 Agent Guide
 
 ## Purpose
 
@@ -6,7 +6,7 @@ This file tells coding agents how to work in this repository. Keep engineering
 workflow, commands, repository structure, deployment, and contribution rules
 here. Keep visual tokens and UI appearance rules in `DESIGN.md`.
 
-Sovereign is an Astro 6 static bilingual (en/es) personal blog. The current
+M2 is an Astro 6 static bilingual (en/es) personal blog. The current
 default locale is English, public routes keep locale prefixes, and `/` redirects
 to `/en/`. The repository must remain usable without private services, databases,
 Cloudflare credentials, analytics IDs, ad IDs, payment credentials, or wallet
