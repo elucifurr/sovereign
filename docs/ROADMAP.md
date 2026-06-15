@@ -71,7 +71,7 @@
 
 ### Fase 3 — Revisión de Posts Demo ✅
 
-- [x] **20 artículos editoriales**: Marcados como `draft: true`. Ninguno se adapta al nuevo eje editorial (eran demo sobre agricultura/startup china).
+- [x] **20 artículos editoriales**: Eliminados (eran demo sobre agricultura/startup china, nada adaptables al eje editorial).
 - [x] **10 placeholders**: Eliminados.
 - [x] Posts de 9 idiomas eliminados.
 
@@ -104,11 +104,10 @@
 - [ ] Escribir siguientes posts.
 - [x] **x402**: desactivado (`X402_ENABLED=false`). Wrangler config mínima, sin worker ni vars.
 - [x] **GitHub Actions**: workflow `deploy.yml` creado (build + deploy automático en push a main).
-- [ ] Registrarse en Cloudflare y generar API token ✅ (hecho por el usuario)
-- [ ] Añadir `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID` a GitHub Secrets ✅ (hecho por el usuario)
-- [ ] Hacer primer push a main para trigger deploy automático.
-- [ ] Configurar dominio definitivo (opcional, comprar en Cloudflare).
-- [ ] Despliegue y CI/CD.
+- [x] Registrarse en Cloudflare y generar API token ✅ (hecho por el usuario)
+- [x] Añadir `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID` a GitHub Secrets ✅ (hecho por el usuario)
+- [x] Primer push a main → trigger deploy automático a `sovereign.workers.dev`.
+- [ ] Configurar dominio definitivo (opcional, comprar en Cloudflare, tú decides cuándo).
 
 ---
 
@@ -117,16 +116,18 @@
 | Tema | Estado |
 |------|--------|
 | Red social (Mastodon vs Bluesky) | Sin decidir |
-| Dominio | Sin decidir |
-| x402, AdSense, GTM, well-known | Mantener por ahora, revisar después |
-| Cloudflare Workers vs static hosting | Pendiente de explorar |
-| Email de contacto | Usar hello@msegundo.dev mientras tanto |
+| Dominio | Sin decidir (comprar en Cloudflare cuando quieras) |
+| x402 | Desactivado, código mantenido en repo |
+| GTM / AdSense / well-known | Mantenido en repo, no molesta |
+| Cloudflare Workers static assets | Ya funcionando en `sovereign.workers.dev` |
+| Email de contacto | hello@msegundo.dev (placeholder) |
 
 ---
 
 ## Notas
 
-- No eliminar infraestructura x402, GTM, AdSense, well-known hasta nueva decisión.
-- No eliminar partytown, wrangler, solana, hono, x402 de dependencias aún.
-- El despliegue con Cloudflare Workers se discutirá más adelante.
-- Build verificado: 62 páginas, 0 errores.
+- x402 desactivado, código mantenido por si se reactiva.
+- GTM, AdSense, well-known mantenidos — no interfieren, decisión diferida.
+- Dependencias sobrantes (`@x402/*`, `hono`, `@solana/*`, `@astrojs/partytown`) mantenidas — no afectan al build.
+- Build verificado: 74 páginas, 0 errores.
+- Primer deploy automático en GitHub Actions tras el próximo push a main.
