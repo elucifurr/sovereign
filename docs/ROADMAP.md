@@ -79,7 +79,7 @@
 
 ## Por hacer
 
-### Fase 4 — Branding y Documentación
+### Fase 4 — Branding y Documentación ✅
 
 - [x] **README.md**: Reescribir para sovereign.
 - [x] **readme-zh.md**: Eliminar.
