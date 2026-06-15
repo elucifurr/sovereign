@@ -5,7 +5,9 @@ locale: es
 draft: false
 ---
 
-Puedes escribirme a hello@msegundo.dev.
+Puedes escribirme a [hello@msegundo.dev](mailto:hello@msegundo.dev).
+
+Encuéntrame en: [Mastodon](https://mastodon.social) · [Bluesky](https://bsky.app) · [GitHub](https://github.com/elucifurr)
 
 Motivos apropiados para contactar:
 

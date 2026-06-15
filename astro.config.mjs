@@ -89,6 +89,10 @@ export default defineConfig({
           "sun",
           "x",
         ],
+        "simple-icons": [
+          "mastodon",
+          "bluesky",
+        ],
       },
     }),
     sitemap({

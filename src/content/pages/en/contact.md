@@ -5,7 +5,9 @@ locale: en
 draft: false
 ---
 
-You can reach me at hello@msegundo.dev.
+You can reach me at [hello@msegundo.dev](mailto:hello@msegundo.dev).
+
+Find me elsewhere: [Mastodon](https://mastodon.social) · [Bluesky](https://bsky.app) · [GitHub](https://github.com/elucifurr)
 
 Appropriate contact topics include:
 
