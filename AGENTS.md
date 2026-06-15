@@ -1,4 +1,4 @@
-# Polyglow Agent Guide
+# Sovereign Agent Guide
 
 ## Purpose
 
@@ -6,9 +6,9 @@ This file tells coding agents how to work in this repository. Keep engineering
 workflow, commands, repository structure, deployment, and contribution rules
 here. Keep visual tokens and UI appearance rules in `DESIGN.md`.
 
-Polyglow is an Astro 6 static multilingual editorial theme. The current default
-locale is English, public routes keep locale prefixes, and `/` redirects to
-`/en/`. The repository must remain usable without private services, databases,
+Sovereign is an Astro 6 static bilingual (en/es) personal blog. The current
+default locale is English, public routes keep locale prefixes, and `/` redirects
+to `/en/`. The repository must remain usable without private services, databases,
 Cloudflare credentials, analytics IDs, ad IDs, payment credentials, or wallet
 addresses.
 
@@ -41,13 +41,13 @@ Use pnpm for Node.js work. Do not add npm, yarn, or bun lockfiles.
 
 ## Development Workflow
 
-- Use Polyglow repository documents, GitHub Issues, and GitHub Projects as the
-  only development planning and tracking tools.
+- Use repository documents, GitHub Issues, and GitHub Projects as the only
+  development planning and tracking tools.
 - Do not use Feishu, Lark, Meegle, Feishu Project, Feishu Wiki, or other
-  external project-management systems for Polyglow development unless a future
-  user request explicitly reintroduces them.
-- Treat `AGENTS.md`, `DESIGN.md`, `README.md`, `readme-zh.md`, and files under
-  `docs/` as the project documentation source.
+  external project-management systems unless a future user request explicitly
+  reintroduces them.
+- Treat `AGENTS.md`, `DESIGN.md`, `README.md`, and files under `docs/` as the
+  project documentation source.
 - Before coding, read `AGENTS.md` and `DESIGN.md`. If either file is missing,
   add a minimal version before continuing.
 - Use Spec-Driven Development for non-trivial changes: define the issue,
@@ -92,7 +92,6 @@ Use pnpm for Node.js work. Do not add npm, yarn, or bun lockfiles.
 - Preserve locale-prefixed routes. The default locale is `en`, and `/`
   redirects to `/en/`.
 - Preserve Astro `trailingSlash: "always"` behavior.
-- Preserve RTL support for Arabic routes.
 - Do not make Cloudflare mandatory. The Cloudflare path uploads static assets
   from `dist`; ordinary static hosting must continue to work.
 - Do not add database-backed features by default.
@@ -118,7 +117,7 @@ Use pnpm for Node.js work. Do not add npm, yarn, or bun lockfiles.
 - Posts live in `src/content/posts/<locale>/`.
 - Pages live in `src/content/pages/<locale>/`.
 - Authors live in `src/content/authors/<locale>/`.
-- Supported locales are `en zh fr es ru ja ko pt de id ar`.
+- Supported locales are `en` and `es`.
 - Use stable slugs and complete frontmatter.
 - Post frontmatter uses `authors: ["default"]`, `locale`, `category`, `tags`,
   `heroImage`, and `heroImageAlt`.
@@ -149,8 +148,7 @@ Use pnpm for Node.js work. Do not add npm, yarn, or bun lockfiles.
 - Keep defaults safe for forked projects and first-time users.
 - Do not commit tokens, local credentials, private database IDs, analytics IDs,
   wallet addresses, or production secrets.
-- Document new public environment variables in `.env.example`, `README.md`, and
-  `readme-zh.md`.
+- Document new public environment variables in `.env.example` and `README.md`.
 - Prefer small, focused changes with clear deployment impact.
 - Do not leave generated output stale when its source file changes in the same
   task.

@@ -81,16 +81,16 @@
 
 ### Fase 4 — Branding y Documentación
 
-- [ ] **README.md**: Reescribir para el proyecto real.
-- [ ] **readme-zh.md**: Eliminar.
-- [ ] **AGENTS.md**: Actualizar propósito y descripción.
-- [ ] **DESIGN.md**: Actualizar frontmatter (`name`, `description`).
-- [ ] **public/favicon.svg**: Reemplazar.
-- [ ] **public/open-graph.webp**: Reemplazar.
-- [ ] **src/assets/logo.svg**: Reemplazar.
-- [ ] **src/assets/author.avif**: Reemplazar.
-- [ ] **public/lighthouse-score-*.svg**: Eliminar.
-- [ ] **public/agent-readiness-*.avif**: Eliminar.
+- [x] **README.md**: Reescribir para sovereign.
+- [x] **readme-zh.md**: Eliminar.
+- [x] **AGENTS.md**: Actualizar propósito y descripción (locales en/es, sin readme-zh).
+- [x] **DESIGN.md**: Actualizar frontmatter (`name`, `description`), limpiar referencias CJK/RTL/11 locales.
+- [x] **public/favicon.svg**: Reemplazar con monograma "S" minimalista.
+- [ ] **public/open-graph.webp**: Conservar temporalmente.
+- [x] **src/assets/logo.svg**: Reemplazar con monograma "S" minimalista.
+- [ ] **src/assets/author.avif**: Conservar temporalmente.
+- [x] **public/lighthouse-score-*.svg**: Eliminar.
+- [x] **public/agent-readiness-*.avif**: Eliminar.
 
 ### Fase 5 — Contenido Real
 

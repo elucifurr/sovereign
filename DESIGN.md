@@ -1,7 +1,7 @@
 ---
 version: "alpha"
-name: "Polyglow"
-description: "A multilingual editorial Astro theme with neutral surfaces, image-led glass cards, compact archives, dark mode, Astro view transitions, Pagefind search, and long-form typography."
+name: "Sovereign"
+description: "A personal blog with neutral surfaces, image-led glass cards, compact archives, dark mode, Astro view transitions, Pagefind search, and long-form typography."
 colors:
   background: "#FFFFFF"
   foreground: "#18181B"
@@ -167,10 +167,10 @@ components:
 
 ## Overview
 
-Polyglow is a multilingual editorial publishing interface built on Astro static
-output. The live visual system is implemented in `src/styles/global.css`; this
-file records the same system as tokens and design rules so later UI work keeps
-the current theme intact.
+Sovereign is a personal blog built on Astro static output. The live visual
+system is implemented in `src/styles/global.css`; this file records the same
+system as tokens and design rules so later UI work keeps the current theme
+intact.
 
 The current interface is neutral, content-first, image-led, and compact. It
 uses strong real imagery, glass panels over post covers and article heroes,
@@ -209,12 +209,10 @@ text. Use the dark tokens as design references; runtime switching stays in CSS.
 ## Typography
 
 The project uses a system sans stack throughout. This keeps startup fast,
-supports all configured locales, and avoids external font loading.
+supports both configured locales (en, es), and avoids external font loading.
 
-Article prose uses `1rem` type with `2rem` line height. Chinese, Japanese, and
-Korean prose uses justified text where supported. Arabic pages rely on the
-document `dir="rtl"` value and start-aligned prose. Headings are compact and
-strong. Navigation and metadata stay small, with normal or slight positive
+Article prose uses `1rem` type with `2rem` line height. Headings are compact
+and strong. Navigation and metadata stay small, with normal or slight positive
 tracking only where the current UI already uses uppercase labels.
 
 Do not use viewport-scaled font sizes. Do not use negative letter spacing.
@@ -280,7 +278,7 @@ tests.
 ## Visual Constraints
 
 - Keep UI text inside its container at mobile, tablet, and desktop sizes.
-- Preserve multilingual and RTL layout behavior.
+- Preserve bilingual layout behavior.
 - Preserve real image-led surfaces for post cards and article heroes.
 - Avoid decorative background blobs, one-note color palettes, and nested cards.
 - Avoid visible UI text that explains implementation details.
