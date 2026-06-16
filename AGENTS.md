@@ -44,7 +44,7 @@ Use pnpm for Node.js work. Do not add npm, yarn, or bun lockfiles.
   reintroduces them.
 - Treat `AGENTS.md`, `DESIGN.md`, `README.md`, and files under `docs/` as the
   project documentation source.
-- Before coding, read `AGENTS.md` and `DESIGN.md`. If either file is missing,
+- Before coding or writing content, read `AGENTS.md` and `DESIGN.md`. If either file is missing,
   add a minimal version before continuing.
 - Use Spec-Driven Development for non-trivial changes: define the issue,
   acceptance criteria, implementation notes, and verification commands before
@@ -117,6 +117,19 @@ Use pnpm for Node.js work. Do not add npm, yarn, or bun lockfiles.
 - Remote `OptimizedPicture` usage in content must include explicit `width` and
   `height` unless it intentionally uses Astro `inferSize`.
 - Keep category and tag slugs canonical through `src/config/taxonomy.ts`.
+
+### Writing Style
+
+- **Tone**: direct, authoritative, essay-like. Neither academic nor informal. Open with a clear thesis.
+- **Length**: ~50–150 lines unless the topic requires more. Depth on one angle, not a broad survey.
+- **Paragraphs**: 2–5 sentences. Dense but not walls of text.
+- **Structure**: `##` for major sections. `###` sparingly. Prefer flat section hierarchy.
+- **Tables**: avoid more than 3 columns (overflow on mobile). Prefer lists or prose over tables.
+- **Lists**: bullets for enumerations, numbered only for sequential steps.
+- **Opening**: thesis in the first paragraph answering "what it is and why it matters."
+- **Closing**: forward-looking or synthesising paragraph, not a summary.
+- **Formatting**: bold only on first mention of key concepts. Links inline, no bare URLs.
+- **Voice**: no first-person plural ("we") unless quoting or making a collective claim. No rhetorical questions.
 
 ## UI and Design Workflow
 
