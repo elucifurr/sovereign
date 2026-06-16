@@ -1,0 +1,207 @@
+---
+title: "How Open Source Licenses Changed"
+description: "A technical look at the shift from permissive and copyleft licenses to non-compete models, why it happened, and what it means for the projects you depend on."
+category: "soberania"
+tags:
+  - "infraestructura"
+  - "dependencia-tecnologica"
+  - "plataformas"
+pubDate: 2026-06-17
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5"
+heroImageAlt: "Digital binary code representing the foundational layers of open source software"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+The open source movement was built on a simple promise: once code is released under an approved license, no one — not even the original author — can take it away. You can fork it. You can redistribute it. You can build a business on top of it.
+
+That promise still holds for existing code under traditional licenses. But the rules for new code have changed. Over the past decade, a growing number of companies have abandoned the established open source licenses in favour of new models that allow them to keep their code visible while restricting how it can be used.
+
+This article examines the technical and legal shifts that led to this change, the specific cases that defined it, and what it means for developers choosing dependencies today.
+
+## The Three Generations of Open Source Licenses
+
+The evolution of open source licensing can be understood in three generations, each responding to the limitations of the previous one.
+
+### First Generation: Permissive Licenses
+
+The MIT, BSD, and Apache 2.0 licenses impose minimal restrictions. You can use the code however you want — modify it, redistribute it, incorporate it into proprietary products, sell it. The only requirement is usually attribution.
+
+These licenses were designed for a world where software was shared between academics and researchers. They assumed that the main value was in the code itself, and that sharing it freely would benefit everyone.
+
+### Second Generation: Copyleft Licenses
+
+The GNU General Public License (GPL) and its variants introduced a constraint: if you distribute modified versions of the code, you must also distribute your modifications under the same license. This is the "copyleft" mechanism — it uses copyright law to ensure that the software and its derivatives remain free.
+
+The GNU Affero General Public License (AGPL) closed the "ASP loophole" — the fact that the GPL's requirements only apply when you distribute software, not when you run it as a service. If you modify AGPL code and offer it as a network service, you must release your modifications.
+
+### Third Generation: Non-Compete Licenses
+
+Starting around 2018, a new category of licenses emerged. These allow users to view and modify the source code, but restrict its use in commercial contexts that compete with the licensor. The most notable examples are:
+
+- **Server Side Public License (SSPL)** — MongoDB's license. Requires you to release not just your modifications, but the entire stack of software used to offer the licensed program as a service.
+- **Business Source License (BSL)** — Created by MariaDB and later adopted by HashiCorp, CockroachDB, and others. Provides full source code access but restricts production or competitive use for a defined period (typically three to four years), after which the code converts to a traditional open source license.
+- **Commons Clause** — A supplementary restriction that can be added to an existing license. It prohibits selling the software or offering it as a service that competes with the licensor.
+
+These are not open source licenses as defined by the Open Source Initiative (OSI). The OSI's definition requires that licenses do not discriminate against fields of endeavour — a restriction that non-compete clauses explicitly violate. But they look like open source. The code is public. You can read it, fork it, and in most cases modify it for personal use. The difference only appears when you try to compete.
+
+## Why Companies Changed Their Licenses
+
+The shift to non-compete licenses was driven by a specific business problem: cloud providers were offering open source projects as managed services, capturing most of the revenue while contributing little back to the project's development.
+
+The classic example is Amazon Web Services. AWS would take an open source project like Elasticsearch or MongoDB, package it as a managed service, and sell it to customers. The project's maintainers — who had written the code and continued to maintain it — received no direct revenue from these offerings. Their only path to monetisation was selling their own managed services, but they could not compete with AWS on price and distribution.
+
+From the maintainer's perspective, the open source license was being used by cloud providers to capture value without contributing to the cost of development. From the cloud provider's perspective, they were following the rules as written — the licenses were designed to allow exactly this kind of use.
+
+The result was a wave of license changes as companies sought to protect their commercial offerings.
+
+## Case Studies
+
+### Terraform and OpenTofu
+
+HashiCorp developed Terraform, an infrastructure-as-code tool that became the de facto standard for managing cloud resources. Terraform was released under the Mozilla Public License (MPL 2.0), a weak copyleft license that allows proprietary integration with MPL-licensed files.
+
+In August 2023, HashiCorp announced that future versions of Terraform would be released under the Business Source License (BSL), effectively prohibiting cloud providers from offering Terraform as a managed service without a commercial agreement.
+
+The community reaction was swift. Within days, the Linux Foundation announced OpenTofu (initially called OpenTF), a fork of the last MPL-licensed version of Terraform. OpenTofu is governed by an independent steering committee and developed in the open.
+
+**Current status:** OpenTofu has matured into a viable alternative, with contributions from Gruntwork, Spacelift, and other companies that had relied on Terraform's open source model. HashiCorp was acquired by IBM in 2025 for \$6.4 billion. The fork has outlived the original company's independence and continues to be developed under the MPL.
+
+**What it means for users:** If you started a Terraform project after August 2023, you are running BSL-licensed code. You cannot offer it as a service without a commercial agreement with HashiCorp (now IBM). You can migrate to OpenTofu, which provides a migration tool, but you need to evaluate whether the projects you depend on have made the same migration.
+
+### Redis and Valkey
+
+Redis is an in-memory data store used as a cache, message broker, and database. It was released under the BSD license, a permissive license that imposes almost no restrictions on use or redistribution.
+
+In 2018, Redis Labs began adding modules under the Commons Clause. In 2024, Redis changed its core licensing to the Server Side Public License (SSPL), which requires that any service offering Redis as a managed solution must release the entire stack of software used to provide that service.
+
+The Linux Foundation responded by creating Valkey, a fork of the last BSD-licensed version of Redis. Valkey is developed under the BSD license and is governed by a neutral foundation.
+
+**Current status:** Valkey has seen rapid adoption and is now the default Redis implementation in several Linux distributions. Redis Ltd. continues to develop its own version under the SSPL. The migration is relatively straightforward because the APIs are compatible.
+
+**What it means for users:** If you use Redis through a cloud provider's managed service, the provider has likely moved to Valkey or negotiated a commercial agreement with Redis Ltd. If you run Redis yourself, you can choose either version. Valkey provides API compatibility, so most applications can switch without code changes.
+
+### Elasticsearch and OpenSearch
+
+Elasticsearch is a search and analytics engine widely used for log analysis, application monitoring, and full-text search. It was released under the Apache 2.0 license.
+
+In 2021, Elastic changed its license from Apache 2.0 to the SSPL. The stated reason was to prevent cloud providers — specifically AWS — from offering Elasticsearch as a managed service without contributing to its development.
+
+AWS responded by forking the last Apache-licensed version of Elasticsearch and Kibana, creating OpenSearch. OpenSearch is developed under the Apache 2.0 license and governed by the OpenSearch Foundation.
+
+**Current status:** OpenSearch has become the dominant fork, adopted by AWS, Aiven, and other providers. Elastic later changed its license again — to the AGPL — which at least qualifies as open source according to the OSI. But by then, the damage to community trust had been done.
+
+**What it means for users:** The Elastic-to-OpenSearch migration is more complex than the Redis case because the APIs diverged over time. OpenSearch maintains compatibility with the Elasticsearch 7.x API, but newer Elasticsearch features are not available in OpenSearch. If you need the latest Elasticsearch features, you use Elastic's AGPL-licensed version. If you want Apache 2.0 licensing and cloud-neutral governance, you use OpenSearch.
+
+### Docker and Podman
+
+Docker popularised containerisation and became the standard tool for building and running containers. Docker's core components were released under the Apache 2.0 license.
+
+In 2021, Docker Inc. changed its licensing model, focusing on its commercial Docker Desktop product while continuing to develop the open source Docker Engine under Apache 2.0. The tension was not about licensing — Docker Engine remained open — but about control over the container ecosystem.
+
+Red Hat, a major contributor to the container ecosystem, developed Podman as a drop-in replacement for Docker that did not require a central daemon and ran rootless by default. Podman is compatible with Docker images and commands, and is released under the Apache 2.0 license.
+
+**Current status:** Podman has become the default container tool in Red Hat Enterprise Linux and Fedora. Docker continues to be widely used, particularly in development environments and CI/CD pipelines. The two tools coexist, with Podman gaining market share in production Linux environments.
+
+**What it means for users:** Docker's licensing change was less disruptive than the others because the open source engine remained under Apache 2.0. The shift to Podman was driven more by architectural preferences (daemonless, rootless) than by licensing concerns. But it illustrates a broader pattern: when a single company controls a critical infrastructure project, users start looking for alternatives.
+
+### Grafana
+
+Grafana, the analytics and monitoring platform, changed its license from Apache 2.0 to AGPL in 2021. The AGPL is an OSI-approved open source license, but it requires that any modification to the software that is offered as a network service must be released under the AGPL.
+
+This change affected companies that wanted to embed Grafana in their own products or offer modified versions as a service. Grafana Labs provides commercial licenses for these use cases.
+
+**Current status:** Grafana continues to be developed actively under the AGPL. The change was less controversial than the SSPL/BSL changes because the AGPL is a recognised open source license, but it still created friction for companies that had built products on top of Grafana under the previous license.
+
+## What These Cases Have in Common
+
+Looking at these five cases, a pattern emerges:
+
+1. **A company creates an open source project that becomes critical infrastructure.** The project gains widespread adoption because it solves a real problem and is freely available.
+
+2. **The company needs a revenue model.** Venture capital funding requires a path to profitability. Selling managed services or commercial licenses is the most common approach.
+
+3. **Cloud providers offer the project as a service, capturing revenue.** The project's own managed service cannot compete with AWS, GCP, or Azure on distribution and price.
+
+4. **The company changes the license to protect its commercial offering.** The new license restricts competition — typically by prohibiting offering the software as a service without a commercial agreement.
+
+5. **The community forks the last open source version.** A foundation or consortium takes over development under the original license.
+
+6. **The fork becomes a viable alternative.** In most cases, the fork survives and thrives because the community has incentives to maintain it.
+
+## The Cost of License Changes
+
+License changes are not free. They impose costs on everyone in the ecosystem:
+
+**For users:** You must evaluate whether your usage is affected by the new license. You may need to migrate to a fork. Migration carries its own costs — testing, validation, retraining. You may need to maintain compatibility with both versions if your dependencies pull in different forks.
+
+**For the project:** The license change splits the community. Some contributors leave. Some users migrate. The project loses the network effects that made it successful in the first place. The original company may find that the license change accelerates the fork's adoption rather than protecting its own revenue.
+
+**For the ecosystem:** Fragmentation increases maintenance burden. Security patches must be applied to multiple forks. Tooling must support multiple versions. The overall cost of infrastructure increases.
+
+## The Governance Dimension
+
+The license change problem is really a governance problem. When a single company controls the copyright of a project, it can change the license unilaterally. When a project is governed by a neutral foundation, license changes require consensus among multiple stakeholders — which is much harder to achieve.
+
+Projects governed by the Apache Software Foundation, the Linux Foundation, the Eclipse Foundation, and the Software Freedom Conservancy have not experienced license changes. These foundations hold the copyright and control the project's assets, including its name and trademark.
+
+This is the structural solution to the license change problem: if you want to ensure that a project remains under a stable license, it should be owned by a foundation, not a single company.
+
+## How to Evaluate a Project's License Risk
+
+Based on the patterns above, here are practical criteria for evaluating whether a project is at risk of a license change:
+
+1. **Who holds the copyright?** If it's a single company, the license can be changed unilaterally. If it's a foundation with multiple members, change is much harder.
+
+2. **What is the company's business model?** If the company sells managed services or commercial licenses for the same project, there is a conflict between the open source version and the company's revenue. This conflict often leads to license changes.
+
+3. **Is the trademark controlled by the company?** Even if the code is forked, the original name and brand usually remain with the company. A fork under a different name cannot benefit from the original project's brand recognition.
+
+4. **What precedents exist in the same ecosystem?** If similar projects have changed their licenses, the same pressures likely apply to this one.
+
+5. **Is there a governance document?** Projects with documented governance structures — steering committees, contribution guidelines, decision-making processes — are less likely to change licenses unilaterally.
+
+## Will This Trend Continue?
+
+The conditions that drove the first wave of license changes have not disappeared. Cloud providers continue to offer managed services for open source projects. Venture capital continues to fund open source startups that need to find revenue models. The tension between openness and monetisation is structural, not incidental.
+
+Several factors could influence the direction:
+
+**The fork response has been effective.** OpenTofu, Valkey, and OpenSearch have demonstrated that the community can fork and maintain critical infrastructure. This reduces the leverage of companies considering license changes, because they know that a fork will quickly replace them.
+
+**Foundations are becoming more active.** The Linux Foundation has sponsored multiple forks and is developing governance models that prevent unilateral license changes. The EU's CRA may also influence how open source projects are governed.
+
+**But the economic incentives remain.** Companies need to make money from their open source projects. If license changes are perceived as the only viable path to revenue, they will continue. The question is whether alternative revenue models — consulting, support, managed services with fair pricing — can support the development of critical infrastructure without restricting competition.
+
+The most likely outcome is a bifurcated ecosystem. Some projects will remain under traditional open source licenses, governed by foundations with diverse funding. Others will adopt non-compete licenses and be controlled by their original companies. Users will need to evaluate each project individually, using the criteria above.
+
+## The Landscape Today
+
+As of 2026, the landscape looks like this:
+
+| Project | Original License | Current License | Fork | Fork License |
+|---------|-----------------|-----------------|------|-------------|
+| Terraform | MPL 2.0 | BSL | OpenTofu | MPL 2.0 |
+| Redis | BSD | SSPL | Valkey | BSD |
+| Elasticsearch | Apache 2.0 | AGPL | OpenSearch | Apache 2.0 |
+| Docker Engine | Apache 2.0 | Apache 2.0 | Podman | Apache 2.0 |
+| Grafana | Apache 2.0 | AGPL | — | — |
+| MongoDB | AGPL | SSPL | — | — |
+| CockroachDB | Apache 2.0 | BSL | — | — |
+
+Projects that have not changed licenses — and that are governed by foundations — are increasingly the exception. But they are also increasingly the preferred choice for organisations that value long-term stability.
+
+## Conclusion
+
+The open source license landscape has changed fundamentally over the past eight years. The traditional licenses — MIT, GPL, Apache — remain in wide use, but they no longer represent the full spectrum of options available to project maintainers. New non-compete licenses have emerged that provide many of the benefits of open source while allowing maintainers to restrict commercial competition.
+
+For users, the key insight is that license stability depends on governance. A project owned by a single company can change its license at any time. A project governed by a foundation cannot, because the foundation's structure prevents unilateral action. When evaluating a dependency, look beyond the current license to the governance model that supports it.
+
+The fork mechanism has proven effective as a safety net. OpenTofu, Valkey, and OpenSearch are viable alternatives that have maintained the original open source licenses. But forks take time to mature, and not every project will attract the community support needed to sustain a fork.
+
+The best protection against license changes is to choose dependencies that are governed by neutral foundations and that have documented governance processes. These projects are not immune to change — but they are structurally resistant to unilateral decisions that undermine the open source model.

@@ -1,0 +1,207 @@
+---
+title: "Cómo cambiaron las licencias del open source"
+description: "Un análisis técnico del cambio de licencias permisivas y copyleft a modelos no competitivos, por qué ocurrió y qué significa para los proyectos de los que dependes."
+category: "soberania"
+tags:
+  - "infraestructura"
+  - "dependencia-tecnologica"
+  - "plataformas"
+pubDate: 2026-06-17
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5"
+heroImageAlt: "Código binario digital representando las capas fundacionales del software open source"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: es
+draft: false
+featured: false
+---
+
+El movimiento open source se construyó sobre una promesa simple: una vez que el código se publica bajo una licencia aprobada, nadie — ni siquiera el autor original — puede quitártelo. Puedes hacerle fork. Puedes redistribuirlo. Puedes construir un negocio encima.
+
+Esa promesa sigue siendo válida para el código existente bajo licencias tradicionales. Pero las reglas para el código nuevo han cambiado. En la última década, un número creciente de empresas ha abandonado las licencias open source establecidas en favor de nuevos modelos que permiten mantener el código visible mientras restringen cómo puede usarse.
+
+Este artículo examina los cambios técnicos y legales que llevaron a esta transformación, los casos concretos que la definieron, y lo que significa para los desarrolladores que eligen dependencias hoy.
+
+## Las tres generaciones de licencias open source
+
+La evolución de las licencias open source puede entenderse en tres generaciones, cada una respondiendo a las limitaciones de la anterior.
+
+### Primera generación: Licencias permisivas
+
+Las licencias MIT, BSD y Apache 2.0 imponen restricciones mínimas. Puedes usar el código como quieras — modificarlo, redistribuirlo, incorporarlo en productos propietarios, venderlo. El único requisito suele ser la atribución.
+
+Estas licencias fueron diseñadas para un mundo donde el software se compartía entre académicos e investigadores. Asumían que el valor principal estaba en el código mismo, y que compartirlo libremente beneficiaría a todos.
+
+### Segunda generación: Licencias copyleft
+
+La GNU General Public License (GPL) y sus variantes introdujeron una restricción: si distribuyes versiones modificadas del código, también debes distribuir tus modificaciones bajo la misma licencia. Es el mecanismo "copyleft" — usa la ley de derechos de autor para asegurar que el software y sus derivados sigan siendo libres.
+
+La GNU Affero General Public License (AGPL) cerró el "vacío del ASP" — el hecho de que los requisitos de la GPL solo se aplican cuando distribuyes software, no cuando lo ejecutas como servicio. Si modificas código AGPL y lo ofreces como servicio de red, debes publicar tus modificaciones.
+
+### Tercera generación: Licencias no competitivas
+
+A partir de 2018 aproximadamente, surgió una nueva categoría de licencias. Permiten ver y modificar el código fuente, pero restringen su uso en contextos comerciales que compiten con el licenciante. Los ejemplos más destacados son:
+
+- **Server Side Public License (SSPL)** — La licencia de MongoDB. Exige que liberes no solo tus modificaciones, sino toda la pila de software utilizada para ofrecer el programa licenciado como servicio.
+- **Business Source License (BSL)** — Creada por MariaDB y adoptada después por HashiCorp, CockroachDB y otros. Proporciona acceso completo al código fuente pero restringe el uso productivo o competitivo durante un período definido (normalmente tres o cuatro años), tras el cual el código se convierte a una licencia open source tradicional.
+- **Commons Clause** — Una restricción suplementaria que puede añadirse a una licencia existente. Prohíbe vender el software u ofrecerlo como servicio que compita con el licenciante.
+
+Estas no son licencias open source según la definición de la Open Source Initiative (OSI). La definición de la OSI requiere que las licencias no discriminen contra campos de actividad — una restricción que las cláusulas no competitivas violan explícitamente. Pero se parecen al open source. El código es público. Puedes leerlo, hacerle fork y, en la mayoría de los casos, modificarlo para uso personal. La diferencia solo aparece cuando intentas competir.
+
+## Por qué las empresas cambiaron sus licencias
+
+El cambio a licencias no competitivas fue impulsado por un problema de negocio concreto: los proveedores de cloud estaban ofreciendo proyectos open source como servicios gestionados, capturando la mayor parte de los ingresos mientras contribuían poco al desarrollo del proyecto.
+
+El ejemplo clásico es Amazon Web Services. AWS tomaba un proyecto open source como Elasticsearch o MongoDB, lo empaquetaba como servicio gestionado y lo vendía a los clientes. Los mantenedores del proyecto — que habían escrito el código y seguían manteniéndolo — no recibían ingresos directos de estas ofertas. Su única vía de monetización era vender sus propios servicios gestionados, pero no podían competir con AWS en precio y distribución.
+
+Desde la perspectiva del mantenedor, la licencia open source estaba siendo utilizada por los proveedores cloud para capturar valor sin contribuir al coste del desarrollo. Desde la perspectiva del proveedor cloud, estaban siguiendo las reglas establecidas — las licencias estaban diseñadas para permitir exactamente este tipo de uso.
+
+El resultado fue una ola de cambios de licencia a medida que las empresas buscaban proteger sus ofertas comerciales.
+
+## Casos prácticos
+
+### Terraform y OpenTofu
+
+HashiCorp desarrolló Terraform, una herramienta de infraestructura como código que se convirtió en el estándar de facto para gestionar recursos cloud. Terraform se publicó bajo la Mozilla Public License (MPL 2.0), una licencia copyleft débil que permite la integración propietaria con archivos licenciados bajo MPL.
+
+En agosto de 2023, HashiCorp anunció que las versiones futuras de Terraform se publicarían bajo la Business Source License (BSL), prohibiendo efectivamente que los proveedores cloud ofrecieran Terraform como servicio gestionado sin un acuerdo comercial.
+
+La reacción de la comunidad fue inmediata. En cuestión de días, la Linux Foundation anunció OpenTofu (inicialmente llamado OpenTF), un fork de la última versión de Terraform bajo MPL. OpenTofu está gobernado por un comité directivo independiente y se desarrolla de forma abierta.
+
+**Estado actual:** OpenTofu ha madurado hasta convertirse en una alternativa viable, con contribuciones de Gruntwork, Spacelift y otras empresas que dependían del modelo open source de Terraform. HashiCorp fue adquirida por IBM en 2025 por 6.400 millones de dólares. El fork ha sobrevivido a la independencia de la empresa original y sigue desarrollándose bajo MPL.
+
+**Lo que significa para los usuarios:** Si iniciaste un proyecto con Terraform después de agosto de 2023, estás ejecutando código bajo BSL. No puedes ofrecerlo como servicio sin un acuerdo comercial con HashiCorp (ahora IBM). Puedes migrar a OpenTofu, que proporciona herramientas de migración, pero debes evaluar si los proyectos de los que dependes han hecho la misma transición.
+
+### Redis y Valkey
+
+Redis es un almacén de datos en memoria utilizado como caché, intermediario de mensajes y base de datos. Se publicó bajo la licencia BSD, una licencia permisiva que impone casi ninguna restricción sobre su uso o redistribución.
+
+En 2018, Redis Labs comenzó a añadir módulos bajo Commons Clause. En 2024, Redis cambió su licencia principal a la Server Side Public License (SSPL), que exige que cualquier servicio que ofrezca Redis como solución gestionada debe liberar toda la pila de software utilizada para proporcionar ese servicio.
+
+La Linux Foundation respondió creando Valkey, un fork de la última versión de Redis bajo BSD. Valkey se desarrolla bajo la licencia BSD y está gobernado por una fundación neutral.
+
+**Estado actual:** Valkey ha tenido una adopción rápida y es ahora la implementación de Redis por defecto en varias distribuciones de Linux. Redis Ltd. continúa desarrollando su propia versión bajo SSPL. La migración es relativamente sencilla porque las API son compatibles.
+
+**Lo que significa para los usuarios:** Si usas Redis a través del servicio gestionado de un proveedor cloud, es probable que el proveedor se haya migrado a Valkey o haya negociado un acuerdo comercial con Redis Ltd. Si ejecutas Redis tú mismo, puedes elegir cualquiera de las dos versiones. Valkey ofrece compatibilidad de API, por lo que la mayoría de las aplicaciones pueden migrar sin cambios de código.
+
+### Elasticsearch y OpenSearch
+
+Elasticsearch es un motor de búsqueda y análisis ampliamente utilizado para análisis de logs, monitorización de aplicaciones y búsqueda de texto completo. Se publicó bajo la licencia Apache 2.0.
+
+En 2021, Elastic cambió su licencia de Apache 2.0 a SSPL. La razón declarada fue evitar que los proveedores cloud — específicamente AWS — ofrecieran Elasticsearch como servicio gestionado sin contribuir a su desarrollo.
+
+AWS respondió haciendo fork de la última versión de Elasticsearch y Kibana bajo Apache 2.0, creando OpenSearch. OpenSearch se desarrolla bajo la licencia Apache 2.0 y está gobernado por la OpenSearch Foundation.
+
+**Estado actual:** OpenSearch se ha convertido en el fork dominante, adoptado por AWS, Aiven y otros proveedores. Elastic cambió su licencia nuevamente — a AGPL — que al menos califica como open source según la OSI. Pero para entonces, el daño a la confianza de la comunidad ya estaba hecho.
+
+**Lo que significa para los usuarios:** La migración de Elasticsearch a OpenSearch es más compleja que en el caso de Redis porque las API divergieron con el tiempo. OpenSearch mantiene compatibilidad con la API de Elasticsearch 7.x, pero las funciones más nuevas de Elasticsearch no están disponibles en OpenSearch. Si necesitas las últimas funciones de Elasticsearch, usas la versión bajo AGPL de Elastic. Si quieres licencia Apache 2.0 y gobernanza neutral, usas OpenSearch.
+
+### Docker y Podman
+
+Docker popularizó la contenerización y se convirtió en la herramienta estándar para construir y ejecutar contenedores. Los componentes principales de Docker se publicaron bajo la licencia Apache 2.0.
+
+En 2021, Docker Inc. cambió su modelo de licencia, centrándose en su producto comercial Docker Desktop mientras continuaba desarrollando el Docker Engine de código abierto bajo Apache 2.0. La tensión no era sobre la licencia — Docker Engine siguió siendo abierto — sino sobre el control del ecosistema de contenedores.
+
+Red Hat, un contribuyente importante del ecosistema de contenedores, desarrolló Podman como un sustituto directo de Docker que no requiere un demonio central y funciona sin root por defecto. Podman es compatible con las imágenes y comandos de Docker, y se publica bajo la licencia Apache 2.0.
+
+**Estado actual:** Podman se ha convertido en la herramienta de contenedores por defecto en Red Hat Enterprise Linux y Fedora. Docker sigue siendo ampliamente utilizado, particularmente en entornos de desarrollo y tuberías CI/CD. Ambas herramientas coexisten, con Podman ganando cuota de mercado en entornos Linux de producción.
+
+**Lo que significa para los usuarios:** El cambio de licencia de Docker fue menos disruptivo que los otros porque el motor open source permaneció bajo Apache 2.0. El cambio a Podman fue impulsado más por preferencias arquitectónicas (sin demonio, sin root) que por preocupaciones de licencia. Pero ilustra un patrón más amplio: cuando una sola empresa controla un proyecto de infraestructura crítica, los usuarios empiezan a buscar alternativas.
+
+### Grafana
+
+Grafana, la plataforma de analítica y monitorización, cambió su licencia de Apache 2.0 a AGPL en 2021. La AGPL es una licencia open source aprobada por la OSI, pero requiere que cualquier modificación del software que se ofrezca como servicio de red debe publicarse bajo AGPL.
+
+Este cambio afectó a las empresas que querían incorporar Grafana en sus propios productos u ofrecer versiones modificadas como servicio. Grafana Labs proporciona licencias comerciales para estos casos de uso.
+
+**Estado actual:** Grafana continúa desarrollándose activamente bajo AGPL. El cambio fue menos controvertido que los cambios a SSPL/BSL porque la AGPL es una licencia open source reconocida, pero aún así creó fricción para las empresas que habían construido productos sobre Grafana bajo la licencia anterior.
+
+## Qué tienen en común estos casos
+
+Observando estos cinco casos, emerge un patrón:
+
+1. **Una empresa crea un proyecto open source que se convierte en infraestructura crítica.** El proyecto gana adopción generalizada porque resuelve un problema real y está disponible gratuitamente.
+
+2. **La empresa necesita un modelo de ingresos.** La financiación de capital riesgo requiere un camino hacia la rentabilidad. Vender servicios gestionados o licencias comerciales es el enfoque más común.
+
+3. **Los proveedores cloud ofrecen el proyecto como servicio, capturando ingresos.** El servicio gestionado del propio proyecto no puede competir con AWS, GCP o Azure en distribución y precio.
+
+4. **La empresa cambia la licencia para proteger su oferta comercial.** La nueva licencia restringe la competencia — típicamente prohibiendo ofrecer el software como servicio sin un acuerdo comercial.
+
+5. **La comunidad hace fork de la última versión open source.** Una fundación o consorcio asume el desarrollo bajo la licencia original.
+
+6. **El fork se convierte en una alternativa viable.** En la mayoría de los casos, el fork sobrevive y prospera porque la comunidad tiene incentivos para mantenerlo.
+
+## El coste de los cambios de licencia
+
+Los cambios de licencia no son gratuitos. Imponen costes a todos los actores del ecosistema:
+
+**Para los usuarios:** Debes evaluar si tu uso se ve afectado por la nueva licencia. Puede que necesites migrar a un fork. La migración tiene sus propios costes — pruebas, validación, reciclaje. Puede que necesites mantener compatibilidad con ambas versiones si tus dependencias utilizan forks diferentes.
+
+**Para el proyecto:** El cambio de licencia divide la comunidad. Algunos contribuyentes se van. Algunos usuarios migran. El proyecto pierde los efectos de red que lo hicieron exitoso. La empresa original puede descubrir que el cambio de licencia acelera la adopción del fork en lugar de proteger sus ingresos.
+
+**Para el ecosistema:** La fragmentación aumenta la carga de mantenimiento. Los parches de seguridad deben aplicarse a múltiples forks. Las herramientas deben soportar múltiples versiones. El coste total de la infraestructura aumenta.
+
+## La dimensión de la gobernanza
+
+El problema del cambio de licencia es en realidad un problema de gobernanza. Cuando una sola empresa controla los derechos de autor de un proyecto, puede cambiar la licencia unilateralmente. Cuando un proyecto está gobernado por una fundación neutral, los cambios de licencia requieren consenso entre múltiples partes interesadas — lo cual es mucho más difícil de lograr.
+
+Los proyectos gobernados por la Apache Software Foundation, la Linux Foundation, la Eclipse Foundation y la Software Freedom Conservancy no han experimentado cambios de licencia. Estas fundaciones poseen los derechos de autor y controlan los activos del proyecto, incluyendo su nombre y marca comercial.
+
+Esta es la solución estructural al problema del cambio de licencia: si quieres asegurarte de que un proyecto permanezca bajo una licencia estable, debería ser propiedad de una fundación, no de una sola empresa.
+
+## Cómo evaluar el riesgo de licencia de un proyecto
+
+Basándote en los patrones anteriores, aquí hay criterios prácticos para evaluar si un proyecto corre riesgo de cambiar su licencia:
+
+1. **¿Quién posee los derechos de autor?** Si es una sola empresa, la licencia puede cambiarse unilateralmente. Si es una fundación con múltiples miembros, el cambio es mucho más difícil.
+
+2. **¿Cuál es el modelo de negocio de la empresa?** Si la empresa vende servicios gestionados o licencias comerciales para el mismo proyecto, existe un conflicto entre la versión open source y los ingresos de la empresa. Este conflicto a menudo lleva a cambios de licencia.
+
+3. **¿La marca comercial está controlada por la empresa?** Incluso si el código se divide en un fork, el nombre original y la marca generalmente permanecen con la empresa. Un fork con un nombre diferente no puede beneficiarse del reconocimiento de marca del proyecto original.
+
+4. **¿Qué precedentes existen en el mismo ecosistema?** Si proyectos similares han cambiado sus licencias, es probable que las mismas presiones se apliquen a este.
+
+5. **¿Existe un documento de gobernanza?** Los proyectos con estructuras de gobernanza documentadas — comités directivos, guías de contribución, procesos de toma de decisiones — tienen menos probabilidades de cambiar licencias unilateralmente.
+
+## ¿Continuará esta tendencia?
+
+Las condiciones que impulsaron la primera ola de cambios de licencia no han desaparecido. Los proveedores cloud continúan ofreciendo servicios gestionados para proyectos open source. El capital riesgo sigue financiando startups open source que necesitan encontrar modelos de ingresos. La tensión entre apertura y monetización es estructural, no incidental.
+
+Varios factores podrían influir en la dirección:
+
+**La respuesta del fork ha sido efectiva.** OpenTofu, Valkey y OpenSearch han demostrado que la comunidad puede hacer fork y mantener infraestructura crítica. Esto reduce la influencia de las empresas que consideran cambios de licencia, porque saben que un fork las reemplazará rápidamente.
+
+**Las fundaciones se están volviendo más activas.** La Linux Foundation ha patrocinado múltiples forks y está desarrollando modelos de gobernanza que previenen cambios unilaterales de licencia. La CRA de la UE también podría influir en cómo se gobiernan los proyectos open source.
+
+**Pero los incentivos económicos permanecen.** Las empresas necesitan ganar dinero con sus proyectos open source. Si los cambios de licencia se perciben como la única vía viable hacia los ingresos, continuarán. La cuestión es si los modelos de ingresos alternativos — consultoría, soporte, servicios gestionados con precios justos — pueden sostener el desarrollo de infraestructura crítica sin restringir la competencia.
+
+El resultado más probable es un ecosistema bifurcado. Algunos proyectos permanecerán bajo licencias open source tradicionales, gobernados por fundaciones con financiación diversa. Otros adoptarán licencias no competitivas y serán controlados por sus empresas originales. Los usuarios necesitarán evaluar cada proyecto individualmente, usando los criterios anteriores.
+
+## El panorama hoy
+
+En 2026, el panorama se ve así:
+
+| Proyecto | Licencia original | Licencia actual | Fork | Licencia del fork |
+|----------|------------------|-----------------|------|-------------------|
+| Terraform | MPL 2.0 | BSL | OpenTofu | MPL 2.0 |
+| Redis | BSD | SSPL | Valkey | BSD |
+| Elasticsearch | Apache 2.0 | AGPL | OpenSearch | Apache 2.0 |
+| Docker Engine | Apache 2.0 | Apache 2.0 | Podman | Apache 2.0 |
+| Grafana | Apache 2.0 | AGPL | — | — |
+| MongoDB | AGPL | SSPL | — | — |
+| CockroachDB | Apache 2.0 | BSL | — | — |
+
+Los proyectos que no han cambiado sus licencias — y que están gobernados por fundaciones — son cada vez más la excepción. Pero también son cada vez más la opción preferida para organizaciones que valoran la estabilidad a largo plazo.
+
+## Conclusión
+
+El panorama de las licencias open source ha cambiado fundamentalmente en los últimos ocho años. Las licencias tradicionales — MIT, GPL, Apache — siguen siendo ampliamente utilizadas, pero ya no representan todo el espectro de opciones disponibles para los mantenedores de proyectos. Han surgido nuevas licencias no competitivas que proporcionan muchos de los beneficios del open source mientras permiten a los mantenedores restringir la competencia comercial.
+
+Para los usuarios, la idea clave es que la estabilidad de la licencia depende de la gobernanza. Un proyecto propiedad de una sola empresa puede cambiar su licencia en cualquier momento. Un proyecto gobernado por una fundación no puede, porque la estructura de la fundación impide la acción unilateral. Al evaluar una dependencia, mira más allá de la licencia actual hacia el modelo de gobernanza que la sostiene.
+
+El mecanismo del fork ha demostrado ser efectivo como red de seguridad. OpenTofu, Valkey y OpenSearch son alternativas viables que han mantenido las licencias open source originales. Pero los forks tardan en madurar, y no todos los proyectos atraerán el apoyo comunitario necesario para sostener un fork.
+
+La mejor protección contra los cambios de licencia es elegir dependencias que estén gobernadas por fundaciones neutrales y que tengan procesos de gobernanza documentados. Estos proyectos no son inmunes al cambio — pero son estructuralmente resistentes a decisiones unilaterales que socavan el modelo open source.
