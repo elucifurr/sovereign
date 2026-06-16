@@ -286,7 +286,7 @@ html:lang(ar) :where(.card-title, .page-title, .article-title) {
 }
 
 .content-prose.article-prose {
-  @apply max-w-none;
+  @apply max-w-none overflow-x-hidden;
 }
 
 .content-prose.prose-neutral {
@@ -436,6 +436,9 @@ html:lang(ar) .article-prose :where(p, li) {
 
 .content-prose :where(table) {
   @apply my-8 text-sm;
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
 }
 
 .content-prose :where(th) {
