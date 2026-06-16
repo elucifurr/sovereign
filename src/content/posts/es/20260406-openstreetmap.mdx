@@ -1,0 +1,62 @@
+---
+title: "OpenStreetMap y el monopolio de los datos cartográficos"
+description: "Por qué los datos geográficos del mundo deberían ser propiedad del público, no de una sola empresa."
+category: "sistemas"
+tags:
+  - "infraestructura"
+  - "herramientas"
+pubDate: 2026-04-06
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1524661135-423995f22d0b"
+heroImageAlt: "Silueta de mapa mundial representando infraestructura de datos geográficos"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: es
+draft: false
+featured: false
+---
+
+La cartografía es infraestructura. Los servicios de emergencia usan mapas para llegar a incidentes. Las empresas de logística usan mapas para rutear entregas. Los urbanistas usan mapas para diseñar ciudades. Las aplicaciones de navegación usan mapas para guiar a conductores, ciclistas y peatones. Los mapas no son una característica de conveniencia. Son una capa fundamental de la vida moderna.
+
+La mayoría de los datos cartográficos están controlados por un pequeño número de empresas. Google Maps es la fuente dominante de datos geográficos para la mayoría de las aplicaciones. Apple Maps usa una combinación de sus propios datos y fuentes de terceros. Here Technologies y TomTom proporcionan datos para uso empresarial y automotriz.
+
+OpenStreetMap es la alternativa. Es un mapa del mundo gratuito y editable construido por una comunidad de colaboradores. Cualquiera puede usar los datos, para cualquier propósito, siempre que atribuya la fuente. Es el único conjunto de datos cartográficos que combina cobertura global con licencias abiertas.
+
+## La dependencia de Google Maps
+
+Google Maps se usa ampliamente porque es completo y conveniente. Google invirtió miles de millones de dólares en cartografía — adquiriendo satélites, desplegando coches Street View y contratando equipos para verificar datos. El resultado es un conjunto de datos difícil de igualar en cobertura y precisión.
+
+El coste de esta exhaustividad es la dependencia. Las aplicaciones que usan Google Maps no pueden cambiar fácilmente a otro proveedor. La API de Google Maps es propietaria. Los datos son licenciados, no propiedad del usuario. Google puede cambiar precios, términos y disponibilidad en cualquier momento. Esto ocurrió en 2018 cuando Google subió significativamente los precios de su API, forzando a muchas aplicaciones a reducir su uso o cerrar.
+
+La dependencia va más allá de los precios. Google Maps influye en lo que es visible en el mapa, cómo se categorizan los lugares y qué negocios aparecen en los resultados de búsqueda. Un negocio que no aparece en Google Maps efectivamente no existe para los usuarios que dependen de los datos de Google.
+
+## Cómo funciona OpenStreetMap
+
+Los datos de OpenStreetMap son recolectados por colaboradores usando trazas GPS, imágenes satelitales y conocimiento local. Cualquiera puede añadir una carretera, un edificio, un sendero o un punto de interés. Los cambios son revisados por la comunidad para mantener la calidad.
+
+El modelo de datos es simple. OpenStreetMap representa elementos como nodos, vías y relaciones. Cada elemento tiene etiquetas que describen sus propiedades — una carretera puede tener etiquetas para su nombre, tipo de superficie, límite de velocidad y dirección. La combinación de geometría y etiquetas hace que OpenStreetMap sea más flexible que los conjuntos de datos propietarios.
+
+Los datos están disponibles bajo la Open Database License. Los usuarios pueden copiar, distribuir y modificar los datos siempre que atribuyan la fuente y compartan cualquier mejora bajo la misma licencia. Este requisito de reciprocidad asegura que la comunidad se beneficie de las mejoras hechas por usuarios comerciales.
+
+## Calidad de datos
+
+La calidad de OpenStreetMap varía según la ubicación. Las principales ciudades de Europa y América del Norte tienen una cobertura que iguala o supera a los conjuntos de datos propietarios. Las áreas rurales y las regiones en desarrollo pueden tener una cobertura menos completa. La comunidad organiza mapeo colectivo y eventos de trazado remoto para llenar vacíos.
+
+Estudios comparativos han encontrado que la calidad de los datos de OpenStreetMap es comparable a los datos propietarios para muchos casos de uso. La precisión de la red de carreteras en áreas urbanas es alta. Los datos de huellas de edificios son cada vez más completos. La cobertura de direcciones varía pero está mejorando mediante importaciones sistemáticas y esfuerzo comunitario.
+
+La diferencia con los datos propietarios no es la calidad sino la consistencia. Los conjuntos de datos propietarios mantienen un estándar uniforme en todas las regiones porque empleados asalariados verifican los datos. La calidad de OpenStreetMap depende de la actividad de la comunidad local. Un área bien mapeada es excelente. Un área mal mapeada puede tener vacíos.
+
+## Usar OpenStreetMap
+
+Usar datos de OpenStreetMap requiere herramientas diferentes a las de los servicios cartográficos propietarios. Los tiles renderizados están disponibles a través de servicios como Mapbox, que se basa en datos de OpenStreetMap, o mediante servidores de tiles auto-alojados. El geocodificado — convertir direcciones en coordenadas — está disponible a través de Nominatim o servicios de terceros. El rutado está disponible a través de OSRM, GraphHopper o Valhalla.
+
+Auto-alojar infraestructura de OpenStreetMap es más complejo que usar una API. Un servidor de tiles requiere almacenamiento y recursos de procesamiento significativos. Un servidor de geocodificado requiere una importación completa de la base de datos de OpenStreetMap. Un servidor de rutado requiere datos de grafo preprocesados.
+
+Para la mayoría de los usuarios, usar un servicio alojado que se basa en datos de OpenStreetMap es la opción práctica. Mapbox, Stadia Maps y otros proveedores ofrecen APIs compatibles con el modelo de datos de OpenStreetMap. La diferencia con usar Google Maps es que los datos subyacentes son abiertos. Si el proveedor cambia sus términos, puedes cambiar a otro proveedor que use los mismos datos, o manejar los datos tú mismo.
+
+## El argumento de autonomía
+
+OpenStreetMap existe porque los datos cartográficos son demasiado importantes para ser controlados por una sola empresa. La dependencia de Google Maps no es una necesidad técnica. Es un resultado de mercado que los datos abiertos pueden revertir.
+
+El éxito del proyecto depende de las contribuciones. Añadir una carretera faltante, corregir un edificio mal etiquetado o trazar imágenes satelitales para un área no cartografiada mejora el conjunto de datos para todos. El modelo comunitario no es un compromiso. Es el mecanismo que mantiene los datos libres.

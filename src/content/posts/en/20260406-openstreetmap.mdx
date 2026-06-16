@@ -1,0 +1,62 @@
+---
+title: "OpenStreetMap and the Map Data Monopoly"
+description: "Why the world's geographic data should be owned by the public, not by a single company."
+category: "sistemas"
+tags:
+  - "infraestructura"
+  - "herramientas"
+pubDate: 2026-04-06
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1524661135-423995f22d0b"
+heroImageAlt: "World map silhouette representing geographic data infrastructure"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+Mapping is infrastructure. Emergency services use maps to reach incidents. Logistics companies use maps to route deliveries. Urban planners use maps to design cities. Navigation applications use maps to guide drivers, cyclists, and pedestrians. Maps are not a convenience feature. They are a foundational layer of modern life.
+
+Most mapping data is controlled by a small number of companies. Google Maps is the dominant source of geographic data for most applications. Apple Maps uses a combination of its own data and third-party sources. Here Technologies and TomTom provide data for enterprise and automotive use.
+
+OpenStreetMap is the alternative. It is a free, editable map of the world built by a community of contributors. Anyone can use the data, for any purpose, as long as they attribute the source. It is the only mapping dataset that combines global coverage with open licensing.
+
+## The Google Maps Dependency
+
+Google Maps is widely used because it is comprehensive and convenient. Google invested billions of dollars in mapping — acquiring satellites, deploying Street View cars, and hiring teams to verify data. The result is a dataset that is difficult to match in coverage and accuracy.
+
+The cost of this comprehensiveness is dependency. Applications that use Google Maps cannot easily switch to another provider. The Google Maps API is proprietary. The data is licensed, not owned, by the user. Google can change pricing, terms, and availability at any time. This happened in 2018 when Google raised its API prices significantly, forcing many applications to reduce their usage or shut down.
+
+The dependency extends beyond pricing. Google Maps influences what is visible on the map, how places are categorised, and which businesses appear in search results. A business that does not appear on Google Maps effectively does not exist for users who rely on Google's data.
+
+## How OpenStreetMap Works
+
+OpenStreetMap data is collected by contributors using GPS traces, satellite imagery, and local knowledge. Anyone can add a road, a building, a footpath, or a point of interest. Changes are reviewed by the community to maintain quality.
+
+The data model is simple. OpenStreetMap represents features as nodes, ways, and relations. Each feature has tags that describe its properties — a road might have tags for its name, surface type, speed limit, and direction. The combination of geometry and tags makes OpenStreetMap more flexible than proprietary datasets.
+
+The data is available under the Open Database License. Users can copy, distribute, and modify the data as long as they attribute the source and share any improvements under the same license. This reciprocity requirement ensures that the community benefits from improvements made by commercial users.
+
+## Data Quality
+
+OpenStreetMap quality varies by location. Major cities in Europe and North America have coverage that matches or exceeds proprietary datasets. Rural areas and developing regions may have less complete coverage. The community organises mapping parties and remote tracing events to fill gaps.
+
+Comparative studies have found that OpenStreetMap data quality is comparable to proprietary data for many use cases. Road network accuracy in urban areas is high. Building footprint data is increasingly complete. Address coverage varies but is improving through systematic imports and community effort.
+
+The difference from proprietary data is not quality but consistency. Proprietary datasets maintain a uniform standard across all regions because paid employees verify the data. OpenStreetMap quality depends on local community activity. A well-mapped area is excellent. A poorly-mapped area may have gaps.
+
+## Using OpenStreetMap
+
+Using OpenStreetMap data requires different tools than proprietary mapping services. Rendered tiles are available through services like Mapbox, which builds on OpenStreetMap data, or through self-hosted tile servers. Geocoding — converting addresses to coordinates — is available through Nominatim or third-party services. Routing is available through OSRM, GraphHopper, or Valhalla.
+
+Self-hosting OpenStreetMap infrastructure is more involved than using an API. A tile server requires significant storage and processing resources. A geocoding server requires a full import of the OpenStreetMap database. A routing server requires preprocessed graph data.
+
+For most users, using a hosted service that builds on OpenStreetMap data is the practical choice. Mapbox, Stadia Maps, and other providers offer APIs that are compatible with the OpenStreetMap data model. The difference from using Google Maps is that the underlying data is open. If the provider changes its terms, you can switch to another provider that uses the same data, or handle the data yourself.
+
+## The Autonomy Argument
+
+OpenStreetMap exists because mapping data is too important to be controlled by a single company. The dependency on Google Maps is not a technical necessity. It is a market outcome that open data can reverse.
+
+The project's success depends on contributions. Adding a missing road, correcting a mislabelled building, or tracing satellite imagery for an unmapped area improves the dataset for everyone. The community model is not a compromise. It is the mechanism that keeps the data free.

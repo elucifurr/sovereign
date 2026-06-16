@@ -1,0 +1,62 @@
+---
+title: "Git is not GitHub"
+description: "Why conflating a distributed version control system with a platform gives a single company control over your code."
+category: "entornos"
+tags:
+  - "herramientas"
+  - "plataformas"
+pubDate: 2026-02-23
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1555066931-4365d14bab8c"
+heroImageAlt: "Code editor on a screen representing version control"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+Git is a distributed version control system released in 2005. GitHub is a platform that hosts Git repositories, founded in 2008. The distinction has blurred to the point that many developers use the terms interchangeably. A significant number of developers believe that Git requires GitHub, or that GitHub is Git.
+
+This confusion has consequences. When a platform becomes synonymous with the technology it hosts, the platform gains market power that the underlying technology alone cannot counter. Microsoft acquired GitHub in 2018 for \$7.5 billion. If Git had been a proprietary system owned by a single company, the acquisition would have triggered a migration. Because Git is open and distributed, the acquisition changed nothing about the underlying technology — but only for those who understood the difference.
+
+## What Git Actually Is
+
+Git is a protocol and a set of command-line tools for tracking changes in files. Every Git repository is a full copy of the entire history, stored locally. You can create a repository, commit changes, branch, merge, and view history without ever connecting to a server.
+
+This is the key design decision that distinguishes Git from earlier version control systems. Subversion and CVS required a central server. If the server went offline, you could not commit changes. Git stores everything locally. The remote server is a convenience for collaboration, not a requirement for version control.
+
+Git repositories communicate using the Git protocol, which can run over SSH, HTTPS, or a custom Git protocol. Anyone can host a Git server. The software is free, the protocol is open, and the setup is straightforward. A single command creates a bare repository that can accept pushes from any Git client.
+
+## What GitHub Actually Is
+
+GitHub is a web application that hosts Git repositories and adds collaboration features — pull requests, issues, code review, CI integration, project management. These features are built on top of Git, but they are not part of Git.
+
+When you use GitHub, you are using a proprietary platform that happens to store its data in Git repositories. The platform controls access to those repositories through its authentication system. The platform decides what features are available at each pricing tier. The platform can change its terms of service, its API, its policies, and its pricing at any time.
+
+The network effects are strong. If your project is on GitHub, other developers can find it, fork it, and contribute to it with minimal friction. If your project is on a self-hosted Git server, the friction is slightly higher — but the control is entirely yours.
+
+## The Dependency Risk
+
+Conflating Git with GitHub creates a dependency risk. A developer who knows only the GitHub workflow — clicking the fork button, creating pull requests through the web interface, resolving conflicts in the browser — cannot migrate to another platform or a self-hosted server without learning a new workflow.
+
+This lock-in is by design. GitHub's value proposition has always been convenience. The platform makes Git easy. But ease of use comes with a cost: the user never learns how Git works independently of GitHub. The platform becomes the user's mental model for version control, and the underlying technology becomes invisible.
+
+The risk materialises when the platform changes in ways the user does not control. GitHub has changed its pricing model, its free-tier limits, its Copilot licensing terms, and its UI multiple times. Each change affects every user who depends on the platform. The user can protest or migrate, but they cannot negotiate.
+
+## Alternatives
+
+Several alternatives to GitHub exist, each with a different approach to hosting and governance. GitLab offers a self-hosted option that provides the same collaboration features as GitHub. SourceHut is a minimalist alternative that emphasises simplicity and email-based workflows. Codeberg is a community-owned platform hosted in Europe.
+
+Self-hosting a Git server is the most autonomous option. A simple Git server requires only SSH access and the `git` command. For a web interface, Gitea or Forgejo provide lightweight, self-hosted alternatives that support pull requests, issues, and CI integration.
+
+The choice between these options depends on the trade-offs the user is willing to accept. GitLab self-hosted requires more resources than Gitea. SourceHut has a different workflow that may not suit every team. Codeberg is free but depends on the community that runs it.
+
+## The Forkability Guarantee
+
+Git's distributed design provides a guarantee that no platform can fully take away: if a platform becomes hostile, the repositories are already on every contributor's machine. The entire project history can be pushed to a different server with a single command. The platform change does not lose data, does not lose history, and does not lose the ability to collaborate.
+
+This guarantee is what makes the Git-GitHub distinction a sovereignty issue. Platforms that use proprietary protocols or data formats cannot offer the same guarantee. If the platform goes offline, changes its pricing, or becomes inaccessible, the data may be trapped.
+
+Git's distribution model is not a technical detail. It is a structural protection against platform dependency. Using GitHub without understanding Git means having the protection without knowing it exists.

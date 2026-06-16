@@ -1,0 +1,59 @@
+---
+title: "WireGuard: diseño VPN moderno"
+description: "Por qué menos código, un protocolo moderno y un diseño más simple convirtieron a WireGuard en el nuevo estándar VPN."
+category: "sistemas"
+tags:
+  - "protocolos"
+pubDate: 2026-01-12
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b"
+heroImageAlt: "Ilustración de arquitectura de red representando redes privadas virtuales"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: es
+draft: false
+featured: false
+---
+
+WireGuard se integró en el kernel de Linux en 2020. Fue el primer protocolo nuevo añadido a la pila de red del kernel en años, y su recepción fue diferente a todo lo que la industria VPN había visto. WireGuard es más rápido, más simple y más seguro que los protocolos que reemplaza. La pregunta es por qué llevó tanto tiempo construir algo tan obvio.
+
+## El estado de las VPN antes de WireGuard
+
+Antes de WireGuard, las VPN significaban IPsec u OpenVPN. Ambos protocolos eran funcionales, pero ambos habían acumulado décadas de complejidad. IPsec tiene múltiples modos de operación, docenas de parámetros de configuración y una especificación que abarca cientos de páginas. OpenVPN depende de un demonio en espacio de usuario y un handshake TLS que añade latencia y complejidad.
+
+Ninguno de los dos protocolos fue diseñado para la redes modernas. IPsec data de los años 90, cuando los dispositivos móviles, las cargas de trabajo contenerizadas y la infraestructura en la nube no existían. OpenVPN fue diseñado en 2001 y ha sido extendido repetidamente para soportar características que no formaban parte del diseño original.
+
+El resultado era software que funciona pero es difícil de configurar correctamente. Una configuración menor incorrecta de IPsec puede crear un agujero de seguridad. Una configuración de OpenVPN con cientos de líneas es común. La seguridad de estos protocolos depende de que el administrador tome las decisiones correctas entre muchas opciones — un modelo frágil.
+
+## Las decisiones de diseño de WireGuard
+
+WireGuard toma decisiones diferentes. El protocolo usa un único primitiva criptográfica para cada operación — Curve25519 para intercambio de claves, ChaCha20 para cifrado, Poly1305 para autenticación, BLAKE2s para hashing. No hay opciones. No hay modos. Hay una forma de hacer cada cosa, y esa forma es siempre la misma.
+
+La gestión de claves es igualmente simplificada. WireGuard usa una asociación simple de claves públicas con direcciones IP permitidas. No hay certificados, no hay autoridades certificadoras, no hay máquinas de estado de handshake que gestionar. Un peer se define por su clave pública y los rangos IP que puede usar.
+
+El código refleja esta simplicidad. La implementación central de WireGuard tiene alrededor de cuatro mil líneas de código. Compáralo con OpenVPN, que tiene más de cien mil líneas, o una implementación típica de IPsec, que es aún mayor. Menos código significa menos errores, menos vulnerabilidades y una superficie de auditoría más pequeña.
+
+## Características de rendimiento
+
+WireGuard rinde mejor que sus predecesores por varias razones. Las primitivas criptográficas son rápidas en hardware moderno. ChaCha20 y Poly1305 están diseñadas para implementación en software y rinden bien sin aceleración hardware. La integración en el kernel elimina la sobrecarga de cambio de contexto de las VPN en espacio de usuario.
+
+WireGuard maneja la itinerancia de forma nativa. Un dispositivo móvil que se mueve entre redes — de Wi-Fi a celular, por ejemplo — no necesita restablecer la conexión VPN. El protocolo reconoce la nueva dirección IP de origen y continúa comunicándose. IPsec y OpenVPN requieren un nuevo handshake o una reconexión en este escenario.
+
+La sobrecarga de paquetes es mínima. WireGuard usa una sola ronda de ida y vuelta para el handshake y cifra datos sin rondas adicionales. La sobrecarga de cifrado por paquete es de 60 bytes, comparado con los 70–90 bytes de IPsec dependiendo de la configuración.
+
+## El diseño criptográfico
+
+El diseño criptográfico de WireGuard es conservador. El protocolo usa un intercambio de claves basado en Noise, un framework bien analizado para construir protocolos de comunicación seguros. El handshake es negable — ninguna de las partes puede probar ante un tercero que la comunicación ocurrió. El secreto perfecto hacia adelante asegura que comprometer una clave a largo plazo no expone sesiones pasadas.
+
+El protocolo resiste denegación de servicio. Los paquetes no autenticados tienen límite de tasa. El handshake requiere que el iniciador demuestre conocimiento de la clave pública del respondedor antes de que el respondedor asigne recursos. Esto previene ataques de amplificación que afectan a otros protocolos basados en UDP.
+
+WireGuard también proporciona un grado de anonimato. El protocolo no transmite la identidad del remitente en claro. Un observador puede ver que hay tráfico de WireGuard pero no puede determinar qué peers de WireGuard se están comunicando.
+
+## El camino de adopción
+
+WireGuard ha sido adoptado por los principales proveedores de VPN, plataformas en la nube y sistemas operativos. Está incluido en el kernel de Linux, macOS y Android. iOS lo soporta a través del framework Network Extension. OpenBSD tiene su propia implementación.
+
+El protocolo no ha reemplazado a IPsec y OpenVPN en todos los contextos. Los entornos empresariales con infraestructura IPsec existente continúan usando IPsec. Las aplicaciones heredadas que dependen de características de OpenVPN como UDP sobre TCP o proxies a nivel de aplicación continúan usando OpenVPN. Pero para nuevos despliegues, WireGuard es la opción por defecto.
+
+La lección de WireGuard es que el diseño de protocolos criptográficos se beneficia de límites estrictos. Un protocolo que hace una cosa bien, sin opciones, sin retrocesos y sin compatibilidad heredada, puede ser más simple, más rápido y más seguro que un protocolo que intenta hacerlo todo.

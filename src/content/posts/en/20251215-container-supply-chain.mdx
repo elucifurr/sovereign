@@ -1,0 +1,60 @@
+---
+title: "The Container Supply Chain Trust Problem"
+description: "Image signing, software bills of materials, and why you should care about what runs in your containers."
+category: "sistemas"
+tags:
+  - "devops"
+  - "infraestructura"
+pubDate: 2025-12-15
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb"
+heroImageAlt: "Shipping containers representing the container software supply chain"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+Containers are the standard unit of software deployment. Most production software today runs inside a container image pulled from a registry. The convenience is enormous — a single command downloads an entire runtime environment with all its dependencies. But the trust model is fragile.
+
+When you pull a container image, you are executing code written by hundreds of upstream maintainers, packaged by someone you have probably never met, and distributed through a registry that may or may not verify what it hosts. The attack surface is not the container runtime. The attack surface is the supply chain that produced the image.
+
+## How Images Are Built
+
+A container image is a stack of layers. Each layer represents a filesystem change — a package installed, a file copied, a configuration written. Layers are built from a Dockerfile or equivalent, which specifies a base image and a sequence of commands.
+
+The base image is where the trust problem begins. Most container images start from a public base image like `ubuntu:24.04`, `node:22`, or `python:3.12`. These images are maintained by their respective projects or by the Docker official image team. They contain thousands of packages, each with its own maintenance history, security track record, and update cadence.
+
+When you build on top of a base image, you inherit every vulnerability in that image. A vulnerability in glibc, OpenSSL, or curl becomes a vulnerability in your application. The base image maintainer may fix it quickly, slowly, or not at all — you are trusting their process without being able to verify it.
+
+## Supply Chain Attacks Are Real
+
+Supply chain attacks in the container ecosystem are not theoretical. Attackers have compromised npm packages, PyPI packages, and Ruby gems that were then included in container images through the build process. The `event-stream` incident, the `colors` and `faker` sabotage, and countless typosquatting attacks all follow the same pattern: compromise a dependency that is widely used, and every container that includes it becomes a vector.
+
+Container-specific attacks have also occurred. Malicious images uploaded to public registries have contained cryptocurrency miners, backdoors, and credential stealers. The registry's scanning tools catch some of these, but scanning is reactive. A malicious image can exist for months before it is identified and removed.
+
+The most sophisticated attacks do not rely on obvious malware. They introduce subtle changes — a modified cryptographic library that weakens entropy, a patched SSH client that leaks keys, a version of OpenSSL with a backdoor that only activates under specific conditions. These are difficult to detect with signature-based scanning and may be impossible to detect without comparing the image to a verified source.
+
+## Image Signing and Verification
+
+Container image signing provides cryptographic verification that an image was produced by a specific publisher and has not been modified since signing. The most widely used standard is Sigstore, which provides a free signing service and a transparency log.
+
+Sigstore works by having the publisher sign the image manifest with a short-lived key, then record the signature in a public transparency log. Clients verify the signature against the log before pulling the image. This makes it possible to trust that an image tagged `nginx:latest` was actually published by the NGINX project, not by an attacker who gained access to the registry account.
+
+Adoption is growing but far from universal. As of late 2025, a minority of public images are signed. The infrastructure to verify signatures exists, but most container runtimes do not enforce verification by default. The cultural shift — from trusting a registry to verifying a signature — is still in progress.
+
+## The Software Bill of Materials
+
+A software bill of materials is a machine-readable inventory of all components in an image. It lists every package, library, and dependency with its version and provenance. SBOMs make it possible to answer a critical question after a vulnerability is disclosed: are we affected?
+
+The answer was surprisingly difficult before SBOMs became standard. Without an SBOM, determining whether a container includes a vulnerable version of Log4j meant inspecting the image manually, running scanners that may or may not detect the dependency, or trusting that the base image maintainer had documented the change.
+
+The US executive order on cybersecurity and the EU Cyber Resilience Act have accelerated SBOM adoption. Tooling like Syft, Trivy, and Grype can generate SBOMs from container images automatically. The challenge is not generation but maintenance — an SBOM is a snapshot that becomes stale as soon as the image is updated.
+
+## Practical Steps
+
+For operators, the practical response to the supply chain trust problem includes several measures. Use minimal base images to reduce the attack surface. Distroless images and scratch-based builds eliminate unnecessary packages. Pin image digests rather than tags to prevent unexpected updates. Verify signatures where available. Generate and review SBOMs for critical images. Scan images for known vulnerabilities before deployment.
+
+For maintainers, signing images and publishing SBOMs should be standard practice. The tools are free and the process is straightforward. The barrier is not technical but cultural — it requires treating the supply chain as a security boundary, not an implementation detail.

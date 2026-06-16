@@ -1,0 +1,56 @@
+---
+title: "The Rise and Fall of PGP"
+description: "Why email encryption failed and what it teaches us about usable security."
+category: "soberania"
+tags:
+  - "privacidad"
+  - "protocolos"
+pubDate: 2025-12-01
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1589656966895-2f33e7653819"
+heroImageAlt: "Metal key representing the promise and failure of cryptographic keys"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+Pretty Good Privacy was released in 1991. It was the first widely available implementation of public-key cryptography for the general public. Its goal was to make email encryption accessible to anyone who could install a piece of software and manage a set of keys.
+
+Thirty-four years later, end-to-end encrypted email has never reached mainstream adoption. PGP works. The cryptography is sound. The protocol has been refined through multiple iterations. But the user experience has always been the barrier that the cryptography alone could not cross.
+
+## The Key Problem
+
+PGP's fundamental design choice is the Web of Trust. Instead of a central authority issuing certificates, users sign each other's keys to build a decentralised trust network. In theory, this is elegant. In practice, it requires users to understand public-key cryptography, generate key pairs, protect private keys, attend key-signing parties, and manage a keyring of trusted identities.
+
+The requirement is not merely technical. The Web of Trust demands social coordination. To verify a correspondent's key, you need a chain of signatures from someone you trust to someone they trust. Building this chain requires participation in a community that most email users do not belong to and have no interest in joining.
+
+The alternative — centralised key discovery via a keyserver — introduced its own problems. Keyservers became repositories of unverified identities. There was no way to know whether a key on a keyserver actually belonged to the person it claimed to represent. The MIT keyserver and SKS keyservers accumulated millions of keys, most of them never verified.
+
+## The Usability Failure
+
+PGP's usability problems extend beyond key management. The encryption workflow itself is hostile to casual use. Composing an encrypted email requires selecting the correct key for each recipient, applying encryption before sending, and trusting that the recipient can decrypt the message. Any mistake breaks the workflow.
+
+The problem is asymmetric. Email is normally sent and received instantly. PGP introduces delay, friction, and failure modes that do not exist in unencrypted email. A recipient who loses their private key cannot read past messages. A sender who encrypts with the wrong key cannot recover the message.
+
+Several attempts have been made to fix this. GnuPG added smartcard support. Enigmail integrated PGP into Thunderbird. ProtonMail built an email service that handles encryption transparently on the server side. But each solution introduces a trade-off. Server-side encryption means the provider holds the keys. Client-side encryption means the user manages the keys. There is no design that eliminates the trade-off entirely.
+
+## The Protocol Shift
+
+While PGP was failing to gain adoption, a different model of encryption succeeded. Signal, WhatsApp, and iMessage adopted end-to-end encryption using the Signal Protocol, which solves three problems that PGP never did.
+
+First, the Signal Protocol handles key management automatically. When you message someone for the first time, the protocol negotiates keys in the background. You do not generate, export, or back up keys. You do not verify fingerprints unless you want to.
+
+Second, the Signal Protocol provides forward secrecy. If a long-term key is compromised, past messages remain encrypted. PGP does not provide forward secrecy — a compromised private key exposes every message encrypted to that key.
+
+Third, the Signal Protocol recovers from compromise. If a session key is lost, the protocol establishes a new session silently. PGP has no session concept — losing a private key means losing access to all past and future messages until a new key is generated and distributed.
+
+## What PGP Left Behind
+
+PGP failed as a mass-market product, but it succeeded as a proof of concept. It demonstrated that strong cryptography could run on commodity hardware and be distributed freely. It established the legal precedent that encryption software is speech protected by the First Amendment. It trained a generation of cryptographers and security engineers.
+
+The legacy of PGP is not its user base but its architecture. The OpenPGP standard defines a message format, a key format, and a trust model that influenced every subsequent encrypted communication system. The lessons from PGP's failure — that key management must be automatic, that forward secrecy is essential, that recovery from compromise must be built into the protocol — are now standard requirements in modern encryption design.
+
+Email encryption without a fundamental redesign of the email protocol itself may never be practical. PGP was an attempt to graft encryption onto a protocol that was never designed for it. The result was technically impressive and practically unusable.

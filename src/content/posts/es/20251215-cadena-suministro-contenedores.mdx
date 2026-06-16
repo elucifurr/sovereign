@@ -1,0 +1,60 @@
+---
+title: "El problema de confianza en la cadena de suministro de contenedores"
+description: "Firmado de imágenes, listas de dependencias y por qué debería importarte lo que se ejecuta en tus contenedores."
+category: "sistemas"
+tags:
+  - "devops"
+  - "infraestructura"
+pubDate: 2025-12-15
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb"
+heroImageAlt: "Contenedores de carga representando la cadena de suministro del software en contenedores"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: es
+draft: false
+featured: false
+---
+
+Los contenedores son la unidad estándar de despliegue de software. La mayoría del software en producción hoy se ejecuta dentro de una imagen de contenedor obtenida de un registro. La conveniencia es enorme — un solo comando descarga un entorno de ejecución completo con todas sus dependencias. Pero el modelo de confianza es frágil.
+
+Cuando obtienes una imagen de contenedor, estás ejecutando código escrito por cientos de mantenedores upstream, empaquetado por alguien a quien probablemente nunca has conocido y distribuido a través de un registro que puede o no verificar lo que aloja. La superficie de ataque no es el motor de contenedores. La superficie de ataque es la cadena de suministro que produjo la imagen.
+
+## Cómo se construyen las imágenes
+
+Una imagen de contenedor es una pila de capas. Cada capa representa un cambio en el sistema de archivos — un paquete instalado, un archivo copiado, una configuración escrita. Las capas se construyen a partir de un Dockerfile o equivalente, que especifica una imagen base y una secuencia de comandos.
+
+La imagen base es donde comienza el problema de confianza. La mayoría de las imágenes de contenedor parten de una imagen base pública como `ubuntu:24.04`, `node:22` o `python:3.12`. Estas imágenes son mantenidas por sus respectivos proyectos o por el equipo de imágenes oficiales de Docker. Contienen miles de paquetes, cada uno con su propio historial de mantenimiento, historial de seguridad y cadencia de actualización.
+
+Cuando construyes sobre una imagen base, heredas cada vulnerabilidad de esa imagen. Una vulnerabilidad en glibc, OpenSSL o curl se convierte en una vulnerabilidad en tu aplicación. El mantenedor de la imagen base puede arreglarla rápido, lento o nunca — estás confiando en su proceso sin poder verificarlo.
+
+## Los ataques a la cadena de suministro son reales
+
+Los ataques a la cadena de suministro en el ecosistema de contenedores no son teóricos. Atacantes han comprometido paquetes de npm, PyPI y Ruby gems que luego fueron incluidos en imágenes de contenedor a través del proceso de construcción. El incidente de `event-stream`, el sabotaje de `colors` y `faker`, y otros innumerables ataques de typosquatting siguen el mismo patrón: comprometer una dependencia ampliamente utilizada, y cada contenedor que la incluya se convierte en un vector.
+
+También han ocurrido ataques específicos de contenedores. Imágenes maliciosas subidas a registros públicos han contenido mineros de criptomonedas, puertas traseras y robadores de credenciales. Las herramientas de escaneo del registro detectan algunos, pero el escaneo es reactivo. Una imagen maliciosa puede existir durante meses antes de ser identificada y eliminada.
+
+Los ataques más sofisticados no dependen de malware obvio. Introducen cambios sutiles — una biblioteca criptográfica modificada que debilita la entropía, un cliente SSH parcheado que filtra claves, una versión de OpenSSL con una puerta trasera que solo se activa bajo condiciones específicas. Estos son difíciles de detectar con escaneo basado en firmas y pueden ser imposibles de detectar sin comparar la imagen con una fuente verificada.
+
+## Firmado y verificación de imágenes
+
+El firmado de imágenes de contenedor proporciona verificación criptográfica de que una imagen fue producida por un editor específico y no ha sido modificada desde su firma. El estándar más utilizado es Sigstore, que proporciona un servicio de firma gratuito y un registro de transparencia.
+
+Sigstore funciona haciendo que el editor firme el manifiesto de la imagen con una clave de corta duración y luego registre la firma en un registro de transparencia público. Los clientes verifican la firma contra el registro antes de obtener la imagen. Esto hace posible confiar en que una imagen etiquetada como `nginx:latest` fue realmente publicada por el proyecto NGINX, no por un atacante que obtuvo acceso a la cuenta del registro.
+
+La adopción está creciendo pero está lejos de ser universal. A finales de 2025, una minoría de imágenes públicas están firmadas. La infraestructura para verificar firmas existe, pero la mayoría de los motores de contenedores no exigen verificación por defecto. El cambio cultural — de confiar en un registro a verificar una firma — todavía está en progreso.
+
+## La lista de dependencias (SBOM)
+
+Una lista de dependencias (software bill of materials) es un inventario legible por máquina de todos los componentes en una imagen. Enumera cada paquete, biblioteca y dependencia con su versión y origen. Los SBOM hacen posible responder a una pregunta crítica después de que se divulga una vulnerabilidad: ¿estamos afectados?
+
+La respuesta era sorprendentemente difícil antes de que los SBOM se convirtieran en estándar. Sin un SBOM, determinar si un contenedor incluye una versión vulnerable de Log4j significaba inspeccionar la imagen manualmente, ejecutar escáneres que podían o no detectar la dependencia, o confiar en que el mantenedor de la imagen base había documentado el cambio.
+
+La orden ejecutiva de ciberseguridad de EE.UU. y la Ley de Ciberresiliencia de la UE han acelerado la adopción de SBOM. Herramientas como Syft, Trivy y Grype pueden generar SBOMs de imágenes de contenedor automáticamente. El desafío no es la generación sino el mantenimiento — un SBOM es una instantánea que se vuelve obsoleta en cuanto la imagen se actualiza.
+
+## Pasos prácticos
+
+Para operadores, la respuesta práctica al problema de confianza en la cadena de suministro incluye varias medidas. Usa imágenes base mínimas para reducir la superficie de ataque. Las imágenes distroless y las construcciones basadas en scratch eliminan paquetes innecesarios. Fija los digests de las imágenes en lugar de las etiquetas para prevenir actualizaciones inesperadas. Verifica las firmas cuando estén disponibles. Genera y revisa SBOMs para imágenes críticas. Escanea imágenes en busca de vulnerabilidades conocidas antes del despliegue.
+
+Para mantenedores, firmar imágenes y publicar SBOMs debería ser una práctica estándar. Las herramientas son gratuitas y el proceso es sencillo. La barrera no es técnica sino cultural — requiere tratar la cadena de suministro como un límite de seguridad, no como un detalle de implementación.

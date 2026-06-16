@@ -1,0 +1,70 @@
+---
+title: "How Encrypted DNS Works"
+description: "DoH, DoT, DoQ, ECH, and the protocols protecting name resolution."
+category: "sistemas"
+tags:
+  - "protocolos"
+  - "privacidad"
+pubDate: 2026-03-23
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71"
+heroImageAlt: "Network data streams illustrating encrypted DNS traffic"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+Traditional DNS queries are sent in plain text. Every time your device resolves a domain name, the query and its response are visible to anyone monitoring the network. Your internet service provider, a Wi-Fi hotspot operator, or an attacker on the same network can see which domains you are visiting.
+
+Encrypted DNS changes this. It protects the content of DNS queries from network observers. But encrypted DNS is not a single protocol. It is a family of protocols with different design goals, security properties, and deployment characteristics.
+
+## The Problem With Plain DNS
+
+Plain DNS uses UDP port 53. The query contains the domain name you want to resolve. The response contains the corresponding IP address. Both are sent as cleartext with no encryption and no authentication.
+
+An attacker on the network can see every domain you visit. This includes the domains loaded by every website you visit — advertising networks, analytics services, content delivery networks — not just the sites you intentionally navigate to. A passive observer can build a comprehensive profile of your online activity from DNS traffic alone.
+
+The lack of authentication means an attacker can also modify DNS responses. A man-in-the-middle can redirect a domain to a malicious IP address. This attack is called DNS spoofing and is the foundation of many phishing and malware distribution campaigns.
+
+## DNS over TLS
+
+DNS over TLS encrypts DNS queries and responses using Transport Layer Security, the same protocol that secures HTTPS traffic. The DNS client connects to the resolver on TCP port 853 and establishes a TLS connection before sending any queries.
+
+DoT is straightforward. The TLS connection provides encryption and server authentication. The client verifies the resolver's certificate, ensuring that the resolver is who it claims to be. Once the connection is established, all DNS traffic is encrypted.
+
+The main limitation of DoT is that it uses a dedicated port. A network administrator can block port 853 to prevent DoT from working, forcing clients to fall back to plain DNS. This makes DoT vulnerable to simple network-level blocking.
+
+## DNS over HTTPS
+
+DNS over HTTPS encrypts DNS queries and sends them over the standard HTTPS port 443. DNS queries are indistinguishable from regular HTTPS traffic to a network observer. The resolver is identified by a URL like `https://dns.cloudflare.com/dns-query`.
+
+DoH provides better privacy properties than DoT because the traffic blends in with other HTTPS traffic. A network administrator cannot block DoH without blocking all HTTPS traffic, which is impractical. DoH is also easier to deploy in enterprise environments where TLS inspection is already in place.
+
+The trade-off is that DoH centralises DNS resolution at the application layer. When a browser implements DoH, it bypasses the system's DNS resolver entirely. This has implications for enterprise network policies, parental controls, and local network configurations that depend on the system resolver.
+
+## DNS over QUIC
+
+DNS over QUIC is the newest encrypted DNS protocol. QUIC is a transport protocol built on UDP that provides encryption, multiplexing, and low-latency connection establishment. DoQ combines the performance benefits of QUIC with the privacy properties of encrypted DNS.
+
+DoQ addresses a limitation of both DoT and DoH. DoT requires a TCP connection and a TLS handshake, adding latency. DoH runs over HTTPS, which adds HTTP overhead. DoQ uses QUIC's single-round-trip handshake to reduce connection latency. It also avoids the TCP head-of-line blocking problem.
+
+Adoption is early. As of 2026, DoQ is supported by a minority of resolvers and clients. Public resolvers like Quad9 and AdGuard DNS support DoQ, and client implementations are available for major operating systems.
+
+## Encrypted Client Hello
+
+Encrypted Client Hello is not a DNS protocol, but it solves a related privacy problem. Even with encrypted DNS, the TLS handshake that follows DNS resolution exposes the domain name in the clear through the Server Name Indication extension. ECH encrypts the SNI so that the destination domain is hidden from network observers.
+
+Without ECH, encrypted DNS protects the DNS query but not the subsequent connection. A network observer who cannot see the DNS query can still see the IP address and the SNI of the TLS handshake. For sites hosted on shared infrastructure, the SNI reveals the domain.
+
+ECH requires support from both the browser and the server. Major CDNs and hosting platforms now support ECH, and browsers have begun implementing it. As with DoQ, adoption is still in progress.
+
+## The Privacy Trade-Off
+
+Encrypted DNS protects your queries from network observers, but it does not protect your queries from the resolver. The resolver still sees every domain you visit. Encrypted DNS changes who can see your traffic, not whether it is seen.
+
+The choice of resolver remains the most important privacy decision in DNS. Using encrypted DNS with a public resolver operated by a large technology company provides privacy from your ISP but not from that company. Using encrypted DNS with a personal resolver provides privacy from both.
+
+The protocols are tools. They encrypt the channel, not the data. The resolver operator still decides how long logs are kept, whether data is shared with third parties, and what policies govern data access.

@@ -1,0 +1,61 @@
+---
+title: "The Browser Engine Monoculture"
+description: "Why the dominance of a single browser engine threatens the independence of the web."
+category: "soberania"
+tags:
+  - "plataformas"
+pubDate: 2026-03-09
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f"
+heroImageAlt: "Web browser interface on multiple devices representing the browser ecosystem"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+The web browser is the most important software application on most devices. It is the interface to email, documents, maps, banking, social media, and a significant portion of the software we use daily. The browser's rendering engine determines what the web can do and who can participate in defining its future.
+
+Three major browser engines exist today: Blink (used by Chrome, Edge, Brave, Opera, and most other browsers), WebKit (used by Safari), and Gecko (used by Firefox). Blink has a market share of over 90%. This is not a competitive market. It is a monoculture.
+
+## How We Got Here
+
+The browser engine market was not always concentrated. In the late 1990s, Internet Explorer dominated but faced competition from Netscape, Opera, and others. The early 2000s saw a period of stagnation after Internet Explorer achieved near-total dominance, followed by a resurgence with Firefox, Chrome, and Safari in the late 2000s.
+
+Chrome's introduction in 2008 changed the competitive dynamics. Chrome was fast, stable, and well-marketed. It took market share from Internet Explorer and Firefox. Google used its search engine and advertising businesses to promote Chrome, bundling it with other services and investing heavily in its development.
+
+Over time, Chrome's dominance became self-reinforcing. Web developers tested primarily on Chrome. Websites were optimised for Chrome. Chrome became the reference implementation for web standards. Other engines had to match Chrome's behaviour to avoid breaking websites.
+
+## The Blink Fork
+
+In 2013, Google forked WebKit to create Blink. The fork was ostensibly about allowing more flexibility in Chrome's development. The practical effect was that Google gained complete control over the engine used by the majority of web users.
+
+Blink is open source, but its governance is controlled by Google. The vast majority of Blink commits come from Google employees. Google decides which features to implement, which APIs to expose, and which performance characteristics to prioritise. Other browsers that use Blink — Edge, Brave, Opera — depend on Google's development decisions.
+
+This creates a structural conflict of interest. Google's primary business is advertising and search. Web features that benefit Google's business — like the Privacy Sandbox APIs — are developed in Blink and adopted by the web. Features that would disadvantage Google's business face higher barriers to implementation.
+
+## What a Monoculture Means
+
+A browser engine monoculture means that a single company effectively decides the direction of the web platform. If Google decides that a proposed standard does not serve its interests, the proposal effectively fails regardless of its technical merit. If Google decides to deprecate a feature, the feature becomes unusable across most of the web.
+
+The monoculture also affects security. A vulnerability in Blink affects over 90% of web users. The incentives for attackers to develop exploits targeting Blink are correspondingly high. A diverse browser engine landscape would distribute this risk.
+
+The monoculture affects web development. Developers optimise for Blink because Blink is what most users have. Websites that work only in Blink are common. This further entrenches the monoculture by making it costly for users to switch to non-Blink browsers.
+
+## Regulatory Responses
+
+Regulators have begun to address browser engine concentration. The European Commission's Digital Markets Act designates Google as a gatekeeper and requires that gatekeeper platforms allow alternative browsers and browser engines on their platforms. This explicitly targets the restriction that prevented iOS users from using non-WebKit browsers.
+
+The UK's Competition and Markets Authority has also investigated browser engine competition. Its market study found that Apple and Google have significant control over the browser engine market and recommended regulatory intervention to ensure that alternative engines can compete.
+
+These regulatory responses are early and their effectiveness is unproven. The technical challenge is significant — allowing alternative engines on mobile platforms requires API access that platform vendors have historically restricted. The legal challenge is equally significant — defining the scope of the remedy and enforcing compliance across jurisdictions.
+
+## The Independence Option
+
+For users who want to reduce dependence on Blink, Firefox is the only mainstream alternative with a fully independent engine. Firefox uses Gecko, which is developed by Mozilla and has a different architecture, a different security model, and a different feature set.
+
+Firefox's market share is small but its independence is valuable. Firefox supports web extensions using the Manifest V3 specification, but without the content filtering restrictions that Google imposed in Chrome's implementation. Firefox has implemented privacy features — Total Cookie Protection, Enhanced Tracking Protection — that Chrome does not offer.
+
+Using Firefox does not change the monoculture by itself. But it supports the existence of an independent engine, funds its development through usage metrics, and provides a fallback if Blink's direction becomes incompatible with your requirements.

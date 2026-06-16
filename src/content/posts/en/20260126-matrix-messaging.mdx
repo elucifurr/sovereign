@@ -1,0 +1,64 @@
+---
+title: "Matrix and the Open Messaging Standard"
+description: "Why open protocols for communication matter for sovereignty."
+category: "soberania"
+tags:
+  - "plataformas"
+  - "protocolos"
+pubDate: 2026-01-26
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1577563908411-5077b6dc7624"
+heroImageAlt: "Chat bubbles and messaging interface on a smartphone"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+Messaging is the most personal software we use. It is how we talk to partners, colleagues, friends, and communities. The choice of messaging platform determines who controls the conversation history, who can read the messages, and whether switching to another platform means losing access to the people you talk to.
+
+The current messaging landscape is dominated by proprietary platforms — WhatsApp, Telegram, Discord, Slack. Each is owned by a single company. Each stores conversation data on its own servers. Each decides what features to build, what policies to enforce, and what data to share. The user has no vote in these decisions.
+
+Matrix is an open standard for decentralised, encrypted communication. It was designed to solve a problem that the proprietary platforms cannot solve: giving users control over their communication infrastructure without sacrificing the convenience of modern messaging.
+
+## How Matrix Works
+
+Matrix is a protocol, not a platform. Anyone can run a Matrix server, called a homeserver, and participate in the network. Homeservers federate — a user on one server can communicate with a user on another server as if they were on the same platform.
+
+This is the same model as email. You can send email from a Gmail address to a Fastmail address because both use the SMTP protocol. Matrix works the same way. A user on matrix.org can message a user on a self-hosted server without either user needing to create an account on the other's platform.
+
+The protocol is built on HTTP and JSON. Messages are signed, encrypted, and replicated across servers. Each room — a Matrix conversation — is stored on every server that has participants in the room. This means there is no single point of failure. If one server goes offline, the conversation continues on the remaining servers.
+
+## End-to-End Encryption
+
+Matrix supports end-to-end encryption using the Olm and Megolm protocols. Olm is a double-ratchet protocol similar to Signal's, designed for one-to-one conversations. Megolm is a group ratchet designed for multi-party rooms. Both provide forward secrecy and future secrecy.
+
+The encryption is optional per-room. This allows use cases where server-side processing is needed — bots, bridges to other platforms, search indexing — while providing strong encryption for private conversations. The user can see which rooms are encrypted and verify other participants' devices.
+
+Matrix's encryption has been audited multiple times. The protocol is open, the implementations are open source, and the cryptographic design is documented. This transparency is a structural advantage over proprietary platforms where encryption claims cannot be independently verified.
+
+## Bridging and Interoperability
+
+Matrix includes a bridging system that connects to other messaging platforms. A Matrix server can bridge to WhatsApp, Telegram, IRC, Slack, Discord, or any other platform that exposes an interface. Messages from the bridged platform appear in Matrix as if they were native Matrix messages.
+
+Bridging is not a perfect solution. Bridge reliability depends on the stability of the bridged platform's interface. Platforms that change their API frequently cause bridge breakage. Platforms that prohibit third-party clients create legal uncertainty for bridge operators.
+
+But bridging solves a practical problem that the pure decentralisation approach cannot: the people you need to talk to are probably on proprietary platforms. Bridging lets you use Matrix as your primary client while reaching contacts on other networks. Over time, as more contacts join Matrix, the dependency on bridges decreases.
+
+## The Network Effect Problem
+
+Matrix faces the same challenge as every decentralised communication system: the network effect. The value of a messaging platform increases with the number of users. Proprietary platforms benefit from their existing user bases. Matrix needs users to attract users.
+
+The growth strategy is indirect. Several large organisations have adopted Matrix for internal communication. The German education system, the French government, and Mozilla all use Matrix. These deployments create a base of users who are familiar with the protocol and can invite external contacts.
+
+Element, the reference Matrix client, has improved the onboarding experience significantly. Creating an account, joining a room, and starting an encrypted conversation are now straightforward. The remaining friction is that the user must choose a homeserver — a decision that requires understanding what a homeserver is.
+
+## Running Your Own Server
+
+Running a Matrix homeserver is more involved than running a DNS resolver or a WireGuard endpoint. Synapse, the reference implementation, uses significant resources for multi-user deployments. Dendrite, a newer implementation, is more efficient but less feature-complete.
+
+For personal use, a lightweight homeserver implementation like Conduit provides the federation and encryption features without the resource requirements. Conduit runs on low-end hardware and supports the essential Matrix features. It is suitable for a single user or a small family.
+
+The autonomy benefit is significant. A self-hosted Matrix server means your conversation history is stored on your own hardware. No company can suspend your account, read your messages, or change the terms of service. The protocol guarantees that you can communicate with anyone on the federated network regardless of which server they use.

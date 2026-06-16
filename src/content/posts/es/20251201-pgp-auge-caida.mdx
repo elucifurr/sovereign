@@ -1,0 +1,56 @@
+---
+title: "El auge y la caída de PGP"
+description: "Por qué el cifrado de correo electrónico fracasó y lo que enseña sobre seguridad usable."
+category: "soberania"
+tags:
+  - "privacidad"
+  - "protocolos"
+pubDate: 2025-12-01
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1589656966895-2f33e7653819"
+heroImageAlt: "Llave metálica representando la promesa y el fracaso de las claves criptográficas"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: es
+draft: false
+featured: false
+---
+
+Pretty Good Privacy se lanzó en 1991. Fue la primera implementación ampliamente disponible de criptografía de clave pública para el público general. Su objetivo era hacer que el cifrado de correo electrónico fuera accesible para cualquiera que pudiera instalar un programa y gestionar un conjunto de claves.
+
+Treinta y cuatro años después, el correo electrónico cifrado de extremo a extremo nunca ha alcanzado una adopción generalizada. PGP funciona. La criptografía es sólida. El protocolo ha sido refinado a través de múltiples iteraciones. Pero la experiencia de usuario siempre ha sido la barrera que la criptografía por sí sola no pudo cruzar.
+
+## El problema de las claves
+
+La decisión fundamental de diseño de PGP es la Red de Confianza. En lugar de una autoridad central que emita certificados, los usuarios firman las claves de otros para construir una red de confianza descentralizada. En teoría, esto es elegante. En la práctica, requiere que los usuarios entiendan criptografía de clave pública, generen pares de claves, protejan las claves privadas, asistan a fiestas de firma de claves y gestionen un llavero de identidades de confianza.
+
+El requisito no es meramente técnico. La Red de Confianza exige coordinación social. Para verificar la clave de un corresponsal, necesitas una cadena de firmas desde alguien en quien confías hasta alguien en quien ellos confían. Construir esta cadena requiere participación en una comunidad a la que la mayoría de los usuarios de correo no pertenecen y no tienen interés en unirse.
+
+La alternativa — el descubrimiento centralizado de claves mediante un servidor de claves — introdujo sus propios problemas. Los servidores de claves se convirtieron en repositorios de identidades no verificadas. No había forma de saber si una clave en un servidor pertenecía realmente a la persona que decía representar. El servidor de claves de MIT y los servidores SKS acumularon millones de claves, la mayoría nunca verificadas.
+
+## El fracaso de usabilidad
+
+Los problemas de usabilidad de PGP van más allá de la gestión de claves. El flujo de trabajo de cifrado es hostil al uso casual. Redactar un correo cifrado requiere seleccionar la clave correcta para cada destinatario, aplicar el cifrado antes de enviar y confiar en que el destinatario puede descifrar el mensaje. Cualquier error rompe el flujo de trabajo.
+
+El problema es asimétrico. El correo electrónico normalmente se envía y recibe al instante. PGP introduce retraso, fricción y modos de fallo que no existen en el correo no cifrado. Un destinatario que pierde su clave privada no puede leer mensajes pasados. Un remitente que cifra con la clave equivocada no puede recuperar el mensaje.
+
+Se han hecho varios intentos de solucionar esto. GnuPG añadió soporte para tarjetas inteligentes. Enigmail integró PGP en Thunderbird. ProtonMail construyó un servicio de correo que maneja el cifrado de forma transparente en el lado del servidor. Pero cada solución introduce una compensación. El cifrado del lado del servidor significa que el proveedor tiene las claves. El cifrado del lado del cliente significa que el usuario gestiona las claves. No hay un diseño que elimine la compensación por completo.
+
+## El cambio de protocolo
+
+Mientras PGP fracasaba en ganar adopción, un modelo diferente de cifrado tuvo éxito. Signal, WhatsApp e iMessage adoptaron cifrado de extremo a extremo usando el Protocolo Signal, que resuelve tres problemas que PGP nunca resolvió.
+
+Primero, el Protocolo Signal gestiona las claves automáticamente. Cuando envías un mensaje a alguien por primera vez, el protocolo negocia las claves en segundo plano. No generas, exportas ni respaldas claves. No verificas huellas digitales a menos que quieras.
+
+Segundo, el Protocolo Signal proporciona secreto perfecto hacia adelante. Si una clave a largo plazo se ve comprometida, los mensajes pasados permanecen cifrados. PGP no proporciona secreto perfecto hacia adelante — una clave privada comprometida expone todos los mensajes cifrados con esa clave.
+
+Tercero, el Protocolo Signal se recupera de compromisos. Si se pierde una clave de sesión, el protocolo establece una nueva sesión silenciosamente. PGP no tiene concepto de sesión — perder una clave privada significa perder el acceso a todos los mensajes pasados y futuros hasta que se genere y distribuya una nueva clave.
+
+## Lo que PGP dejó atrás
+
+PGP fracasó como producto de mercado masivo, pero tuvo éxito como prueba de concepto. Demostró que la criptografía fuerte podía ejecutarse en hardware estándar y distribuirse libremente. Estableció el precedente legal de que el software de cifrado es lenguaje protegido por la Primera Enmienda. Formó a una generación de criptógrafos e ingenieros de seguridad.
+
+El legado de PGP no es su base de usuarios sino su arquitectura. El estándar OpenPGP define un formato de mensaje, un formato de clave y un modelo de confianza que influyó en todos los sistemas de comunicación cifrados posteriores. Las lecciones del fracaso de PGP — que la gestión de claves debe ser automática, que el secreto perfecto hacia adelante es esencial, que la recuperación de compromisos debe estar integrada en el protocolo — son ahora requisitos estándar en el diseño de cifrado moderno.
+
+El cifrado de correo electrónico sin un rediseño fundamental del propio protocolo de correo puede que nunca sea práctico. PGP fue un intento de injertar cifrado en un protocolo que nunca fue diseñado para ello. El resultado fue técnicamente impresionante y prácticamente inutilizable.

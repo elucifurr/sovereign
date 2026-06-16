@@ -1,0 +1,64 @@
+---
+title: "Los gestores de contraseñas como infraestructura"
+description: "Por qué los gestores de contraseñas son herramientas de soberanía, no de conveniencia."
+category: "entornos"
+tags:
+  - "herramientas"
+  - "self-hosting"
+pubDate: 2026-02-09
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1639322537228-f710d846310a"
+heroImageAlt: "Candado digital sobre un teclado representando la gestión de contraseñas"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: es
+draft: false
+featured: false
+---
+
+Los gestores de contraseñas suelen comercializarse como herramientas de conveniencia. Recuerdan tus contraseñas para que no tengas que hacerlo. Generan contraseñas fuertes aleatorias. Rellenan formularios de inicio de sesión automáticamente. Estos son beneficios genuinos, pero describen el gestor de contraseñas como una herramienta de productividad, no como lo que realmente es — infraestructura crítica para la autonomía digital.
+
+Tu gestor de contraseñas tiene las llaves de cada cuenta que posees. Correo electrónico, banca, redes sociales, infraestructura en la nube, registro de dominios — todo está detrás de credenciales que el gestor almacena. La seguridad de toda tu vida digital depende de la seguridad de esa única base de datos. Esto hace que la elección del gestor de contraseñas sea una decisión de soberanía.
+
+## El modelo local
+
+El modelo de seguridad de un gestor de contraseñas depende de dónde y cómo almacena tu bóveda cifrada. Los gestores locales como KeePassXC almacenan la bóveda como un archivo en tu propio dispositivo. La bóveda nunca toca un servidor a menos que explícitamente la sincronices.
+
+Este modelo te da control completo. Tú eliges dónde almacenar el archivo de la bóveda, cómo hacer copias de seguridad y cómo sincronizarlo entre dispositivos — si es que lo haces. La bóveda está cifrada con una contraseña maestra y opcionalmente un archivo de clave. Ningún tercero tiene acceso a los datos cifrados.
+
+La contrapartida es la conveniencia. La sincronización entre dispositivos es manual a menos que configures tu propio mecanismo de sincronización. No hay interfaz web. Si pierdes el archivo de la bóveda y la copia de seguridad, pierdes el acceso a todas tus credenciales. La responsabilidad es completamente tuya.
+
+## El modelo auto-alojado
+
+Los gestores de contraseñas auto-alojados como Vaultwarden (un servidor compatible con Bitwarden escrito en Rust) proporcionan la conveniencia de un servicio en la nube sin la dependencia de un tercero. Tú ejecutas el servidor en tu propia infraestructura y los clientes se conectan a él.
+
+Vaultwarden es una implementación ligera de la API del servidor de Bitwarden. Usa menos de 10 MB de memoria y funciona en cualquier sistema compatible con Rust. Los clientes — escritorio, móvil, extensión del navegador — son los mismos clientes de Bitwarden usados por cientos de miles de personas. La diferencia es que el servidor es tuyo.
+
+El modelo de seguridad es similar al modelo local con una adición: el servidor almacena datos cifrados de la bóveda que pueden sincronizarse entre dispositivos automáticamente. El servidor nunca ve la contraseña maestra ni la bóveda descifrada. El cifrado y descifrado ocurren en el cliente.
+
+Auto-alojar un gestor de contraseñas requiere mantener un servidor y mantenerlo accesible. Esto no es un requisito trivial, pero está dentro de las capacidades de cualquiera que ya ejecute un VPS. La sobrecarga operativa es baja una vez que el servidor está funcionando.
+
+## El modelo en la nube
+
+Los gestores de contraseñas en la nube como 1Password, el servicio alojado de Bitwarden y Dashlane ofrecen la máxima conveniencia. Las bóvedas se sincronizan automáticamente, están disponibles desde cualquier dispositivo y se respaldan por el proveedor. El usuario no necesita gestionar infraestructura.
+
+La contrapartida es la confianza. El proveedor podría ser obligado a servir una actualización maliciosa que extraiga la bóveda. El proveedor podría ser hackeado. El proveedor podría cambiar sus precios, términos de servicio o conjunto de funciones. El usuario no tiene recurso excepto cambiar de proveedor, lo que significa exportar e importar bóvedas — un proceso que rara vez es perfecto.
+
+Los gestores de contraseñas en la nube son mejores que ningún gestor de contraseñas. Para la mayoría de los usuarios, son la opción correcta. Pero la conveniencia viene con una relación de dependencia que los modelos local y auto-alojado evitan.
+
+## El modelo de amenazas
+
+Elegir un gestor de contraseñas requiere entender el modelo de amenazas. Un gestor de contraseñas en la nube protege contra las amenazas más comunes — reutilización de credenciales, phishing, contraseñas débiles. Un gestor auto-alojado o local añade protección contra amenazas del propio proveedor.
+
+La diferencia importa cuando la amenaza no es un atacante aleatorio sino un compromiso del proveedor del servicio. Los gestores de contraseñas en la nube han sido objetivo de ataques de phishing, ataques de ingeniería social y ataques a la cadena de suministro. El cifrado de la bóveda protege los contenidos, pero los metadatos — qué servicios usas, cuándo los accedes — son visibles para el proveedor.
+
+Un gestor auto-alojado detrás de una VPN o en una red local elimina la mayoría de estos riesgos. La superficie de ataque se limita al servidor que controlas y los clientes que instalas. No hay un tercero al que suplantar, ninguna base de datos central que comprometer, ningún equipo de soporte al que engañar.
+
+## El coste de configuración
+
+Configurar Vaultwarden lleva unos treinta minutos. Descarga el binario, crea un archivo de configuración, configura un proxy inverso con TLS e inicia el servicio. Los clientes se conectan a la URL de tu servidor y funcionan exactamente como lo harían con el servicio alojado.
+
+El mantenimiento continuo es mínimo. Vaultwarden recibe actualizaciones regulares que corrigen errores y problemas de seguridad. Actualizar significa descargar un nuevo binario y reiniciar el servicio. Las copias de seguridad significan copiar la base de datos de la bóveda a otra ubicación.
+
+Los gestores de contraseñas no son infraestructura opcional. Usar la misma contraseña en varios servicios es irresponsable. Usar contraseñas débiles es irresponsable. La única pregunta es si quieres la conveniencia de un servicio en la nube o la autonomía de una solución auto-alojada.

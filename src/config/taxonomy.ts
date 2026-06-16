@@ -88,30 +88,6 @@ export const TAXONOMY = {
       }),
     },
     {
-      slug: "protocolos-abiertos",
-      order: 3,
-      labelByLocale: localized({
-        en: "Open Protocols",
-        es: "Protocolos Abiertos",
-      }),
-      descriptionByLocale: localized({
-        en: "Open standards, federated protocols, and interoperability.",
-        es: "Estándares abiertos, protocolos federados e interoperabilidad.",
-      }),
-    },
-    {
-      slug: "dependencia-tecnologica",
-      order: 4,
-      labelByLocale: localized({
-        en: "Tech Dependency",
-        es: "Dependencia Tecnológica",
-      }),
-      descriptionByLocale: localized({
-        en: "Digital dependency, vendor lock-in, and autonomy risks.",
-        es: "Dependencia digital, vendor lock-in y riesgos para la autonomía.",
-      }),
-    },
-    {
       slug: "linux",
       order: 5,
       labelByLocale: localized({
@@ -252,7 +228,7 @@ const TAGS_BY_CATEGORY: Record<
   (typeof PRIMARY_CATEGORY_SLUGS)[number],
   string[]
 > = {
-  soberania: ["regulacion", "privacidad", "plataformas", "protocolos-abiertos", "dependencia-tecnologica"],
+  soberania: ["regulacion", "privacidad", "plataformas", "protocolos"],
   sistemas: ["linux", "infraestructura", "devops", "arquitectura", "protocolos", "automatizacion"],
   entornos: ["herramientas", "self-hosting", "ia-aplicada", "workflow", "grapheneos"],
 }

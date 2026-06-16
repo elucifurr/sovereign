@@ -1,0 +1,60 @@
+---
+title: "Git no es GitHub"
+description: "Por qué confundir un sistema de control de versiones distribuido con una plataforma le da a una sola empresa el control sobre tu código."
+category: "entornos"
+tags:
+  - "herramientas"
+  - "plataformas"
+pubDate: 2026-02-23
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1555066931-4365d14bab8c"
+heroImageAlt: "Editor de código en una pantalla representando control de versiones"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: es
+draft: false
+featured: false
+---
+
+Git es un sistema de control de versiones distribuido lanzado en 2005. GitHub es una plataforma que aloja repositorios Git, fundada en 2008. La distinción se ha difuminado hasta el punto de que muchos desarrolladores usan los términos indistintamente. Un número significativo de desarrolladores cree que Git requiere GitHub, o que GitHub es Git.
+
+Esta confusión tiene consecuencias. Cuando una plataforma se convierte en sinónimo de la tecnología que aloja, la plataforma gana poder de mercado que la tecnología subyacente por sí sola no puede contrarrestar. Microsoft adquirió GitHub en 2018 por 7.500 millones de dólares. Si Git hubiera sido un sistema propietario propiedad de una sola empresa, la adquisición habría desencadenado una migración. Como Git es abierto y distribuido, la adquisición no cambió nada sobre la tecnología subyacente — pero solo para quienes entendían la diferencia.
+
+## Lo que Git realmente es
+
+Git es un protocolo y un conjunto de herramientas de línea de comandos para rastrear cambios en archivos. Cada repositorio de Git es una copia completa de todo el historial, almacenada localmente. Puedes crear un repositorio, hacer commits, ramificar, fusionar y ver el historial sin conectarte nunca a un servidor.
+
+Esta es la decisión de diseño clave que distingue a Git de los sistemas de control de versiones anteriores. Subversion y CVS requerían un servidor central. Si el servidor se desconectaba, no podías hacer commits. Git almacena todo localmente. El servidor remoto es una conveniencia para la colaboración, no un requisito para el control de versiones.
+
+Los repositorios de Git se comunican usando el protocolo Git, que puede ejecutarse sobre SSH, HTTPS o un protocolo Git personalizado. Cualquiera puede alojar un servidor Git. El software es gratuito, el protocolo es abierto y la configuración es sencilla. Un solo comando crea un repositorio vacío que puede aceptar pushes de cualquier cliente Git.
+
+## Lo que GitHub realmente es
+
+GitHub es una aplicación web que aloja repositorios Git y añade funciones de colaboración — pull requests, issues, revisión de código, integración CI, gestión de proyectos. Estas funciones están construidas sobre Git, pero no son parte de Git.
+
+Cuando usas GitHub, estás usando una plataforma propietaria que casualmente almacena sus datos en repositorios Git. La plataforma controla el acceso a esos repositorios a través de su sistema de autenticación. La plataforma decide qué funciones están disponibles en cada nivel de precios. La plataforma puede cambiar sus términos de servicio, su API, sus políticas y sus precios en cualquier momento.
+
+Los efectos de red son fuertes. Si tu proyecto está en GitHub, otros desarrolladores pueden encontrarlo, bifurcarlo y contribuir con una fricción mínima. Si tu proyecto está en un servidor Git auto-alojado, la fricción es ligeramente mayor — pero el control es completamente tuyo.
+
+## El riesgo de dependencia
+
+Confundir Git con GitHub crea un riesgo de dependencia. Un desarrollador que solo conoce el flujo de trabajo de GitHub — hacer clic en el botón de fork, crear pull requests a través de la interfaz web, resolver conflictos en el navegador — no puede migrar a otra plataforma o un servidor auto-alojado sin aprender un nuevo flujo de trabajo.
+
+Este bloqueo es intencional. La propuesta de valor de GitHub siempre ha sido la conveniencia. La plataforma hace que Git sea fácil. Pero la facilidad de uso tiene un coste: el usuario nunca aprende cómo funciona Git independientemente de GitHub. La plataforma se convierte en el modelo mental del usuario para el control de versiones, y la tecnología subyacente se vuelve invisible.
+
+El riesgo se materializa cuando la plataforma cambia de maneras que el usuario no controla. GitHub ha cambiado su modelo de precios, sus límites del nivel gratuito, sus términos de licencia de Copilot y su interfaz de usuario múltiples veces. Cada cambio afecta a todos los usuarios que dependen de la plataforma. El usuario puede protestar o migrar, pero no puede negociar.
+
+## Alternativas
+
+Existen varias alternativas a GitHub, cada una con un enfoque diferente para el alojamiento y la gobernanza. GitLab ofrece una opción auto-alojada que proporciona las mismas funciones de colaboración que GitHub. SourceHut es una alternativa minimalista que enfatiza la simplicidad y los flujos de trabajo basados en correo electrónico. Codeberg es una plataforma propiedad de la comunidad alojada en Europa.
+
+Auto-alojar un servidor Git es la opción más autónoma. Un servidor Git simple solo requiere acceso SSH y el comando `git`. Para una interfaz web, Gitea o Forgejo proporcionan alternativas ligeras y auto-alojadas que soportan pull requests, issues e integración CI.
+
+## La garantía de bifurcabilidad
+
+El diseño distribuido de Git proporciona una garantía que ninguna plataforma puede eliminar por completo: si una plataforma se vuelve hostil, los repositorios ya están en la máquina de cada colaborador. El historial completo del proyecto puede enviarse a un servidor diferente con un solo comando. El cambio de plataforma no pierde datos, no pierde historial y no pierde la capacidad de colaborar.
+
+Esta garantía es lo que convierte la distinción entre Git y GitHub en un problema de soberanía. Las plataformas que usan protocolos o formatos de datos propietarios no pueden ofrecer la misma garantía. Si la plataforma se desconecta, cambia sus precios o se vuelve inaccesible, los datos pueden quedar atrapados.
+
+El modelo de distribución de Git no es un detalle técnico. Es una protección estructural contra la dependencia de plataformas. Usar GitHub sin entender Git significa tener la protección sin saber que existe.

@@ -1,0 +1,72 @@
+---
+title: "DNS and the Centralization of the Internet"
+description: "How the Domain Name System became a single point of control and why it matters for autonomy."
+category: "sistemas"
+tags:
+  - "infraestructura"
+  - "protocolos"
+pubDate: 2025-11-17
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31"
+heroImageAlt: "Network servers representing the backbone of domain name resolution"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+The Domain Name System is the phone book of the internet. Every time you visit a website, send an email, or connect to a server, your device performs a DNS query to translate a human-readable domain name into an IP address. This system was designed in 1983 and it has not fundamentally changed since.
+
+The problem is not the protocol itself. The problem is that DNS resolution has become increasingly centralized, concentrating control of internet traffic into a handful of companies.
+
+## How DNS Was Designed
+
+The original DNS design was hierarchical but distributed. Root servers sit at the top, managed by twelve organisations under the oversight of ICANN. Below them, top-level domain registries operate their own authoritative servers. Below those, domain owners configure their own DNS records through registrars.
+
+When your device needs to resolve a domain, it queries a recursive resolver. In the original design, your internet service provider ran this resolver. The provider had direct responsibility for resolving names on behalf of its customers.
+
+This model kept control local. Your ISP could see your DNS traffic, but it could also be held accountable for it under local law. The resolver was part of the infrastructure you were already paying for.
+
+## What Changed
+
+The modern internet does not work this way. Most DNS queries are now handled by a small number of public resolvers run by large technology companies. Google Public DNS, Cloudflare's 1.1.1.1, OpenDNS, and Quad9 handle a significant fraction of global DNS traffic.
+
+Several factors drove this shift. ISP resolvers were often slow and unreliable. Public resolvers offered better performance, security features like DNSSEC validation, and privacy guarantees. They were easy to configure and free to use.
+
+But the convenience came at a cost. Every DNS query sent to a public resolver reveals the domains you visit. The resolver operator can build a complete profile of your internet activity. Privacy policies and transparency reports are not a substitute for a resolver that has no economic incentive to log or monetise your data.
+
+## The Control Point
+
+DNS is a control point for a reason that is not always obvious: the resolver chooses which IP address a domain resolves to. A resolver can return a different result than the domain owner intended. This is called DNS hijacking, and it happens regularly.
+
+Governments use DNS blocking to enforce censorship. ISPs use it to inject advertising. Public resolvers use it to block malware domains. The mechanism is the same in all cases — the resolver intercepts the query and returns an alternative response.
+
+When the resolver is operated by a single company with market power, the decision to block, redirect, or modify DNS responses is made by that company. There is no appeal process. There is no transparency requirement. The infrastructure of the internet depends on a database that a handful of organisations can alter at will.
+
+## DNSSEC and Its Limitations
+
+DNSSEC was designed to solve a different problem — authenticating that DNS responses come from the legitimate domain owner. It cryptographically signs DNS records so that resolvers can verify their authenticity.
+
+DNSSEC prevents a specific class of attacks, but it does not address centralization. Even with DNSSEC, the resolver still sees every query you make. The resolver still chooses which IP address to connect you to. DNSSEC ensures the response is authentic, but it does not make the resolver trustworthy.
+
+Deployment remains incomplete. As of 2025, a minority of domains have DNSSEC enabled, and a minority of resolvers perform validation. The protocol works, but the incentive structure does not push adoption.
+
+## Running Your Own Resolver
+
+The alternative to centralised DNS is running your own recursive resolver. Software like Unbound, BIND, or CoreDNS can resolve DNS from the root servers directly, bypassing any public resolver entirely.
+
+Running your own resolver means no third party sees your DNS traffic. It means you decide which blocklists to apply. It means your DNS infrastructure is under your control.
+
+The operational cost is low. A resolver running on a small VPS consumes minimal resources and requires little ongoing maintenance. The main requirement is trust in your own configuration rather than trust in a provider's privacy policy.
+
+Unbound in particular is well-suited for personal use. It supports DNSSEC validation, can be configured with minimal effort, and runs on any Unix system. A single configuration file is enough to turn a server into a validating, caching recursive resolver.
+
+## What You Give Up
+
+Running your own resolver means losing some convenience. Public resolvers often maintain enormous caches that improve resolution speed for popular domains. A personal resolver starts cold and learns over time.
+
+You also lose malware filtering if you rely on a resolver that provides it. This can be replaced with local blocklists or a separate filtering layer, but it requires additional configuration.
+
+The trade-off is between convenience and autonomy. For most users, the convenience of public resolvers outweighs the autonomy cost. For users who value control over their infrastructure, running a personal resolver is a small operational investment with significant sovereignty returns.

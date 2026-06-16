@@ -1,0 +1,70 @@
+---
+title: "Cómo funciona el DNS cifrado"
+description: "DoH, DoT, DoQ, ECH y los protocolos que protegen la resolución de nombres."
+category: "sistemas"
+tags:
+  - "protocolos"
+  - "privacidad"
+pubDate: 2026-03-23
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71"
+heroImageAlt: "Flujos de datos de red ilustrando tráfico DNS cifrado"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: es
+draft: false
+featured: false
+---
+
+Las consultas DNS tradicionales se envían en texto plano. Cada vez que tu dispositivo resuelve un nombre de dominio, la consulta y su respuesta son visibles para cualquiera que monitoree la red. Tu proveedor de internet, un operador de Wi-Fi público o un atacante en la misma red pueden ver qué dominios visitas.
+
+El DNS cifrado cambia esto. Protege el contenido de las consultas DNS de los observadores de red. Pero el DNS cifrado no es un solo protocolo. Es una familia de protocolos con diferentes objetivos de diseño, propiedades de seguridad y características de despliegue.
+
+## El problema del DNS sin cifrar
+
+El DNS sin cifrar usa UDP puerto 53. La consulta contiene el nombre de dominio que quieres resolver. La respuesta contiene la dirección IP correspondiente. Ambos se envían como texto claro sin cifrado ni autenticación.
+
+Un atacante en la red puede ver cada dominio que visitas. Esto incluye los dominios cargados por cada sitio web que visitas — redes publicitarias, servicios de análisis, redes de entrega de contenido — no solo los sitios a los que navegas intencionadamente. Un observador pasivo puede construir un perfil completo de tu actividad online solo con el tráfico DNS.
+
+La falta de autenticación significa que un atacante también puede modificar las respuestas DNS. Un hombre en medio puede redirigir un dominio a una dirección IP maliciosa. Este ataque se llama suplantación DNS y es la base de muchas campañas de phishing y distribución de malware.
+
+## DNS sobre TLS
+
+DNS sobre TLS cifra las consultas y respuestas DNS usando Transport Layer Security, el mismo protocolo que asegura el tráfico HTTPS. El cliente DNS se conecta al resolvedor en el puerto TCP 853 y establece una conexión TLS antes de enviar cualquier consulta.
+
+DoT es sencillo. La conexión TLS proporciona cifrado y autenticación del servidor. El cliente verifica el certificado del resolvedor, asegurando que el resolvedor es quien dice ser. Una vez establecida la conexión, todo el tráfico DNS está cifrado.
+
+La principal limitación de DoT es que usa un puerto dedicado. Un administrador de red puede bloquear el puerto 853 para evitar que DoT funcione, forzando a los clientes a volver al DNS sin cifrar. Esto hace que DoT sea vulnerable al bloqueo a nivel de red.
+
+## DNS sobre HTTPS
+
+DNS sobre HTTPS cifra las consultas DNS y las envía a través del puerto HTTPS estándar 443. Las consultas DNS son indistinguibles del tráfico HTTPS regular para un observador de red. El resolvedor se identifica por una URL como `https://dns.cloudflare.com/dns-query`.
+
+DoH proporciona mejores propiedades de privacidad que DoT porque el tráfico se mezcla con otro tráfico HTTPS. Un administrador de red no puede bloquear DoH sin bloquear todo el tráfico HTTPS, lo cual es inviable. DoH también es más fácil de desplegar en entornos empresariales donde la inspección TLS ya está implementada.
+
+La compensación es que DoH centraliza la resolución DNS a nivel de aplicación. Cuando un navegador implementa DoH, evita por completo el resolvedor DNS del sistema. Esto tiene implicaciones para las políticas de red empresariales, los controles parentales y las configuraciones de red local que dependen del resolvedor del sistema.
+
+## DNS sobre QUIC
+
+DNS sobre QUIC es el protocolo de DNS cifrado más reciente. QUIC es un protocolo de transporte construido sobre UDP que proporciona cifrado, multiplexación y establecimiento de conexión de baja latencia. DoQ combina los beneficios de rendimiento de QUIC con las propiedades de privacidad del DNS cifrado.
+
+DoQ aborda una limitación tanto de DoT como de DoH. DoT requiere una conexión TCP y un handshake TLS, añadiendo latencia. DoH se ejecuta sobre HTTPS, lo que añade sobrecarga HTTP. DoQ usa el handshake de una sola ronda de QUIC para reducir la latencia de conexión. También evita el problema de bloqueo de cabeza de línea de TCP.
+
+La adopción es temprana. A principios de 2026, DoQ es compatible con una minoría de resolvedores y clientes. Resolvedores públicos como Quad9 y AdGuard DNS soportan DoQ, y hay implementaciones de cliente disponibles para los principales sistemas operativos.
+
+## Encrypted Client Hello
+
+Encrypted Client Hello no es un protocolo DNS, pero resuelve un problema de privacidad relacionado. Incluso con DNS cifrado, el handshake TLS que sigue a la resolución DNS expone el nombre de dominio en claro a través de la extensión Server Name Indication. ECH cifra el SNI para que el dominio de destino esté oculto para los observadores de red.
+
+Sin ECH, el DNS cifrado protege la consulta DNS pero no la conexión posterior. Un observador de red que no puede ver la consulta DNS aún puede ver la dirección IP y el SNI del handshake TLS. Para sitios alojados en infraestructura compartida, el SNI revela el dominio.
+
+ECH requiere soporte tanto del navegador como del servidor. Los principales CDN y plataformas de alojamiento ahora soportan ECH, y los navegadores han comenzado a implementarlo. Al igual que con DoQ, la adopción todavía está en progreso.
+
+## La compensación de privacidad
+
+El DNS cifrado protege tus consultas de los observadores de red, pero no protege tus consultas del resolvedor. El resolvedor sigue viendo cada dominio que visitas. El DNS cifrado cambia quién puede ver tu tráfico, no si se ve.
+
+La elección del resolvedor sigue siendo la decisión de privacidad más importante en DNS. Usar DNS cifrado con un resolvedor público operado por una gran empresa tecnológica proporciona privacidad de tu ISP pero no de esa empresa. Usar DNS cifrado con un resolvedor personal proporciona privacidad de ambos.
+
+Los protocolos son herramientas. Cifran el canal, no los datos. El operador del resolvedor sigue decidiendo cuánto tiempo se guardan los registros, si los datos se comparten con terceros y qué políticas rigen el acceso a los datos.

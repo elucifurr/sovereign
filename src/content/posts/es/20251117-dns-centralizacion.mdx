@@ -1,0 +1,72 @@
+---
+title: "DNS y la centralización de internet"
+description: "Cómo el sistema de nombres de dominio se convirtió en un punto de control único y por qué importa para la autonomía."
+category: "sistemas"
+tags:
+  - "infraestructura"
+  - "protocolos"
+pubDate: 2025-11-17
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31"
+heroImageAlt: "Servidores de red representando la columna vertebral de la resolución de nombres de dominio"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: es
+draft: false
+featured: false
+---
+
+El Sistema de Nombres de Dominio es la guía telefónica de internet. Cada vez que visitas un sitio web, envías un correo o te conectas a un servidor, tu dispositivo realiza una consulta DNS para traducir un nombre de dominio legible en una dirección IP. Este sistema fue diseñado en 1983 y no ha cambiado fundamentalmente desde entonces.
+
+El problema no es el protocolo en sí. El problema es que la resolución DNS se ha centralizado cada vez más, concentrando el control del tráfico de internet en un puñado de empresas.
+
+## Cómo se diseñó DNS
+
+El diseño original de DNS era jerárquico pero distribuido. Los servidores raíz están en la cúspide, gestionados por doce organizaciones bajo la supervisión de ICANN. Debajo, los registros de dominios de nivel superior operan sus propios servidores autoritativos. Más abajo, los propietarios de dominios configuran sus registros DNS a través de registradores.
+
+Cuando tu dispositivo necesita resolver un dominio, consulta un resolvedor recursivo. En el diseño original, tu proveedor de internet ejecutaba este resolvedor. El proveedor tenía la responsabilidad directa de resolver nombres en nombre de sus clientes.
+
+Este modelo mantenía el control local. Tu ISP podía ver tu tráfico DNS, pero también podía ser responsabilizado por ello bajo la ley local. El resolvedor era parte de la infraestructura por la que ya estabas pagando.
+
+## Qué cambió
+
+El internet moderno no funciona así. La mayoría de las consultas DNS ahora son manejadas por un pequeño número de resolvedores públicos operados por grandes empresas tecnológicas. Google Public DNS, Cloudflare 1.1.1.1, OpenDNS y Quad9 manejan una fracción significativa del tráfico DNS global.
+
+Varios factores impulsaron este cambio. Los resolvedores de los ISP eran a menudo lentos y poco fiables. Los resolvedores públicos ofrecían mejor rendimiento, características de seguridad como validación DNSSEC y garantías de privacidad. Eran fáciles de configurar y gratuitos.
+
+Pero la conveniencia tuvo un costo. Cada consulta DNS enviada a un resolvedor público revela los dominios que visitas. El operador del resolvedor puede construir un perfil completo de tu actividad en internet. Las políticas de privacidad y los informes de transparencia no sustituyen a un resolvedor que no tenga incentivo económico para registrar o monetizar tus datos.
+
+## El punto de control
+
+DNS es un punto de control por una razón que no siempre es obvia: el resolvedor elige a qué dirección IP se resuelve un dominio. Un resolvedor puede devolver un resultado diferente al que el propietario del dominio pretendía. Esto se llama secuestro DNS y ocurre regularmente.
+
+Los gobiernos usan el bloqueo DNS para imponer censura. Los ISP lo usan para inyectar publicidad. Los resolvedores públicos lo usan para bloquear dominios de malware. El mecanismo es el mismo en todos los casos: el resolvedor intercepta la consulta y devuelve una respuesta alternativa.
+
+Cuando el resolvedor es operado por una sola empresa con poder de mercado, la decisión de bloquear, redirigir o modificar las respuestas DNS la toma esa empresa. No hay proceso de apelación. No hay requisito de transparencia. La infraestructura de internet depende de una base de datos que un puñado de organizaciones puede alterar a voluntad.
+
+## DNSSEC y sus limitaciones
+
+DNSSEC fue diseñado para resolver un problema diferente — autenticar que las respuestas DNS provienen del propietario legítimo del dominio. Firma criptográficamente los registros DNS para que los resolvedores puedan verificar su autenticidad.
+
+DNSSEC previene una clase específica de ataques, pero no aborda la centralización. Incluso con DNSSEC, el resolvedor sigue viendo cada consulta que haces. El resolvedor sigue eligiendo a qué dirección IP conectarte. DNSSEC asegura que la respuesta es auténtica, pero no hace que el resolvedor sea confiable.
+
+El despliegue sigue siendo incompleto. A día de hoy, una minoría de dominios tienen DNSSEC activado, y una minoría de resolvedores realizan validación. El protocolo funciona, pero la estructura de incentivos no impulsa la adopción.
+
+## Ejecutar tu propio resolvedor
+
+La alternativa al DNS centralizado es ejecutar tu propio resolvedor recursivo. Software como Unbound, BIND o CoreDNS puede resolver DNS desde los servidores raíz directamente, sin pasar por ningún resolvedor público.
+
+Ejecutar tu propio resolvedor significa que ningún tercero ve tu tráfico DNS. Significa que tú decides qué listas de bloqueo aplicar. Significa que tu infraestructura DNS está bajo tu control.
+
+El costo operativo es bajo. Un resolvedor ejecutándose en un pequeño VPS consume recursos mínimos y requiere poco mantenimiento. El requisito principal es confiar en tu propia configuración en lugar de confiar en la política de privacidad de un proveedor.
+
+Unbound está especialmente bien adaptado para uso personal. Soporta validación DNSSEC, se puede configurar con esfuerzo mínimo y funciona en cualquier sistema Unix. Un solo archivo de configuración basta para convertir un servidor en un resolvedor recursivo validante y con caché.
+
+## Qué pierdes
+
+Ejecutar tu propio resolvedor significa perder algo de conveniencia. Los resolvedores públicos a menudo mantienen enormes cachés que mejoran la velocidad de resolución de dominios populares. Un resolvedor personal empieza frío y aprende con el tiempo.
+
+También pierdes el filtrado de malware si dependes de un resolvedor que lo proporciona. Esto se puede reemplazar con listas de bloqueo locales o una capa de filtrado separada, pero requiere configuración adicional.
+
+La compensación es entre conveniencia y autonomía. Para la mayoría de los usuarios, la conveniencia de los resolvedores públicos supera el costo en autonomía. Para los usuarios que valoran el control sobre su infraestructura, ejecutar un resolvedor personal es una pequeña inversión operativa con retornos significativos en soberanía.

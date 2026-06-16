@@ -1,0 +1,61 @@
+---
+title: "El monocultivo de motores de navegador"
+description: "Por qué el dominio de un solo motor de navegador amenaza la independencia de la web."
+category: "soberania"
+tags:
+  - "plataformas"
+pubDate: 2026-03-09
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f"
+heroImageAlt: "Interfaz de navegador web en múltiples dispositivos representando el ecosistema de navegadores"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: es
+draft: false
+featured: false
+---
+
+El navegador web es la aplicación de software más importante en la mayoría de los dispositivos. Es la interfaz para el correo electrónico, documentos, mapas, banca, redes sociales y una parte significativa del software que usamos a diario. El motor de renderizado del navegador determina lo que la web puede hacer y quién puede participar en definir su futuro.
+
+Hoy existen tres motores de navegador principales: Blink (usado por Chrome, Edge, Brave, Opera y la mayoría de los otros navegadores), WebKit (usado por Safari) y Gecko (usado por Firefox). Blink tiene una cuota de mercado de más del 90%. Esto no es un mercado competitivo. Es un monocultivo.
+
+## Cómo llegamos aquí
+
+El mercado de motores de navegador no siempre estuvo concentrado. A finales de los 90, Internet Explorer dominaba pero enfrentaba competencia de Netscape, Opera y otros. Los primeros 2000 vieron un período de estancamiento después de que Internet Explorer alcanzara un dominio casi total, seguido de un resurgimiento con Firefox, Chrome y Safari a finales de los 2000.
+
+La introducción de Chrome en 2008 cambió las dinámicas competitivas. Chrome era rápido, estable y bien promocionado. Tomó cuota de mercado de Internet Explorer y Firefox. Google usó su negocio de búsqueda y publicidad para promover Chrome, empaquetándolo con otros servicios e invirtiendo fuertemente en su desarrollo.
+
+Con el tiempo, el dominio de Chrome se volvió auto-reforzante. Los desarrolladores web probaban principalmente en Chrome. Los sitios web se optimizaban para Chrome. Chrome se convirtió en la implementación de referencia para los estándares web. Otros motores tenían que igualar el comportamiento de Chrome para evitar romper sitios web.
+
+## El fork de Blink
+
+En 2013, Google bifurcó WebKit para crear Blink. La bifurcación era aparentemente para permitir más flexibilidad en el desarrollo de Chrome. El efecto práctico fue que Google obtuvo control completo sobre el motor utilizado por la mayoría de los usuarios web.
+
+Blink es código abierto, pero su gobernanza está controlada por Google. La gran mayoría de los commits de Blink provienen de empleados de Google. Google decide qué funciones implementar, qué APIs exponer y qué características de rendimiento priorizar. Otros navegadores que usan Blink — Edge, Brave, Opera — dependen de las decisiones de desarrollo de Google.
+
+Esto crea un conflicto de intereses estructural. El negocio principal de Google es la publicidad y la búsqueda. Las funciones web que benefician al negocio de Google — como las APIs de Privacy Sandbox — se desarrollan en Blink y son adoptadas por la web. Las funciones que perjudicarían el negocio de Google enfrentan barreras más altas para su implementación.
+
+## Qué significa el monocultivo
+
+Un monocultivo de motores de navegador significa que una sola empresa decide efectivamente la dirección de la plataforma web. Si Google decide que una propuesta de estándar no sirve a sus intereses, la propuesta fracasa independientemente de su mérito técnico. Si Google decide eliminar una función, la función se vuelve inutilizable en la mayor parte de la web.
+
+El monocultivo también afecta la seguridad. Una vulnerabilidad en Blink afecta a más del 90% de los usuarios web. Los incentivos para que los atacantes desarrollen exploits dirigidos a Blink son correspondientemente altos. Un panorama diverso de motores distribuiría este riesgo.
+
+El monocultivo afecta el desarrollo web. Los desarrolladores optimizan para Blink porque Blink es lo que la mayoría de los usuarios tiene. Los sitios web que solo funcionan en Blink son comunes. Esto afianza aún más el monocultivo al hacer costoso para los usuarios cambiar a navegadores que no sean Blink.
+
+## Respuestas regulatorias
+
+Los reguladores han comenzado a abordar la concentración de motores de navegador. La Ley de Mercados Digitales de la Comisión Europea designa a Google como guardián y exige que las plataformas guardianas permitan navegadores y motores alternativos en sus plataformas. Esto apunta directamente a la restricción que impedía a los usuarios de iOS usar navegadores que no fueran WebKit.
+
+La Autoridad de Competencia y Mercados del Reino Unido también ha investigado la competencia de motores de navegador. Su estudio de mercado encontró que Apple y Google tienen un control significativo sobre el mercado de motores de navegador y recomendó intervención regulatoria para garantizar que los motores alternativos puedan competir.
+
+Estas respuestas regulatorias son tempranas y su efectividad no está probada. El desafío técnico es significativo — permitir motores alternativos en plataformas móviles requiere acceso a API que los proveedores de plataformas han restringido históricamente. El desafío legal es igualmente significativo — definir el alcance de la solución y hacer cumplir el cumplimiento en todas las jurisdicciones.
+
+## La opción de independencia
+
+Para los usuarios que quieren reducir su dependencia de Blink, Firefox es la única alternativa importante con un motor completamente independiente. Firefox usa Gecko, que es desarrollado por Mozilla y tiene una arquitectura diferente, un modelo de seguridad diferente y un conjunto de funciones diferente.
+
+La cuota de mercado de Firefox es pequeña pero su independencia es valiosa. Firefox soporta extensiones web usando la especificación Manifest V3, pero sin las restricciones de filtrado de contenido que Google impuso en la implementación de Chrome. Firefox ha implementado funciones de privacidad — Total Cookie Protection, Enhanced Tracking Protection — que Chrome no ofrece.
+
+Usar Firefox no cambia el monocultivo por sí mismo. Pero apoya la existencia de un motor independiente, financia su desarrollo a través de métricas de uso y proporciona un respaldo si la dirección de Blink se vuelve incompatible con tus requisitos.
