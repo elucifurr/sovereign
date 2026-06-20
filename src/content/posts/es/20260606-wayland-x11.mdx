@@ -1,0 +1,52 @@
+---
+title: "Wayland: el relevo técnico"
+description: "Por qué X11 no podía arreglarse y cómo Wayland reinventó la pila gráfica de Linux."
+category: "sistemas"
+tags:
+  - "linux"
+  - "arquitectura"
+pubDate: 2026-06-06
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31"
+heroImageAlt: "Pantalla digital abstracta representando la evolución de los sistemas gráficos"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: es
+draft: false
+featured: false
+---
+
+X11 se lanzó en 1987, pero su diseño data de 1984 — una época en la que el servidor de pantalla era un intermediario de confianza en una LAN universitaria, la seguridad consistía en cerrar la puerta del cuarto de máquinas, y cada píxel lo dibujaba el servidor. Cuarenta años después, el mismo protocolo seguía ejecutándose en la mayoría de los escritorios Linux, sostenido por extensiones, parches y una tolerancia colectiva a sus limitaciones.
+
+Wayland no es un parche sobre X11. Es un modelo fundamentalmente distinto. Donde X11 trataba al servidor de pantalla como un intermediario omnisciente, Wayland trata al compositor como un gestor de búferes con conocimiento mínimo sobre su contenido.
+
+## Qué hizo mal X11
+
+El modelo de seguridad de X11 asume que todo cliente es de confianza. Cualquier aplicación puede leer la entrada de cualquier otra, capturar la pantalla, enviar eventos sintéticos e interceptar pulsaciones de teclas. Esto era razonable en 1984. No lo es en un sistema moderno que ejecuta aplicaciones no confiables de internet.
+
+El modelo de renderizado estaba igualmente anticuado. X11 fue diseñado para gráficos 2D en modo inmediato. El servidor mantenía el árbol de ventanas, el cursor, el mapa de colores, las rutas de fuentes y el portapapeles. Cada extensión — XRender, XComposite, XDamage, XFixes — era un parche para limitaciones del protocolo original. X11 acumuló más de 150 extensiones, ninguna obligatoria, todas necesitando soporte del driver.
+
+El resultado era un sistema donde el servidor hacía demasiado y demasiado poco a la vez. Gestionaba recursos que las aplicaciones podían manejar mejor, mientras proporcionaba abstracciones demasiado básicas para gráficos modernos acelerados por GPU.
+
+## Cómo lo resuelve Wayland
+
+Wayland invierte el modelo. El compositor se ejecuta sobre KMS y EGL. Las aplicaciones dibujan directamente en búferes que el compositor gestiona. El compositor no sabe qué hay dentro de cada búfer — solo su geometría y región dañada. Los eventos de teclado y ratón van directamente al cliente enfocado; el compositor nunca ve su contenido.
+
+Esto elimina clases enteras de ataques a nivel arquitectónico. Una aplicación en segundo plano no puede leer tu contraseña porque nunca recibe los eventos de teclado de otra ventana. Las herramientas de captura de pantalla requieren APIs explícitas de PipeWire que piden permiso. El aislamiento no se añade a posteriori — es inherente al diseño.
+
+El protocolo es deliberadamente mínimo. Wayland no tiene extensiones para renderizado, fuentes o gestión de ventanas. El compositor decide esas políticas. Por eso Sway y Hyprland se ven completamente distintos sobre el mismo protocolo — el compositor controla la experiencia, no un servidor central.
+
+## Los puntos dolorosos
+
+La adopción de Wayland se retrasó por tres problemas. El driver propietario de NVIDIA se negó inicialmente a soportar GBM, la API de gestión de búferes que usan los compositores Wayland. NVIDIA implementó GBM tiempo después, pero los años de transición fragmentaron el ecosistema.
+
+La captura de pantalla y el escritorio remoto requirieron una reescritura completa. El protocolo xdg-desktop-portal basado en PipeWire funciona bien, pero las herramientas que capturaban la pantalla leyendo el servidor X directamente — OBS con xcomposite, servidores VNC antiguos — necesitaron nuevos backends.
+
+XWayland proporciona un servidor X dentro de una ventana de Wayland, ejecutando aplicaciones X11 heredadas de forma transparente. Funciona para la mayoría de los casos, pero las aplicaciones que dependen de atajos globales, posicionamiento preciso de ventanas, o arrastrar y soltar entre XWayland y Wayland nativo tienen casos límite.
+
+## Dónde estamos ahora
+
+En 2026, la transición está efectivamente completa. GNOME y KDE usan Wayland por defecto. Todas las distribuciones principales lo envían así. NVIDIA lo soporta. Los problemas restantes afectan a una minoría cada vez más pequeña de usuarios.
+
+La lección no es que Wayland sea perfecto. El protocolo sigue evolucionando y surgirán nuevos problemas. La lección es que algunos problemas arquitectónicos no pueden arreglarse con parches. X11 tuvo cuarenta años de soluciones temporales. Wayland tenía que ser diferente desde el principio.
