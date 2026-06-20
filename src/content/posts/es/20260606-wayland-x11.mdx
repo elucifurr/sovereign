@@ -37,16 +37,74 @@ Esto elimina clases enteras de ataques a nivel arquitectónico. Una aplicación 
 
 El protocolo es deliberadamente mínimo. Wayland no tiene extensiones para renderizado, fuentes o gestión de ventanas. El compositor decide esas políticas. Por eso Sway y Hyprland se ven completamente distintos sobre el mismo protocolo — el compositor controla la experiencia, no un servidor central.
 
+## Arquitectura del protocolo
+
+Wayland define su protocolo como un conjunto de especificaciones XML en wayland-protocols. Cada interfaz — wl_surface, wl_buffer, xdg_surface, xdg_toplevel — es un contrato entre cliente y compositor. El compositor implementa estas interfaces sobre un backend: DRM/KMS directo para acceso hardware, o un backend anidado para desarrollo y pruebas.
+
+La biblioteca wlroots se ha convertido en la implementación de referencia para la fontanería compartida de bajo nivel. Proporciona detección de daños, cálculos de matrices, planos de cursor hardware, configuración de salidas e integración con libinput a través de una única API en C. Los compositores construidos sobre wlroots — Sway, River, Hyprland — comparten el mismo stack KMS y de entrada pero divergen por completo en renderizado, animación y políticas de gestión de ventanas.
+
+La gestión de búferes funciona mediante el protocolo linux-dmabuf. Las aplicaciones renderizan en búferes asignados por la GPU, pasan un descriptor de archivo al compositor vía DMA-BUF, y el compositor presenta el búfer mediante commits atómicos de KMS. No hay fallback por software, no hay copia intermedia, ni composición del lado del servidor. La copia cero está integrada en el protocolo, no añadida como optimización posterior.
+
+Esto importa en la práctica. En X11, cada píxel de una aplicación a pantalla completa se copiaba del búfer de la aplicación al búfer del servidor antes de mostrarse. En Wayland, el búfer de la aplicación va directamente al controlador de pantalla. La diferencia es medible en latencia, consumo energético y tasa de fotogramas en cargas de trabajo intensivas de GPU.
+
 ## Los puntos dolorosos
 
-La adopción de Wayland se retrasó por tres problemas. El driver propietario de NVIDIA se negó inicialmente a soportar GBM, la API de gestión de búferes que usan los compositores Wayland. NVIDIA implementó GBM tiempo después, pero los años de transición fragmentaron el ecosistema.
+La adopción de Wayland se retrasó por tres problemas. El driver propietario de NVIDIA se negó inicialmente a soportar GBM, la API de gestión de búferes que usan los compositores Wayland. NVIDIA implementó GBM tiempo después, pero los años de transición fragmentaron el ecosistema — las distribuciones enviaban compositores basados en GBM, los usuarios de NVIDIA veían pantallas en negro, y la culpa se pasaba entre vendedores.
 
-La captura de pantalla y el escritorio remoto requirieron una reescritura completa. El protocolo xdg-desktop-portal basado en PipeWire funciona bien, pero las herramientas que capturaban la pantalla leyendo el servidor X directamente — OBS con xcomposite, servidores VNC antiguos — necesitaron nuevos backends.
+La captura de pantalla y el escritorio remoto requirieron una reescritura completa. El protocolo xdg-desktop-portal basado en PipeWire funciona bien, pero las herramientas que capturaban la pantalla leyendo el servidor X directamente — OBS con xcomposite, servidores VNC antiguos — necesitaron nuevos backends. Los protocolos de escritorio remoto como RDP y VNC aún carecen de soporte Wayland nativo completo en algunas implementaciones, dependiendo de soluciones basadas en wlroots o transcodificación con PipeWire.
+
+El escalado fraccional sigue siendo un punto áspero. El protocolo Wayland especifica factores de escalado enteros por salida. El escalado fraccional requiere renderizar a una resolución mayor y reducir — una operación intensiva para la GPU que los compositores implementan de forma distinta. GNOME usa composición por GPU sobre el búfer completo. KDE usa escalado por ventana con diferentes compromisos de calidad. Ninguno iguala la simplicidad de los hacks de DPI de X11, pero ambos producen mejores resultados visuales.
 
 XWayland proporciona un servidor X dentro de una ventana de Wayland, ejecutando aplicaciones X11 heredadas de forma transparente. Funciona para la mayoría de los casos, pero las aplicaciones que dependen de atajos globales, posicionamiento preciso de ventanas, o arrastrar y soltar entre XWayland y Wayland nativo tienen casos límite.
 
+## Diagnóstico práctico
+
+Comprueba qué servidor de pantalla está usando tu sesión:
+
+```bash
+loginctl show-session "$(loginctl | awk '/$(whoami)/ {print $1}')" -p Type
+```
+
+`Type=wayland` indica una sesión Wayland nativa. `Type=x11` indica que el gestor de pantalla inició una sesión X — las aplicaciones Wayland nativas se ejecutan a través de XWayland.
+
+Inspecciona el compositor activo:
+
+```bash
+echo "$WAYLAND_DISPLAY"
+swaymsg -t get_outputs 2>/dev/null || hyprctl monitors
+```
+
+La variable `WAYLAND_DISPLAY` contiene el nombre del socket Wayland, normalmente `wayland-0` o `wayland-1`. Si no está definida, no hay ningún compositor Wayland activo en esta sesión.
+
+Depura los mensajes del protocolo para una aplicación:
+
+```bash
+WAYLAND_DEBUG=1 miaplicacion 2>&1 | grep --line-buffered 'wl_'
+```
+
+Esto muestra cada intercambio Wayland: creación de objetos, asignación de búferes, confirmación, callback de fotograma y liberación. Para diagnósticos a nivel de compositor:
+
+```bash
+sway --verbose --unsupported-gpu 2>&1
+hyprctl systeminfo
+```
+
+La compartición de pantalla sigue un camino distinto porque xdg-desktop-portal actúa como intermediario entre la aplicación y el compositor:
+
+```bash
+pw-cli list-objects | grep -A4 node
+dbus-send --session --dest=org.freedesktop.portal.Desktop \
+  /org/freedesktop/portal/desktop \
+  org.freedesktop.Dbus.Properties.Get \
+  string:org.freedesktop.portal.ScreenCast string:version
+```
+
+En X11, la captura de pantalla significaba leer píxeles directamente del framebuffer del servidor X. En Wayland, la aplicación negocia el acceso a través de xdg-desktop-portal, que abre un flujo DMA-BUF de PipeWire. Los datos de píxeles nunca salen de la GPU — el compositor exporta los manejadores de búfer a través de PipeWire, y el portal muestra un diálogo de permiso en la primera solicitud de captura.
+
 ## Dónde estamos ahora
 
-En 2026, la transición está efectivamente completa. GNOME y KDE usan Wayland por defecto. Todas las distribuciones principales lo envían así. NVIDIA lo soporta. Los problemas restantes afectan a una minoría cada vez más pequeña de usuarios.
+En 2026, la transición está efectivamente completa. GNOME y KDE usan Wayland por defecto. Todas las distribuciones principales lo envían así. NVIDIA soporta GBM. Los problemas restantes afectan a una minoría cada vez más pequeña de usuarios con hardware o requisitos de flujo de trabajo específicos.
 
 La lección no es que Wayland sea perfecto. El protocolo sigue evolucionando y surgirán nuevos problemas. La lección es que algunos problemas arquitectónicos no pueden arreglarse con parches. X11 tuvo cuarenta años de soluciones temporales. Wayland tenía que ser diferente desde el principio.
+
+Para el ingeniero práctico: si tu distribución usa Wayland por defecto y no estás ejecutando un pipeline de vídeo profesional con plugins X11 heredados, no hay razón para quedarse en X11. Perfila tu compositor, verifica tu ruta de aceleración GPU, y sigue adelante.

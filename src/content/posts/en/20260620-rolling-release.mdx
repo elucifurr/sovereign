@@ -39,6 +39,68 @@ Arch itself is more stable than its reputation suggests. The Arch User Repositor
 
 The real source of breakage in point releases is the upgrade itself. Upgrading from Ubuntu 22.04 to 24.04 carries more risk than a typical week of Arch updates, because the entire system changes at once. Rolling releases distribute the change across hundreds of small updates, each one individually tested.
 
+## Package Management in Practice
+
+The practical difference between a rolling release and a point release shows up in the package manager. On Arch, every update is a full system update:
+
+```bash
+pacman -Syu
+```
+
+This single command synchronises the repository databases, downloads new packages, and applies them. There is no concept of a partial upgrade in the Arch model — `pacman -Sy package` without `-u` is explicitly unsupported and will produce an inconsistent system.
+
+On Debian or Ubuntu, the workflow is different:
+
+```bash
+apt update
+apt upgrade
+apt install package
+```
+
+The `apt upgrade` command only upgrades packages that do not require removing or installing new dependencies. For full distribution upgrades, `apt full-upgrade` or `do-release-upgrade` is needed, and those run only once every two years.
+
+The transactional difference matters. `pacman -Syu` is atomic at the package level — if the download or installation of any package fails, the entire transaction rolls back. `apt upgrade` processes packages sequentially and may leave the system in a partial state if interrupted. This is not a theoretical concern. A power loss during an apt upgrade has left many systems unbootable. A power loss during a pacman transaction leaves the system in its previous state.
+
+AUR management introduces additional risk. Tools like `yay` and `paru` fetch PKGBUILDs from the Arch User Repository, verify their contents, build from source, and install. An AUR package that passes a quick `diff` against its upstream source is generally safe. A package that uses `curl | bash` in its PKGBUILD is not. The rule of thumb: never install AUR packages without reading the PKGBUILD first.
+
+```bash
+# Review a PKGBUILD before installing
+yay -G package
+cd package && less PKGBUILD
+makepkg -si
+```
+
+For paranoid users, `paru` supports a `--diff` flag that shows the difference between the PKGBUILD and the upstream source before building.
+
+## Snapshots and Rollback
+
+The single most compelling argument for a rolling release disappears if you cannot recover from a bad update. Every serious rolling release user should run snapshots.
+
+openSUSE Tumbleweed integrates Snapper with Btrfs out of the box. Before every `zypper dup`, Snapper creates a filesystem snapshot. If the update breaks something, you reboot into the snapshot from the GRUB menu:
+
+```bash
+# List snapshots
+snapper list
+# Rollback to a previous snapshot
+snapper rollback 42
+reboot
+```
+
+The same approach works on Arch with Timeshift, which uses rsync or Btrfs snapshots:
+
+```bash
+# Create a manual snapshot before a risky update
+sudo timeshift --create --comments "before kernel update"
+# Apply the update
+pacman -Syu
+# If something breaks, restore interactively
+sudo timeshift --restore
+```
+
+Btrfs snapshots are nearly instant and consume only the space that differs from the current state. A snapshot before every `pacman -Syu` uses negligible disk space — typically 100–200 MB for the diff of a kernel update — and eliminates the anxiety of a bad update.
+
+The combination of rolling updates with snapshot-based rollback is strictly better than the point release model in one specific way: you can revert a single bad update without waiting for the next point release to fix it. On Ubuntu LTS, if a kernel update introduces a regression, you either live with it or manually downgrade and pin the package. On Arch with Timeshift, you restore the pre-update snapshot and continue working.
+
 ## The Real Cost
 
 The cost of a rolling release is attention. You must update regularly. If you let a rolling system sit for six months without updating, catching up becomes difficult. Packages may have been dropped or replaced, configuration formats may have changed, dependencies may have shifted.
@@ -46,6 +108,8 @@ The cost of a rolling release is attention. You must update regularly. If you le
 Point releases let you defer decisions. You can stay on Ubuntu 22.04 for years, applying only security patches. When you finally upgrade, it is a planned event with documentation and migration guides. Rolling releases do not offer this luxury.
 
 The second cost is testing. Point release distributions test the entire system together before shipping a new version. Rolling release distributions test individual packages, not the entire stack. Most of the time this works fine. Occasionally, an update to one library breaks an application that depends on it. The fix arrives quickly, but the window of breakage exists.
+
+The third cost is documentation. A point release has a defined target. Ubuntu 22.04 documentation applies to every Ubuntu 22.04 system. Arch documentation applies to Arch in general, but specific configuration paths may change between updates without notice.
 
 ## The Real Benefit
 
@@ -61,6 +125,6 @@ Rolling releases excel for developers, enthusiasts, and anyone running recent ha
 
 Point releases excel for servers, production environments, and users who want to set up their system and forget about it. The deferred decision making is a feature, not a bug.
 
-The middle ground is distributions like Fedora, which release new versions every six months with automated upgrade tooling, or openSUSE Tumbleweed, which combines rolling releases with automated testing. Both offer the freshness of rolling with some of the safety of point releases.
+The middle ground is distributions like Fedora, which release new versions every six months with automated upgrade tooling, or openSUSE Tumbleweed, which combines rolling releases with automated testing and snapshot-based rollback. Both offer the freshness of rolling with some of the safety of point releases.
 
-The choice is not about stability. It is about how much attention you want to pay to your operating system.
+The choice is not about stability. It is about how much attention you want to pay to your operating system. With snapshot-based rollback, the attention cost drops dramatically. If you snapshot before every update and know you can restore in under a minute, the rolling model's risk profile changes completely.

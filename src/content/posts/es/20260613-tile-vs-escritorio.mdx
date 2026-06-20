@@ -39,24 +39,116 @@ La característica definitoria del modelo mosaico es la interacción mediante te
 
 La curva de aprendizaje es empinada. Un usuario nuevo de Hyprland o Sway debe memorizar combinaciones de teclas para operaciones básicas — cerrar una ventana, cambiar el foco, mover una ventana a otro espacio de trabajo. La configuración es código. Cambiar el comportamiento significa editar un archivo de texto, no navegar por un panel de opciones.
 
+## Configuración como código
+
+En un gestor de ventanas mosaico, la configuración del escritorio vive en un archivo de texto plano. Cada combinación de teclas, regla de espacio de trabajo, propiedad visual y ajuste de entrada se declara en ese archivo y se carga al inicio. Esto no es una diferencia superficial — cambia la relación con el sistema.
+
+Una configuración de i3 asigna espacios de trabajo a salidas y define la navegación común:
+
+```
+# Layout de espacios de trabajo
+workspace 1 output DP-1
+workspace 2 output DP-1
+workspace 3 output DP-2
+
+# Atajos de navegación
+bindsym $mod+1 workspace number 1
+bindsym $mod+Shift+1 move container to workspace number 1
+bindsym $mod+h split h
+bindsym $mod+v split v
+bindsym $mod+f fullscreen toggle
+
+# Abrir terminal
+bindsym $mod+Return exec alacritty
+# Lanzador de aplicaciones
+bindsym $mod+d exec rofi -show drun
+```
+
+Hyprland añade curvas de animación, reglas por ventana y configuración de entrada por monitor:
+
+```
+# Reglas por ventana
+windowrule = float, title:^(Picture-in-Picture)$
+windowrule = noblur, class:^(steam)$
+windowrule = opacity 0.9 override 0.9, class:^(kitty)$
+windowrule = workspace 1, class:^(firefox)$
+
+# Configuración de monitores
+monitor = DP-1, 2560x1440@144, 0x0, 1
+monitor = DP-2, 1920x1080@60, 2560x0, 1
+
+# Configuración de entrada
+input {
+    kb_layout = us,es
+    kb_variant = ,deadtilde
+    kb_options = grp:win_space_toggle
+    follow_mouse = 1
+    touchpad {
+        natural_scroll = true
+        tap-to-click = true
+    }
+}
+```
+
+Esta configuración es versionable. Commiteas tus dotfiles, replicas el mismo escritorio en otra máquina con un `git pull`, y deshaces cambios problemáticos con un revert. Ningún panel de configuración de ningún entorno de escritorio ofrece este nivel de reproducibilidad.
+
+## Scripting del escritorio
+
+Los gestores de ventanas mosaico exponen una interfaz IPC que convierte el escritorio en una superficie programable. i3 usa un socket Unix con un protocolo basado en JSON. Hyprland usa `hyprctl` para consultas y `hyprctl dispatch` para comandos.
+
+```bash
+# i3-msg: cambiar al espacio de trabajo 3 en el monitor primario
+i3-msg workspace 3
+
+# Hyprland: obtener la clase de la ventana activa
+hyprctl activewindow -j | jq -r '.class'
+
+# Mover todas las ventanas del espacio 1 al espacio 2
+i3-msg '[workspace="1"]' move workspace 2
+
+# Enfocar la siguiente ventana urgente
+i3-msg '[urgent="latest"]' focus
+
+# Mover la ventana enfocada a un espacio de trabajo vacío
+hyprctl dispatch movetoworkspace empty
+```
+
+Estos comandos se integran directamente en scripts de shell, barras de estado y lanzadores. Un ejemplo práctico — un selector de ventanas basado en rofi que lista todos los espacios de trabajo y sus ventanas:
+
+```bash
+# i3: listar espacios de trabajo con sus ventanas
+i3-msg -t get_tree | jq -r '
+  recurse(.nodes[]) |
+  select(.type == "workspace") |
+  "\(.name) (\(.nodes | length) ventanas)"'
+```
+
+En un escritorio tradicional, el equivalente más cercano es `wmctrl`, que parsea `_NET_CLIENT_LIST` y envía mensajes `_NET_ACTIVE_WINDOW`. Funciona, pero es un orden de magnitud más lento y carece de una API consistente entre compositores.
+
 ## Qué ganas realmente
 
-El primer beneficio es eficiencia de pantalla. Sin barras de título, bordes, paneles ni ventanas solapadas, cada píxel muestra contenido. En una pantalla de portátil, esto es espacio significativo.
+El primer beneficio es eficiencia de pantalla. Sin barras de título, bordes, paneles ni ventanas solapadas, cada píxel muestra contenido. En una pantalla de portátil de 13 pulgadas, esto es la diferencia entre tener una vista dividida usable y estar constantemente haciendo scroll.
 
-El segundo es fluidez con el teclado. Una vez que las combinaciones de teclas son memoria muscular, te mueves entre aplicaciones, espacios de trabajo y diseños sin romper el flujo. Tus manos permanecen en la fila central. La fricción entre pensar y actuar se reduce.
+El segundo es fluidez con el teclado. Una vez que las combinaciones de teclas se convierten en memoria muscular, te mueves entre aplicaciones, espacios de trabajo y diseños sin romper el flujo. Tus manos permanecen en la fila central. La fricción entre pensar y actuar se reduce a casi cero.
 
-El tercero es disciplina de espacios de trabajo. Los tile WMs fomentan un enfoque estructurado — una aplicación por espacio de trabajo, o un diseño de pantalla dividida con material de referencia a un lado y trabajo al otro. La estructura la impone el gestor de ventanas, facilitando mantenerla.
+El tercero es disciplina de espacios de trabajo. Los tile WMs fomentan un enfoque estructurado — una aplicación por espacio de trabajo, o un diseño de pantalla dividida con material de referencia a un lado y trabajo al otro. La estructura la impone el gestor de ventanas, facilitando mantenerla en comparación con un DE donde las ventanas se desplazan entre escritorios sin control.
+
+El cuarto es eficiencia de recursos. Una instalación mínima de Sway o i3 usa 100–200 MB de RAM en reposo. GNOME usa 500–800 MB. KDE usa 600–900 MB. En sistemas con 8 GB o menos, esta diferencia no es insignificante — es la diferencia entre tener un navegador con treinta pestañas abiertas y estar haciendo swapping.
 
 ## Qué pierdes
 
 Descubribilidad. Un tile WM no te dice lo que puedes hacer. Debes aprender antes de poder usar. Esto lo convierte en una mala elección para cualquiera que no quiera invertir tiempo en configurar y memorizar su entorno.
 
-Accesibilidad. El modelo solo-teclado funciona bien para muchas discapacidades pero mal para otras. Los usuarios que dependen de dispositivos señaladores, control por voz o conmutadores encontrarán los tile WMs hostiles.
+Accesibilidad. El modelo solo-teclado funciona bien para muchas discapacidades pero mal para otras. Los usuarios que dependen de dispositivos señaladores, control por voz o conmutadores encontrarán los tile WMs hostiles. La brecha no se salva fácilmente — el modelo de interacción completo asume un teclado físico con teclas modificadoras.
 
 Gestos y táctil. Los escritorios tradicionales soportan cada vez más pantallas táctiles, navegación por gestos y entrada con lápiz. Los tile WMs están construidos para teclado y ratón. Asumen que un teclado físico está siempre presente.
+
+Integración de aplicaciones. GNOME y KDE proporcionan ajustes a nivel de sistema para notificaciones, gestión de redes, Bluetooth, perfiles de energía y brillo de pantalla. En un tile WM, cada uno de estos necesita una herramienta independiente o un widget en la barra de estado. La deuda de integración se acumula con el tiempo. Un desarrollador nuevo en un equipo que usa un DE aprende el flujo de trabajo en una tarde. Un desarrollador nuevo en un equipo que usa Hyprland necesita entender el repositorio de dotfiles del usuario.
 
 ## Por qué el debate es estéril
 
 La productividad depende del contexto, no de la ideología. Un desarrollador escribiendo código se beneficia de la gestión de ventanas por teclado. Un diseñador trabajando en Figma se beneficia del control preciso del ratón y de poder solapar imágenes de referencia. Un usuario casual se beneficia de una interfaz que no estorba y no requiere configuración.
 
 El mejor gestor de ventanas es aquel en el que no tienes que pensar. Para algunos, ese es GNOME. Para otros, Hyprland. La elección no es sobre cuál es más productivo en términos absolutos. Es sobre qué modelo se alinea con cómo trabajas.
+
+Lo que importa más que la elección en sí es que la elección existe. Ningún otro sistema operativo convencional te permite reemplazar el gestor de ventanas sin reemplazar el sistema entero. Esa libertad es la verdadera ventaja del escritorio Linux.

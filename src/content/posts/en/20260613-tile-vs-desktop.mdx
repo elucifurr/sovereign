@@ -39,24 +39,116 @@ The defining characteristic of the tile model is keyboard-driven interaction. Yo
 
 The learning curve is steep. A new Hyprland or Sway user must memorise keybindings for basic operations — closing a window, switching focus, moving a window to another workspace. Configuration is code. Changing behaviour means editing a text file, not clicking through a settings panel.
 
+## Configuration as Code
+
+In a tiling WM, your desktop configuration lives in a plain text file. Every keybinding, workspace rule, visual property, and input setting is declared in that file and loaded at startup. This is not a superficial difference — it changes how you relate to the system.
+
+An i3 configuration maps workspaces to outputs and defines common navigation:
+
+```
+# Workspace layout
+workspace 1 output DP-1
+workspace 2 output DP-1
+workspace 3 output DP-2
+
+# Navigation keybindings
+bindsym $mod+1 workspace number 1
+bindsym $mod+Shift+1 move container to workspace number 1
+bindsym $mod+h split h
+bindsym $mod+v split v
+bindsym $mod+f fullscreen toggle
+
+# Start a terminal
+bindsym $mod+Return exec alacritty
+# Launcher
+bindsym $mod+d exec rofi -show drun
+```
+
+Hyprland adds animation curves, window rules, and per-monitor input configuration:
+
+```
+# Per-window rules
+windowrule = float, title:^(Picture-in-Picture)$
+windowrule = noblur, class:^(steam)$
+windowrule = opacity 0.9 override 0.9, class:^(kitty)$
+windowrule = workspace 1, class:^(firefox)$
+
+# Monitor setup
+monitor = DP-1, 2560x1440@144, 0x0, 1
+monitor = DP-2, 1920x1080@60, 2560x0, 1
+
+# Input configuration
+input {
+    kb_layout = us,es
+    kb_variant = ,deadtilde
+    kb_options = grp:win_space_toggle
+    follow_mouse = 1
+    touchpad {
+        natural_scroll = true
+        tap-to-click = true
+    }
+}
+```
+
+This configuration is version-controllable. You commit your dotfiles, replicate the same desktop across machines with a single git pull, and roll back broken changes with a revert. No settings panel in any desktop environment offers this level of reproducibility.
+
+## Scripting the Desktop
+
+Tile WMs expose an IPC interface that turns the desktop into a programmable surface. i3 uses a Unix socket and a JSON-based protocol. Hyprland uses `hyprctl` for queries and `hyprctl dispatch` for commands.
+
+```bash
+# i3-msg: switch to workspace 3 on the primary monitor
+i3-msg workspace 3
+
+# Hyprland: get the active window class
+hyprctl activewindow -j | jq -r '.class'
+
+# Move all windows from workspace 1 to workspace 2
+i3-msg '[workspace="1"]' move workspace 2
+
+# Focus the next urgent window
+i3-msg '[urgent="latest"]' focus
+
+# Move the focused window to an empty workspace
+hyprctl dispatch movetoworkspace empty
+```
+
+These commands integrate directly into shell scripts, status bars, and launchers. A practical example — a rofi-based window switcher that lists all workspaces and their windows:
+
+```bash
+# i3: list workspaces with their windows
+i3-msg -t get_tree | jq -r '
+  recurse(.nodes[]) |
+  select(.type == "workspace") |
+  "\(.name) (\(.nodes | length) windows)"'
+```
+
+In a traditional DE, the closest equivalent is `wmctrl`, which parses `_NET_CLIENT_LIST` and sends `_NET_ACTIVE_WINDOW` messages. It works, but it is an order of magnitude slower and has no consistent API across compositors.
+
 ## What You Actually Gain
 
-The first benefit is screen efficiency. Without title bars, borders, panels, or overlapping windows, every pixel displays content. On a laptop screen, this is meaningful space.
+The first benefit is screen efficiency. Without title bars, borders, panels, or overlapping windows, every pixel displays content. On a 13-inch laptop screen, this is the difference between a usable split-view and constantly scrolling.
 
-The second is keyboard fluency. Once the keybindings are muscle memory, you move between applications, workspaces, and layouts without breaking flow. Your hands stay on the home row. The friction between thinking and acting is reduced.
+The second is keyboard fluency. Once the keybindings embed as muscle memory, you move between applications, workspaces, and layouts without breaking flow. Your hands stay on the home row. The friction between thinking and acting is reduced to nearly zero.
 
-The third is workspace discipline. Tile WMs encourage a structured approach — one application per workspace, or a split-screen layout for reference material on one side and work on the other. The structure is enforced by the window manager, making it easier to maintain.
+The third is workspace discipline. Tile WMs encourage a structured approach — one application per workspace, or a split-screen layout with reference material on one side and work on the other. The structure is enforced by the window manager, making it easier to maintain than in a DE where windows drift across desktops.
+
+The fourth is resource efficiency. A minimal Sway or i3 setup uses 100–200 MB of RAM at idle. GNOME sits at 500–800 MB. KDE sits at 600–900 MB. On systems with 8 GB or less, this difference is not negligible — it is the difference between keeping a browser with thirty tabs open and swapping.
 
 ## What You Lose
 
 Discoverability. A tiling WM does not tell you what you can do. You must learn before you can use. This makes it a poor choice for anyone who does not want to invest time in configuring and memorising their environment.
 
-Accessibility. The keyboard-only model works well for many disabilities but poorly for others. Users who rely on pointing devices, voice control, or switch access will find tile WMs hostile.
+Accessibility. The keyboard-only model works well for many disabilities but poorly for others. Users who rely on pointing devices, voice control, or switch access will find tile WMs hostile. The gap is not easily bridged — the entire interaction model assumes a physical keyboard with modifier keys.
 
 Gestures and touch. Traditional desktops increasingly support touchscreens, gesture navigation, and tablet input. Tile WMs are built around keyboard and mouse. They assume a physical keyboard is always present.
+
+Application integration. GNOME and KDE provide system-wide settings for notifications, network management, Bluetooth, power profiles, and display brightness. In a tile WM, each of these needs a standalone tool or a status bar widget. The integration debt compounds over time. A new developer joining a DE-based team picks up the workflow in an afternoon. A developer joining a Hyprland-based team needs to understand the user's dotfiles repo.
 
 ## Why the Debate Is Sterile
 
 Productivity depends on context, not ideology. A developer writing code benefits from keyboard-driven window management. A designer working in Figma benefits from precise mouse control and overlapping reference images. A casual user benefits from an interface that stays out of the way and does not require configuration.
 
 The best window manager is the one you do not have to think about. For some people, that is GNOME. For others, it is Hyprland. The choice is not about which is more productive in absolute terms. It is about which model aligns with how you work.
+
+What matters more than the choice itself is that the choice exists. No other mainstream operating system lets you replace the window manager without replacing the entire OS. That freedom is the real advantage of the Linux desktop.
