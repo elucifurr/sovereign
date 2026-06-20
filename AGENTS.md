@@ -172,8 +172,9 @@ Use pnpm for Node.js work. Do not add npm, yarn, or bun lockfiles.
 - **Cleaned taxonomy**: Removed `protocolos-abiertos` and `dependencia-tecnologica` tags, updated 6 referencing posts.
 - **Created tracker**: `posts.md` with all 26 posts across 3 series.
 - **Wrote "Escritorio Linux Moderno" series** (3 posts en+es): Wayland (06-06), Tile vs DE (06-13), Rolling Release (06-20).
-- **Re-dated 5 regulatory posts** to 2026-05-30 through 06-05 to clear space for the new series.
-- **Fixed duplicate hero images**: Replaced 7 duplicate Unsplash photos across 14 files — Platform Risk, Regulatory Stack, Protocol Layer, Linux Architecture, EUDI Wallet, Rolling Release, Wayland. All Unsplash IDs now unique per post.
+- **Deepened 3 new posts with technical content**: Wayland 52→110 lines (wlroots, linux-dmabuf, `WAYLAND_DEBUG`, xdg-desktop-portal diagnostics). Tile vs DE 62→154 lines (config snippets, IPC scripting, resource comparison). Rolling Release 66→130 lines (pacman vs apt transactional model, AUR, snapper/timeshift rollback).
+- **Re-spaced 5 regulatory posts**: Client-Side Scanning (May 30→16), Proof of Age (Jun 1→May 20), EUDI Wallet (Jun 2→May 26), Regulatory Stack (Jun 3→Jun 2), Open Source Licenses (Jun 5→Jun 8).
+- **Fixed duplicate hero images**: Replaced 7 duplicate Unsplash photos across 14 files. All Unsplash IDs now unique per post.
 - **Build verified**: `pnpm build` passes with 0 errors, 118 pages, Pagefind indexed.
 
 ### Key decisions
@@ -181,3 +182,4 @@ Use pnpm for Node.js work. Do not add npm, yarn, or bun lockfiles.
 - Each post must have a unique Unsplash hero image (no sharing between different topics).
 - Feeds, search indexing, and static output must never depend on runtime services.
 - Editorial scope includes digital sovereignty, EU regulation, and Linux desktop topics.
+- New posts must include code snippets, CLI commands, and actionable diagnostics.
