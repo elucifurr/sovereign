@@ -22,7 +22,7 @@ const seoTitle = lang === "en" ? `${SITE_CONFIG.authorName} | ${SITE_CONFIG.name
 const seoDescription =
   lang === "en"
     ? `${SITE_CONFIG.authorName}'s author profile, recent publishing activity, and articles on digital sovereignty, systems, and environments.`
-    : author?.data.bio
+    : `${SITE_CONFIG.authorName} — perfil del autor, actividad de publicación reciente y artículos sobre soberanía digital, sistemas y entornos.`
 const writingActivityLabel = t(lang, "pages.author.writingActivity")
 const publishedText = t(lang, "post.publishedAt")
 const authorSlug = author?.data.slug ?? "default"
