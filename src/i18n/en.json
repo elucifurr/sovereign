@@ -1,7 +1,7 @@
 {
   "site": {
-    "name": "M. Segundo",
-    "titleTemplate": "%s · M. Segundo",
+    "name": "M2",
+    "titleTemplate": "%s · M2",
     "description": "How software design, infrastructure, and regulation affect personal autonomy.",
     "twitter": {
       "site": "@msegundo",
@@ -34,8 +34,7 @@
     "regulacion": "Regulation",
     "privacidad": "Privacy",
     "plataformas": "Platforms",
-    "protocolos-abiertos": "Open Protocols",
-    "dependencia-tecnologica": "Tech Dependency",
+
     "linux": "Linux",
     "infraestructura": "Infrastructure",
     "devops": "DevOps",
@@ -51,7 +50,7 @@
   "headings": {
     "home": {
       "title": "Home",
-      "h1": "M. Segundo",
+      "h1": "M2",
       "h2": "How software design, infrastructure, and regulation affect personal autonomy."
     },
     "soberania": {

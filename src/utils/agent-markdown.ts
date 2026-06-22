@@ -55,7 +55,7 @@ export function renderLlmsTxt(posts: readonly PostEntry[]): string {
 
 export function renderLlmsFullTxt(posts: readonly PostEntry[]): string {
   const lines = [
-    "# M2 llms-full.txt",
+    `# ${SITE_CONFIG.name} llms-full.txt`,
     "",
     `Site: ${SITE_CONFIG.url}`,
     `Generated from ${posts.length} published posts.`,

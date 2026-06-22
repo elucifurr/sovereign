@@ -9,12 +9,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/elucifurr/sovereign.git"
+    "url": "TODO"
   },
   "bugs": {
-    "url": "https://github.com/elucifurr/sovereign/issues"
+    "url": "TODO"
   },
-  "homepage": "https://github.com/elucifurr/sovereign#readme",
+      "homepage": "TODO",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",

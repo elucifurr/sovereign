@@ -38,16 +38,20 @@ const publicAssetHost = hostnameFromUrl(publicAssetBaseUrl)
 const socialMastodonUrl = "https://mastodon.social"
 
 export const SITE_CONFIG = {
-  name: "Mario Segundo",
+  name: "M2",
+  authorName: "Mario Segundo",
+  contactEmail: "hello@msegundo.dev",
   url: (
     readPublicEnv("PUBLIC_SITE_URL") ?? "https://m2by.me"
   ).replace(/\/$/, ""),
   description:
     "How software design, infrastructure, and regulation affect personal autonomy.",
+  // TODO: replace with your GitHub username and repo
   repository: "https://github.com/elucifurr/sovereign",
   social: {
     mastodon: socialMastodonUrl,
     bluesky: "https://bsky.app",
+    // TODO: replace with your GitHub username
     github: "https://github.com/elucifurr",
   },
   defaultOgImage: "/open-graph.webp",

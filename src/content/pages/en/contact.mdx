@@ -5,7 +5,9 @@ locale: en
 draft: false
 ---
 
-You can reach me at [hello@msegundo.dev](mailto:hello@msegundo.dev).
+import { SITE_CONFIG } from "@/config/site"
+
+You can reach me at [{SITE_CONFIG.contactEmail}](mailto:{SITE_CONFIG.contactEmail}).
 
 Find me elsewhere: [Mastodon](https://mastodon.social) · [Bluesky](https://bsky.app) · [GitHub](https://github.com/elucifurr)
 
