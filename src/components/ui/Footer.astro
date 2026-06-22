@@ -16,7 +16,6 @@ const { lang } = Astro.props
 const primaryCategories = getPrimaryCategories()
 const year = new Date().getFullYear()
 const legalLinks = [
-  { href: localePath(lang, "/about/"), label: t(lang, "pages.about.title") },
   {
     href: localePath(lang, "/privacy-policy/"),
     label: t(lang, "footer.privacyPolicy"),
@@ -133,6 +132,12 @@ const legalLinks = [
           href={localePath(lang, "/author/")}
         >
           {t(lang, "footer.author")}
+        </a>
+        <a
+          class="text-[0.9375rem] leading-6 transition-colors hover:text-foreground"
+          href={localePath(lang, "/about/")}
+        >
+          {t(lang, "pages.about.title")}
         </a>
       </nav>
     </div>
