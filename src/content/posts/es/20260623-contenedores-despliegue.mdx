@@ -1,0 +1,218 @@
+---
+title: "Contenedores en producción: del código al clúster"
+description: "Cómo los contenedores, Kubernetes y OpenTofu cambiaron la forma de desplegar software."
+category: "sistemas"
+tags:
+  - "infraestructura"
+  - "devops"
+  - "arquitectura"
+pubDate: 2026-06-23
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1573164713712-03790a178651"
+heroImageAlt: "Sala de servidores con filas de racks y cableado organizado"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: es
+draft: false
+featured: false
+---
+
+Antes de los contenedores, desplegar software era un proceso artesanal. Subías un binario por SSH, copiabas archivos de configuración a mano, reiniciabas el servicio y cruzabas los dedos. Si tenías suerte, el servidor de producción se parecía lo suficiente al de staging como para que todo funcionase. Si no, pasabas la tarde debuggeando una diferencia de versión de OpenSSL que nadie sabía que existía.
+
+Los contenedores rompieron ese ciclo. Empaquetan la aplicación con todo lo que necesita para ejecutarse: librerías, archivos de configuración, variables de entorno, incluso el usuario del sistema. La imagen que sale de CI es exactamente la misma que se despliega en producción. No hay compilación intermedia, no hay dependencias que resolver, no hay "en mi máquina funciona".
+
+## Cómo funciona una imagen
+
+Una imagen de contenedor sigue el estándar OCI. Son capas superpuestas que forman un sistema de archivos completo. Cada instrucción del Dockerfile genera una capa nueva. Cuando descargas una imagen, solo transfieres las capas que no tienes localmente.
+
+Docker fue quien popularizó el formato, pero el ecosistema ya no depende de él. containerd es el runtime que usa Kubernetes por debajo. Podman ejecuta las mismas imágenes sin demonio y funciona rootless desde el primer momento. La imagen es la misma independientemente de la herramienta que uses para construirla o ejecutarla.
+
+```dockerfile
+# Build multi-etapa: compila en una imagen completa, envía solo el binario
+FROM golang:1.23 AS build
+WORKDIR /app
+COPY . .
+RUN CGO_ENABLED=0 go build -o server .
+
+FROM alpine:3.21
+COPY --from=build /app/server /server
+EXPOSE 8080
+CMD ["/server"]
+```
+
+El resultado es una imagen de unos 15 megas. Sin compilador, sin gestor de paquetes, sin shell. Solo el binario y el puerto que expone. Eso es lo que viaja desde tu máquina hasta el clúster.
+
+## Un contenedor no es suficiente
+
+Con un solo contenedor en una sola máquina, cualquier fallo es catastrófico. El proceso se cuelga, la máquina se cae, el tráfico se dispara — no hay alternativa. Para que los contenedores tengan sentido en producción necesitas orquestación.
+
+## Kubernetes y el modelo de despliegue
+
+Kubernetes convierte un conjunto de máquinas en un pool de recursos. Tú declaras el estado deseado — cinco réplicas de esta imagen, expuestas en el puerto 443 — y Kubernetes se encarga de que la realidad se parezca a lo que has pedido.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-server
+spec:
+  replicas: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: api-server
+  template:
+    metadata:
+      labels:
+        app: api-server
+    spec:
+      containers:
+      - name: api
+        image: myregistry.io/api:v2.1.0
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+```
+
+Este Deployment mantiene cinco copias del mismo contenedor siempre activas. Cuando toca actualizar, lo hace de a una: reemplaza un pod, espera a que pase el health check, sigue con el siguiente. Si la nueva versión falla, la actualización se detiene y Kubernetes vuelve a la versión anterior sin que intervenga un humano.
+
+Hay tres estrategias típicas:
+
+- **Rolling update**: el que viene por defecto. Los pods se reemplazan de uno en uno sin tiempo de inactividad.
+- **Blue-green**: dos entornos idénticos funcionan al mismo tiempo. El tráfico se redirige del azul al verde cuando el nuevo está verificado.
+- **Canary**: una fracción pequeña del tráfico se envía a la nueva versión. Si los errores no aumentan, el despliegue continúa.
+
+Cada una responde a un nivel de tolerancia al riesgo distinto.
+
+## Escalado horizontal
+
+Kubernetes escala réplicas en función de métricas. El HorizontalPodAutoscaler observa el consumo de CPU, memoria o métricas personalizadas y ajusta el número de pods.
+
+```yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api-server-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api-server
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+```
+
+Cuando la CPU supera el 70% de media, Kubernetes añade réplicas. Cuando baja, las elimina. La aplicación no necesita saber que está siendo escalada. Solo recibe peticiones. Esto funciona porque el contenedor es stateless — no guarda estado local, no depende de la máquina donde se ejecuta.
+
+Las cargas stateful — bases de datos, colas de mensajes, cachés — usan StatefulSets, que asignan identidades fijas y almacenamiento persistente a cada pod. Pero escalar un StatefulSet es más complejo porque los datos hay que redistribuirlos. En la práctica, la mayoría de los sistemas mantienen fijo el tamaño de los componentes stateful y escalan los stateless a su alrededor.
+
+## La infraestructura también se declara
+
+Antes de que un contenedor pueda ejecutarse, el clúster tiene que existir. OpenTofu, el fork abierto de Terraform, aplica el mismo enfoque declarativo a la infraestructura que Kubernetes aplica a los contenedores.
+
+```hcl
+resource "kubernetes_deployment" "api" {
+  metadata {
+    name = "api-server"
+  }
+  spec {
+    replicas = 3
+    selector {
+      match_labels = {
+        app = "api-server"
+      }
+    }
+    template {
+      metadata {
+        labels = {
+          app = "api-server"
+        }
+      }
+      spec {
+        container {
+          image = "myregistry.io/api:v2.1.0"
+          name  = "api"
+          port {
+            container_port = 8080
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+OpenTofu mantiene un estado con todos los recursos que gestiona. Cuando cambias una etiqueta, una réplica o la versión de la imagen, OpenTofu calcula la diferencia y aplica solo lo necesario. El mismo fichero define el clúster, las redes, las políticas de acceso y los certificados.
+
+## El pipeline completo
+
+Del código a producción hay una secuencia de pasos que se repite en cada despliegue:
+
+1. **Build**: se construye la imagen Docker multi-etapa y se etiqueta con el SHA del commit.
+2. **Escaneo**: Trivy revisa la imagen en busca de vulnerabilidades conocidas. Si hay hallazgos críticos por encima de un umbral, el pipeline falla.
+3. **Firmado**: la imagen se firma con Cosign y la firma se registra en un log de transparencia.
+4. **Subida**: la imagen firmada se envía al registro.
+5. **Actualización**: el manifiesto de Kubernetes se actualiza con la nueva etiqueta.
+6. **Aplicación**: el pipeline ejecuta `kubectl apply` o lanza una sincronización de ArgoCD para que el clúster converja.
+7. **Verificación**: los health checks confirman que la nueva versión está activa y recibe tráfico.
+
+```yaml
+# Pipeline de GitHub Actions
+name: Deploy
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t myregistry.io/api:${{ github.sha }} .
+      - name: Scan image
+        run: trivy image myregistry.io/api:${{ github.sha }}
+      - name: Push image
+        run: docker push myregistry.io/api:${{ github.sha }}
+      - name: Update manifest
+        run: sed -i "s|image: .*|image: myregistry.io/api:${{ github.sha }}|" k8s/deployment.yaml
+      - name: Deploy
+        run: kubectl apply -f k8s/
+```
+
+Con este pipeline, cada commit que pasa los tests llega a producción en minutos. La imagen es el artefacto único, firmado, escaneado e idéntico en todos los entornos.
+
+## Lo que los contenedores no resuelven
+
+Los contenedores solucionaron el empaquetado. No solucionaron la operación. La complejidad que sigue existiendo está en otra parte:
+
+- **Red**: service meshes, controladores de ingress, resolución DNS entre namespaces, políticas de red. El contenedor es portátil, pero la topología que lo conecta no lo es.
+- **Almacenamiento**: los volúmenes persistentes hay que aprovisionarlos, respaldarlos y migrarlos. El ciclo de vida del contenedor es efímero, el de los datos no.
+- **Secretos**: claves de API, certificados, contraseñas. Hay que entregarlos al contenedor correcto en el momento correcto sin exponerlos en el repositorio.
+- **Observabilidad**: logs, métricas y trazas de cientos de contenedores hay que agregarlos en una sola vista. Depurar un sistema distribuido es más difícil que depurar un solo proceso.
+
+No son problemas sin solución, pero son la parte del stack que los contenedores no simplifican. La imagen es la parte fácil. Todo lo demás — red, almacenamiento, secretos, observabilidad — es donde está el trabajo real.
+
+## Lo que cambió
+
+Antes de los contenedores, desplegar era una secuencia de comandos SSH, copias de binarios y reinicios de servicios. Cada entorno derivaba lentamente del original y nadie se daba cuenta hasta que algo explotaba en producción.
+
+Los contenedores hicieron que el artefacto de despliegue fuera inmutable. La imagen que pasa los tests en CI es exactamente la misma que se ejecuta en producción. Entre medias no hay recompilación, no hay diferencias de entorno, no hay dependencias que se resuelven de forma distinta. Kubernetes hace que esa imagen se ejecute de forma fiable a escala. OpenTofu hace que la infraestructura que la sostiene sea reproducible.
+
+El resultado no es un sistema más simple. Es un sistema más honesto. Cada dependencia está declarada. Cada cambio pasa por el mismo pipeline. La imagen es la fuente de verdad, y el clúster converge hacia ella.

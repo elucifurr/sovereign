@@ -1,0 +1,220 @@
+---
+title: "Containers in Production: From Code to Cluster"
+description: "How containers, Kubernetes, and OpenTofu changed the way we deploy software."
+category: "sistemas"
+tags:
+  - "infraestructura"
+  - "devops"
+  - "arquitectura"
+pubDate: 2026-06-23
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1573164713712-03790a178651"
+heroImageAlt: "Server room with rows of server racks and organized cabling"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+Before containers, deploying software was a sequence of manual steps that always diverged between environments. The developer's machine had a slightly different version of a library, a different kernel, a different filesystem layout. The staging server had been patched two months ago and never rebooted. The production server ran a configuration that nobody remembered writing. Every deployment was a leap of faith.
+
+Containers changed that by packaging the application with its entire runtime environment. The same image that passes tests in CI is pulled into production. The environment is identical because it is, literally, the same filesystem.
+
+## The Container Contract
+
+A container image is an OCI standard bundle: a layered filesystem, a manifest, and runtime metadata. It does not care about the host distribution, the init system, or the kernel version as long as the host runs a compatible container runtime. This is the core insight — the image is the deployment artifact, not the source code, not the binary, not the package.
+
+Docker popularised the format, but the runtime layer has since been standardised. containerd, the reference OCI runtime, is now the default in Kubernetes. Podman runs the same images without a daemon and supports rootless execution out of the box. The image format is the same regardless of which tool you use to build or run it.
+
+```dockerfile
+# Multi-stage build: compile in a fat image, ship only the binary
+FROM golang:1.23 AS build
+WORKDIR /app
+COPY . .
+RUN CGO_ENABLED=0 go build -o server .
+
+FROM alpine:3.21
+COPY --from=build /app/server /server
+EXPOSE 8080
+CMD ["/server"]
+```
+
+This Dockerfile builds a Go binary using the full Go toolchain and copies only the resulting binary into a minimal Alpine image. The final image is about 15 MB, contains no compiler, no package manager, and no shell unless you explicitly install one. That is the artifact that gets deployed.
+
+## Why One Container Is Not Enough
+
+A single container works for a local development environment. In production, one instance is a single point of failure. If the process crashes, the machine goes down, or the traffic exceeds capacity, there is no fallback.
+
+This is where orchestration comes in. Running containers at scale requires a system that manages placement, health checks, networking, storage, and updates across a cluster of machines.
+
+## Kubernetes and the Deployment Model
+
+Kubernetes abstracts the underlying machines into a pool of compute capacity. You declare the desired state — five replicas of this image, exposed on port 443, with a TLS certificate — and Kubernetes converges the actual state towards it.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-server
+spec:
+  replicas: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: api-server
+  template:
+    metadata:
+      labels:
+        app: api-server
+    spec:
+      containers:
+      - name: api
+        image: myregistry.io/api:v2.1.0
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+```
+
+This deployment ensures five copies of the container are running at all times. When a new image is rolled out, Kubernetes performs a rolling update — it replaces pods one at a time, keeping at least four running during the process. If the new version fails its health check, the rollout stops and Kubernetes reverts to the previous version automatically.
+
+Three strategies cover most scenarios:
+
+- **Rolling update**: the default. Pods are replaced gradually with zero downtime.
+- **Blue-green**: two identical environments run simultaneously. Traffic is switched from blue to green when the new version is verified.
+- **Canary**: a small percentage of traffic is routed to the new version. If error rates stay within thresholds, the rollout proceeds.
+
+The decision between them is about risk tolerance. Rolling updates are safe for stateless services. Blue-green requires enough capacity to run two full environments. Canary requires traffic routing and observability.
+
+## Scaling Up and Down
+
+Horizontal scaling in Kubernetes is driven by metrics. The HorizontalPodAutoscaler watches CPU, memory, or custom metrics and adjusts the replica count accordingly.
+
+```yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api-server-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api-server
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+```
+
+When CPU averages above 70% across all pods, Kubernetes adds replicas. When it drops below, it removes them. The application does not need to be aware of the scaling — it just handles requests. This is the stateless model, and it works because the container image contains everything the application needs to run.
+
+Stateful workloads — databases, message queues, caches — require a different approach. StatefulSets assign stable identities and persistent storage to each pod. Scaling a stateful set is more involved because data must be rebalanced. Most production systems keep stateful workloads at a fixed size and scale stateless services around them.
+
+## Provisioning the Infrastructure
+
+Before the first container can run, the cluster must exist. OpenTofu, the open-source fork of Terraform, manages infrastructure as code. The same declarative approach used for Kubernetes deployments applies to the infrastructure underneath.
+
+```hcl
+resource "kubernetes_deployment" "api" {
+  metadata {
+    name = "api-server"
+  }
+  spec {
+    replicas = 3
+    selector {
+      match_labels = {
+        app = "api-server"
+      }
+    }
+    template {
+      metadata {
+        labels = {
+          app = "api-server"
+        }
+      }
+      spec {
+        container {
+          image = "myregistry.io/api:v2.1.0"
+          name  = "api"
+          port {
+            container_port = 8080
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+OpenTofu tracks the state of every resource it manages. When the image tag changes in the configuration, OpenTofu computes the diff and applies only the necessary changes. The same tool provisions the cluster, the networking, the storage classes, and the IAM policies.
+
+## The Pipeline
+
+The full path from code to production follows a pipeline that each major step:
+
+1. **Build**: a multi-stage Docker image is built and tagged with the commit SHA.
+2. **Scan**: tools like Trivy check the image for known vulnerabilities. If critical findings are above a threshold, the pipeline fails.
+3. **Sign**: the image manifest is signed with Cosign and the signature is recorded in a transparency log.
+4. **Push**: the signed image is pushed to a registry.
+5. **Update**: the deployment manifest is updated with the new image tag.
+6. **Apply**: the pipeline runs `kubectl apply` or triggers an ArgoCD sync to converge the cluster.
+7. **Verify**: health checks confirm the new version is running and accepting traffic.
+
+```yaml
+# GitHub Actions pipeline
+name: Deploy
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t myregistry.io/api:${{ github.sha }} .
+      - name: Scan image
+        run: trivy image myregistry.io/api:${{ github.sha }}
+      - name: Push image
+        run: docker push myregistry.io/api:${{ github.sha }}
+      - name: Update manifest
+        run: sed -i "s|image: .*|image: myregistry.io/api:${{ github.sha }}|" k8s/deployment.yaml
+      - name: Deploy
+        run: kubectl apply -f k8s/
+```
+
+This pipeline, in its simplest form, automates the entire cycle. Each commit that passes tests goes to production within minutes. The image is the deployable artifact — signed, scanned, and identical across environments.
+
+## What Remains Complex
+
+Containers solved the packaging problem. They did not solve the operational problem. The complexity that remains includes:
+
+- **Networking**: service meshes, ingress controllers, DNS resolution across namespaces, network policies. Containers are portable, but the network topology that connects them is not.
+- **Storage**: persistent volumes must be provisioned, backed up, and migrated. The container lifecycle is ephemeral, but data is not.
+- **Secrets**: configuration values, API keys, and certificates must be delivered securely to the right container at the right time. Tools like Sealed Secrets and External Secrets Operator help, but the problem is not fully abstracted.
+- **Observability**: logs, metrics, and traces from hundreds of containers must be aggregated into a single view. The container runtime provides isolation, but debugging a distributed system is harder than debugging a single process.
+
+These challenges are not unsolvable, but they are the parts of the stack that containers do not simplify. The image is the easy part. Everything around it — networking, storage, secrets, observability — is where the work lives.
+
+## What Changed
+
+Before containers, deploying software meant running SSH into servers, copying binaries, restarting services, and hoping nothing broke. Rollbacks meant restoring from backup or rebuilding from source with the previous tag. Environment drift was inevitable and undetectable until it caused an incident.
+
+Containers made the deployment artifact immutable. The same image that passed tests in CI is the same image running in production. There is no compilation step between them, no environment difference, no dependency mismatch. Kubernetes made that image run reliably at scale. OpenTofu made the infrastructure behind it reproducible.
+
+The result is not a simpler system. It is a more honest one. Every dependency is declared. Every change goes through the same pipeline. The image is the source of truth, and the cluster converges towards it.
