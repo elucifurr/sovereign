@@ -1,0 +1,128 @@
+---
+title: "GitOps: When the Cluster Runs Itself"
+description: "Why pushing YAML with kubectl apply doesn't scale, and how GitOps fixes it."
+category: "sistemas"
+tags:
+  - "infraestructura"
+  - "devops"
+  - "arquitectura"
+  - "automatizacion"
+pubDate: 2026-06-27
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"
+heroImageAlt: "Laptop on a wooden desk with a cup of coffee"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+Running `kubectl apply` from a CI/CD pipeline works for a single cluster with a small team. The pipeline builds an image, pushes it to a registry, and runs `kubectl set image` or `kubectl apply`. This is the push model — the pipeline has credentials to write into the Kubernetes API, and it uses them every time a commit reaches the main branch.
+
+The problem is that the pipeline is not the only thing writing to the cluster. Someone runs a `kubectl scale` during an incident. A developer applies a ConfigMap change directly to debug something at 2 AM. An automated script patches a resource. Weeks later, the cluster state no longer matches what is in the repository. That mismatch is configuration drift, and it is the root cause of most unreproducible production incidents.
+
+## The Inversion
+
+GitOps replaces the push model with a pull model. Instead of a pipeline pushing YAML into the cluster, a controller inside the cluster watches a Git repository and reconciles the actual state towards the desired state defined in that repository.
+
+The controller — typically ArgoCD or Flux — runs inside the cluster. It has credentials to read from Git and credentials to write into the Kubernetes API. The pipeline no longer needs API access. Its job ends when it pushes an image and opens a pull request against the GitOps repository.
+
+This inversion has three immediate consequences:
+
+- **The cluster state is in Git**. Every change is a commit. There is no way to modify the cluster without leaving a trace in the repository.
+- **Drift is detected and corrected**. If someone runs `kubectl delete deployment` manually, the controller notices the deployment is missing and re-applies it from Git.
+- **Rollback is `git revert`**. If a deployment breaks, reverting the commit and letting the controller reconcile is faster than rebuilding and redeploying.
+
+## ArgoCD Application
+
+ArgoCD organises deployments around a custom resource called an Application. Each Application points to a Git repository, a path within it, and a target cluster.
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: api-server
+  namespace: argocd
+spec:
+  project: production
+  source:
+    repoURL: https://github.com/org/gitops-config
+    targetRevision: main
+    path: apps/api-server/overlays/production
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: api
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ApplyOutOfSyncOnly=true
+```
+
+This Application tells ArgoCD to sync the directory `apps/api-server/overlays/production` from the main branch. The `syncPolicy` block enables automatic synchronisation: when the Git repository changes, ArgoCD applies the diff automatically. `prune: true` removes resources that are no longer in Git. `selfHeal: true` corrects manual modifications to the cluster.
+
+ArgoCD does not blindly apply every change. Each Application has a health check that validates whether the deployed resources are working. A Deployment is healthy when the desired number of replicas are available. A Custom Resource is healthy when its status field reports ready. If a change produces an unhealthy state, ArgoCD marks it as degraded and stops the sync. The operator can inspect the diff, decide to roll back or fix forward, and the audit trail is in the Application events.
+
+## AppProject: Boundaries and Access
+
+Not every team should be able to deploy to every namespace. ArgoCD AppProjects define boundaries: which Git repositories can be used, which clusters can be targeted, which resource types are allowed, and which namespaces they can write to.
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: production
+  namespace: argocd
+spec:
+  sourceRepos:
+    - https://github.com/org/gitops-config
+  destinations:
+    - namespace: api
+      server: https://kubernetes.default.svc
+    - namespace: frontend
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+```
+
+An Application inside the `production` project can only deploy from the allowed repository and only to the `api` and `frontend` namespaces. This prevents a configuration mistake in one service from affecting unrelated infrastructure.
+
+## How the Pipeline Changes
+
+Before GitOps, a typical deployment pipeline looks like this:
+
+1. Build the image
+2. Scan and sign it
+3. Push to registry
+4. Run `kubectl set image` or `kubectl apply`
+
+With GitOps, it becomes:
+
+1. Build the image
+2. Scan and sign it
+3. Push to registry
+4. Update the tag in the GitOps repository and open a pull request
+5. Merge the pull request
+6. ArgoCD detects the change and syncs
+
+Step 4 is the shift. The pipeline no longer talks to the cluster. It writes a new image tag into a YAML file and opens a PR. The PR goes through code review, just like any other change. Once merged, ArgoCD sees the new commit and applies the update.
+
+For environments that deploy frequently, updating the tag by hand is impractical. Tools like Kustomize and Renovate automate this step. Kustomize separates the base configuration from environment-specific overlays. The pipeline updates the image tag in the overlay, commits it, and opens the PR. Renovate watches the registry for new image versions and opens PRs automatically.
+
+## What GitOps Does Not Solve
+
+GitOps makes deployments auditable and reversible. It does not make them fast by itself. The bottleneck shifts from having credentials to apply changes to the speed of the CI pipeline and the PR review process.
+
+It also assumes that the Git repository is the source of truth for infrastructure configuration. This works well for Kubernetes resources. It does not work for secrets, which should never be stored in plain text in Git. Secrets management requires a separate strategy, and GitOps tools handle this by integrating with external stores.
+
+GitOps does not replace monitoring. If a deployment succeeds but the application is serving errors, ArgoCD will report the Application as healthy because the Pods are running. Health checks cover Kubernetes resources, not application logic. Observability remains a separate concern.
+
+## Why It Matters
+
+The push model treats the cluster as mutable state that pipelines modify directly. The pull model treats the cluster as a system that converges towards a declared state stored in Git. The difference is not technical — it is operational. In the push model, incidents happen and nobody knows who changed what. In the pull model, every change is recorded, reviewed, and reversible.
+
+GitOps extends the same principle that containers introduced: immutability. A container image is built once and deployed everywhere. A GitOps repository defines the desired state once, and every cluster converges towards it. The image is the artifact. The repository is the source of truth. The cluster is a consumer.

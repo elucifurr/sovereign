@@ -77,15 +77,36 @@
 
 ## Serie: Escritorio Linux Moderno
 
-- [ ] **Post 1** — 2026-06-06 — Wayland: The Technical Transition
-  - [ ] en: `src/content/posts/en/20260606-wayland-x11.mdx`
-  - [ ] es: `src/content/posts/es/20260606-wayland-x11.mdx`
-- [ ] **Post 2** — 2026-06-13 — Tile WMs vs Desktop Environments
-  - [ ] en: `src/content/posts/en/20260613-tile-vs-desktop.mdx`
-  - [ ] es: `src/content/posts/es/20260613-tile-vs-escritorio.mdx`
-- [ ] **Post 3** — 2026-06-20 — Rolling Release: The Myth and the Reality
-  - [ ] en: `src/content/posts/en/20260620-rolling-release.mdx`
-  - [ ] es: `src/content/posts/es/20260620-rolling-release.mdx`
+- [x] **Post 1** — 2026-06-06 — Wayland: The Technical Transition
+  - [x] en: `src/content/posts/en/20260606-wayland-x11.mdx`
+  - [x] es: `src/content/posts/es/20260606-wayland-x11.mdx`
+- [x] **Post 2** — 2026-06-13 — Tile WMs vs Desktop Environments
+  - [x] en: `src/content/posts/en/20260613-tile-vs-desktop.mdx`
+  - [x] es: `src/content/posts/es/20260613-tile-vs-escritorio.mdx`
+- [x] **Post 3** — 2026-06-20 — Rolling Release: The Myth and the Reality
+  - [x] en: `src/content/posts/en/20260620-rolling-release.mdx`
+  - [x] es: `src/content/posts/es/20260620-rolling-release.mdx`
+
+## Serie: Contenedores y Producción
+
+- [x] **Post 0** — 2026-06-23 — Containers in Production / Contenedores en producción
+  - [x] en: `src/content/posts/en/20260623-containers-deployment.mdx`
+  - [x] es: `src/content/posts/es/20260623-contenedores-despliegue.mdx`
+- [x] **Post 1** — 2026-06-27 — GitOps: el cluster se reconcilia solo (ArgoCD)
+  - [x] en: `src/content/posts/en/20260627-gitops.mdx`
+  - [x] es: `src/content/posts/es/20260627-gitops.mdx`
+- [ ] **Post 2** — Secretos: cómo no filtrar credenciales (External Secrets Operator, SOPS, Vault)
+  - [ ] en: `src/content/posts/en/202607XX-secrets-management.mdx`
+  - [ ] es: `src/content/posts/es/202607XX-gestion-secretos.mdx`
+- [ ] **Post 3** — Observabilidad: Prometheus, Grafana, Loki, OpenTelemetry
+  - [ ] en: `src/content/posts/en/202607XX-observability.mdx`
+  - [ ] es: `src/content/posts/es/202607XX-observabilidad.mdx`
+- [ ] **Post 4** — Service Mesh: comunicaciones seguras entre servicios (Cilium, Istio)
+  - [ ] en: `src/content/posts/en/202607XX-service-mesh.mdx`
+  - [ ] es: `src/content/posts/es/202607XX-service-mesh.mdx`
+- [ ] **Post 5** — Stateful en K8s: bases de datos y backups (CloudNativePG, Velero)
+  - [ ] en: `src/content/posts/en/202608XX-stateful-k8s.mdx`
+  - [ ] es: `src/content/posts/es/202608XX-stateful-k8s.mdx`
 
 ## Tags clean-up
 

@@ -1,0 +1,118 @@
+---
+title: "GitOps: cuando el clúster se gestiona solo"
+description: "Por qué hacer kubectl apply desde CI/CD no escala, y cómo GitOps lo resuelve."
+category: "sistemas"
+tags:
+  - "infraestructura"
+  - "devops"
+  - "arquitectura"
+  - "automatizacion"
+pubDate: 2026-06-27
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d"
+heroImageAlt: "Portátil sobre una mesa de madera con una taza de café"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: es
+draft: false
+featured: false
+---
+
+GitOps es un modelo de despliegue en el que el clúster de Kubernetes se reconcilia contra un repositorio de Git. No hay un pipeline que empuje YAML al API. Hay un controlador dentro del clúster que mira el repositorio, compara el estado actual con el deseado, y aplica los cambios necesarios.
+
+El concepto es sencillo, pero sus implicaciones cambian la forma en que operas un clúster. Cada modificación queda registrada en el historial de Git. Cada despliegue es reversible con un `git revert`. El estado del clúster no se desvía porque el controlador lo corrige automáticamente.
+
+## El modelo pull
+
+Sin GitOps, el flujo típico es push: construyes la imagen, la subes al registro y ejecutas `kubectl apply` desde el pipeline o desde tu máquina. El pipeline necesita credenciales para escribir en el API de Kubernetes, y cada miembro del equipo también las tiene. Con el tiempo, alguien ejecuta un cambio directo en producción — un scale manual, un ConfigMap corregido sobre la marcha — y el repositorio deja de reflejar la realidad del clúster.
+
+GitOps invierte la dirección. El pipeline construye la imagen y la sube. Luego actualiza el tag en el repositorio de configuración y abre un pull request. Una vez mergeado, ArgoCD detecta el cambio, calcula la diferencia con el estado actual del clúster y aplica solo lo necesario. El pipeline ya no necesita credenciales del clúster. El controlador dentro del clúster es quien tiene permiso para escribir.
+
+## Cómo se declara un despliegue
+
+ArgoCD organiza los despliegues mediante un recurso personalizado llamado Application. Cada Application apunta a un repositorio, una ruta dentro de él, y el clúster donde desplegar.
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: api-server
+  namespace: argocd
+spec:
+  project: production
+  source:
+    repoURL: https://github.com/org/gitops-config
+    targetRevision: main
+    path: apps/api-server/overlays/production
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: api
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ApplyOutOfSyncOnly=true
+```
+
+Este Application le dice a ArgoCD que sincronice el directorio `apps/api-server/overlays/production` de la rama main. Con `prune: true`, ArgoCD elimina recursos que ya no están en Git. Con `selfHeal: true`, corrige cualquier modificación manual que alguien haga en el clúster.
+
+ArgoCD no aplica cualquier cambio sin control. Cada recurso tiene un health check. Un Deployment está sano cuando tiene el número correcto de réplicas funcionando. Si un cambio produce un estado degradado, ArgoCD marca el Application como degradado y detiene la sincronización. El operador revisa el diff, decide si revertir o seguir adelante, y todo queda registrado en los eventos del Application.
+
+## Límites entre equipos
+
+No todos los equipos deben poder desplegar en todos los namespaces. Los AppProject definen fronteras: qué repositorios se pueden usar, qué clústers, qué tipos de recursos y qué namespaces.
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: production
+  namespace: argocd
+spec:
+  sourceRepos:
+    - https://github.com/org/gitops-config
+  destinations:
+    - namespace: api
+      server: https://kubernetes.default.svc
+    - namespace: frontend
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+```
+
+Un Application dentro del proyecto `production` solo puede desplegar desde el repositorio permitido y solo en los namespaces `api` y `frontend`. Esto evita que un error de configuración en un servicio afecte a recursos que no le corresponden.
+
+## Cómo evoluciona el pipeline
+
+Con GitOps, el pipeline de publicación cambia de forma significativa:
+
+**Antes**
+1. Build → scan → push → `kubectl set image`
+2. El pipeline escribe directamente en el API del clúster
+3. No hay revisión entre el cambio y la aplicación
+
+**Después**
+1. Build → scan → push → PR al repositorio GitOps
+2. Code review del PR (igual que cualquier cambio de código)
+3. Merge → ArgoCD detecta el cambio y sincroniza
+
+El paso clave es el pull request. La imagen se actualiza escribiendo el nuevo tag en un archivo YAML y abriendo un PR. Ese PR pasa por los mismos controles que el código de la aplicación: revisión, tests, aprobación. Cuando se mergea, ArgoCD aplica el cambio.
+
+Para equipos que despliegan varias veces al día, herramientas como Kustomize y Renovate automatizan la actualización de tags. Kustomize separa la configuración base de los overlays por entorno. Renovate vigila el registro de imágenes y abre PRs automáticos cuando hay versiones nuevas.
+
+## Lo que GitOps no resuelve
+
+GitOps hace que los despliegues sean auditables y reversibles. No los hace más rápidos por sí solo. El cuello de botella se traslada de tener credenciales para aplicar cambios a la velocidad del pipeline de CI y del proceso de revisión de PRs.
+
+Tampoco resuelve la gestión de secretos. Git no debe contener contraseñas ni claves en texto plano. ArgoCD se integra con External Secrets Operator o Vault para que los secretos se inyecten en tiempo de sincronización sin almacenarlos en el repositorio.
+
+GitOps no sustituye a la monitorización. Si un despliegue se completa pero la aplicación sirve errores HTTP 500, ArgoCD reportará el Application como sano porque los Pods están ejecutándose. Los health checks cubren recursos de Kubernetes, no la lógica de la aplicación. La observabilidad sigue siendo un tema aparte.
+
+## Por qué cambia las reglas
+
+El modelo push trata el clúster como un sistema mutable que los pipelines modifican directamente. El modelo pull trata el clúster como un sistema que converge hacia un estado declarado almacenado en Git. La diferencia no es técnica, es operativa. En el modelo push, los incidentes ocurren y nadie sabe quién cambió qué ni cuándo. En el modelo pull, cada cambio está registrado, revisado y es reversible.
+
+GitOps extiende el mismo principio que los contenedores introdujeron: la inmutabilidad. Una imagen de contenedor se construye una vez y se despliega en todas partes. Un repositorio GitOps define el estado deseado una vez, y cada clúster converge hacia él. La imagen es el artefacto. El repositorio es la fuente de verdad. El clúster es un consumidor.
