@@ -1,0 +1,130 @@
+---
+title: "Service Mesh: Communication Between Pods"
+description: "How Cilium and Istio handle mTLS, traffic policies, and observability at the network layer."
+category: "sistemas"
+tags:
+  - "infraestructura"
+  - "devops"
+  - "arquitectura"
+  - "protocolos"
+pubDate: 2026-07-15
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1519389950473-47ba0277781c"
+heroImageAlt: "Team collaborating around a whiteboard with network topology diagrams"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+In a small Kubernetes cluster with a handful of services, communication between pods is straightforward. Service A calls Service B by its DNS name, the cluster DNS resolves it to a virtual IP, and kube-proxy forwards the traffic to a healthy pod. TLS is terminated at the ingress gateway, and internal traffic is assumed to be safe.
+
+As the cluster grows to dozens or hundreds of services, this assumption breaks. Every service becomes a potential attack surface. A compromised pod can call any other pod. Latency issues become hard to attribute because the network is a black box. Retries and timeouts are implemented differently across every service, or not at all.
+
+A service mesh solves these problems by injecting a proxy into each pod that handles all network communication. The application sends and receives plain HTTP or gRPC. The proxy handles encryption, retries, observability, and access control.
+
+## Cilium and eBPF
+
+Cilium takes a different approach from traditional service meshes. Instead of a sidecar proxy, it uses eBPF — a Linux kernel feature that runs sandboxed programs inside the kernel — to enforce network policies and load balance traffic at the socket layer.
+
+```yaml
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: api-to-database
+spec:
+  endpointSelector:
+    matchLabels:
+      app: api-server
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        app: postgres
+    toPorts:
+    - ports:
+      - port: "5432"
+        protocol: TCP
+```
+
+This policy allows only pods with label `app: api-server` to connect to pods with label `app: postgres` on port 5432. Everything else is denied by default. Cilium enforces this at the kernel level — there is no iptables rule traversal, no proxy overhead.
+
+Hubble, the observability layer built on top of Cilium, provides service-map visualisation, flow logs, and network-layer metrics. You can see which services are talking to each other, how much bandwidth they use, and whether any traffic is being dropped by a policy.
+
+Cilium replaces kube-proxy entirely. It handles service discovery, load balancing, and network policy in a single eBPF program. The performance overhead is negligible because the policy enforcement happens inside the kernel, not in a user-space proxy.
+
+## Istio and the Sidecar Proxy
+
+Istio uses a sidecar proxy — an Envoy instance running alongside each application container. The sidecar intercepts all inbound and outbound traffic, applies policies, and reports telemetry.
+
+```yaml
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: istio-system
+spec:
+  mtls:
+    mode: STRICT
+```
+
+With `STRICT` mTLS, every pod in the mesh must authenticate and encrypt traffic to every other pod. Istio manages the certificate authority, rotates certificates automatically, and distributes them to each sidecar. Application code does not need to handle TLS at all — the sidecar terminates and originates it transparently.
+
+Traffic management is configured through VirtualService and DestinationRule resources.
+
+```yaml
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: api-server
+spec:
+  hosts:
+  - api-server
+  http:
+  - match:
+    - uri:
+        prefix: /v2
+    route:
+    - destination:
+        host: api-server
+        subset: v2
+      weight: 10
+    - destination:
+        host: api-server
+        subset: v1
+      weight: 90
+```
+
+This VirtualService routes 10% of requests with the `/v2` prefix to the `v2` subset of the service. Istio manages the traffic split at the proxy level, without requiring changes to the application or the ingress gateway.
+
+Envoy generates detailed metrics for every request: latency, response code, request size, TCP connection state. These flow into Prometheus automatically. Istio also propagates trace context through the sidecars, enabling distributed tracing across the mesh without per-service instrumentation.
+
+## Cilium vs Istio
+
+The two approaches are not interchangeable — they operate at different layers.
+
+| Aspect | Cilium | Istio |
+|--------|--------|-------|
+| Mechanism | eBPF kernel programs | Envoy sidecar proxy |
+| Performance | Near-zero overhead | 2-5 ms added latency |
+| mTLS | Via wireguard or node-level | Per-pod sidecar |
+| Traffic splitting | Limited | Full (weight, header, mirror) |
+| Observability | Hubble (flows, policies) | Prometheus, tracing, access logs |
+| Complexity | Low (single component) | High (multiple control plane services) |
+
+Cilium is a better choice when the primary need is network security and policy enforcement with minimal performance impact. Istio is a better choice when the team needs traffic splitting, circuit breaking, and detailed observability at the request level.
+
+Both can be used together. Cilium handles the network layer and replaces kube-proxy. Istio handles the application layer on top.
+
+## When Not to Use a Mesh
+
+A service mesh adds operational complexity. The control plane must be monitored and upgraded. Sidecar proxies consume CPU and memory. TLS encryption adds latency. For a cluster with fewer than 20 services, the overhead may exceed the benefit.
+
+The mesh also changes the failure model. A misconfigured sidecar can block all traffic to a service. A bug in the control plane can disrupt communication across the entire mesh. The debugging surface expands from application code to include Envoy configuration, certificate rotation, and network policy interactions.
+
+Service meshes are tools for organisations that have outgrown manual network management. They are not a default choice for every cluster.
+
+## Closing
+
+As a cluster scales, the network becomes a shared responsibility that no single team owns. Cilium and Istio provide different answers to the same question — how to make service-to-service communication secure, observable, and manageable. Cilium answers at the kernel layer with eBPF. Istio answers at the application layer with Envoy. Both are better than the alternative: a flat network where every pod can talk to every other pod and nobody knows what is happening on the wire.

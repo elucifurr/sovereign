@@ -95,18 +95,18 @@
 - [x] **Post 1** — 2026-06-27 — GitOps: el cluster se reconcilia solo (ArgoCD)
   - [x] en: `src/content/posts/en/20260627-gitops.mdx`
   - [x] es: `src/content/posts/es/20260627-gitops.mdx`
-- [ ] **Post 2** — Secretos: cómo no filtrar credenciales (External Secrets Operator, SOPS, Vault)
-  - [ ] en: `src/content/posts/en/202607XX-secrets-management.mdx`
-  - [ ] es: `src/content/posts/es/202607XX-gestion-secretos.mdx`
-- [ ] **Post 3** — Observabilidad: Prometheus, Grafana, Loki, OpenTelemetry
-  - [ ] en: `src/content/posts/en/202607XX-observability.mdx`
-  - [ ] es: `src/content/posts/es/202607XX-observabilidad.mdx`
-- [ ] **Post 4** — Service Mesh: comunicaciones seguras entre servicios (Cilium, Istio)
-  - [ ] en: `src/content/posts/en/202607XX-service-mesh.mdx`
-  - [ ] es: `src/content/posts/es/202607XX-service-mesh.mdx`
-- [ ] **Post 5** — Stateful en K8s: bases de datos y backups (CloudNativePG, Velero)
-  - [ ] en: `src/content/posts/en/202608XX-stateful-k8s.mdx`
-  - [ ] es: `src/content/posts/es/202608XX-stateful-k8s.mdx`
+- [x] **Post 2** — 2026-07-01 — Secrets: The Last Plaintext in Your Repository / Secretos: el último texto plano en tu repo
+  - [x] en: `src/content/posts/en/20260701-secrets-management.mdx`
+  - [x] es: `src/content/posts/es/20260701-gestion-secretos.mdx`
+- [x] **Post 3** — 2026-07-08 — Observability: Knowing What Your Cluster Is Doing / Observabilidad: saber qué hace tu clúster
+  - [x] en: `src/content/posts/en/20260708-observability.mdx`
+  - [x] es: `src/content/posts/es/20260708-observabilidad.mdx`
+- [x] **Post 4** — 2026-07-15 — Service Mesh: Communication Between Pods / Service Mesh: comunicación entre pods
+  - [x] en: `src/content/posts/en/20260715-service-mesh.mdx`
+  - [x] es: `src/content/posts/es/20260715-service-mesh.mdx`
+- [x] **Post 5** — 2026-07-22 — Stateful Workloads in Kubernetes / Cargas stateful en Kubernetes
+  - [x] en: `src/content/posts/en/20260722-stateful-kubernetes.mdx`
+  - [x] es: `src/content/posts/es/20260722-stateful-kubernetes.mdx`
 
 ## Tags clean-up
 

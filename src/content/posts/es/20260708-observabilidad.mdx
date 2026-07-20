@@ -1,0 +1,116 @@
+---
+title: "Observabilidad: saber qué hace tu clúster"
+description: "Por qué los health checks de Kubernetes no bastan, y cómo Prometheus, Grafana, Loki y OpenTelemetry llenan el vacío."
+category: "sistemas"
+tags:
+  - "infraestructura"
+  - "devops"
+  - "arquitectura"
+pubDate: 2026-07-08
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1499750310107-5fef28a66643"
+heroImageAlt: "Panel de control con gráficos analíticos en un monitor"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: es
+draft: false
+featured: false
+---
+
+Los health checks de Kubernetes verifican que un proceso está vivo y responde en un puerto. No verifican que la aplicación funcione correctamente. Un pod puede estar Ready y Healthy mientras devuelve errores internos, consume memoria sin control, o espera por un servicio que ya no responde.
+
+La observabilidad es la práctica de deducir el estado interno de un sistema a partir de sus salidas externas. En Kubernetes, esas salidas son tres: métricas, logs y trazas. Cada una cubre una dimensión distinta.
+
+## Métricas con Prometheus
+
+Prometheus recolecta series temporales numéricas. Las aplicaciones exponen métricas en un endpoint `/metrics` con formato texto plano, y Prometheus las almacena con marcas de tiempo y etiquetas.
+
+```yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: api-server
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: api-server
+  endpoints:
+  - port: http
+    interval: 15s
+    path: /metrics
+```
+
+El ServiceMonitor le dice a Prometheus qué servicios debe rastrear y cada cuánto. Prometheus Operator gestiona el ciclo de vida completo: despliegue, configuración, reglas de alerta y almacenamiento.
+
+Las alertas se definen con PrometheusRule. Una regla evalúa una expresión PromQL periódicamente y dispara una alerta cuando se cumple la condición.
+
+```yaml
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: api-alerts
+  namespace: monitoring
+spec:
+  groups:
+  - name: api
+    rules:
+    - alert: HighErrorRate
+      expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Tasa de error superior al 5% durante 5 minutos"
+```
+
+Alertmanager se encarga de deduplicar, agrupar y enrutar las alertas a los canales configurados.
+
+## Dashboards con Grafana
+
+Grafana consulta Prometheus y pinta dashboards. Un dashboard estándar de Kubernetes incluye uso de CPU y memoria por namespace, tasas de petición por servicio, tasas de error y percentiles de latencia.
+
+Los dashboards de Grafana son JSON. Se versionan en Git y se despliegan con el Grafana Operator. Si las métricas mantienen los mismos nombres y etiquetas, los dashboards funcionan en cualquier clúster.
+
+## Logs con Loki
+
+Loki agrega logs sin indexar su contenido. Indexa solo etiquetas — namespace, pod, contenedor — y almacena el contenido comprimido. Las consultas filtran primero por etiquetas y luego buscan en el contenido con LogQL.
+
+```logql
+{namespace="api", container="server"} |= "error" != "timeout"
+  | json
+  | duration > 1s
+```
+
+Esta consulta obtiene logs del namespace `api`, filtra líneas que contienen "error" pero no "timeout", las parsea como JSON y se queda solo con las entradas cuyo campo `duration` supera un segundo.
+
+Promtail o Grafana Alloy recogen los logs de cada nodo y los envían a Loki. No hace falta Elasticsearch: sin indexado pesado, sin ajustes de JVM, sin un clúster dedicado solo para logs. Loki funciona con un solo binario o unos pocos microservicios.
+
+## Trazas con OpenTelemetry
+
+Las métricas dicen que la tasa de error sube. Los logs dicen qué peticiones fallan. Las trazas dicen por qué: siguen una petición a través de todos los servicios, midiendo el tiempo en cada componente.
+
+OpenTelemetry es el estándar para trazas distribuidas. Las aplicaciones se instrumentan con un SDK o un sidecar que propaga el contexto de la traza mediante cabeceras HTTP. Cada servicio añade spans — operaciones con nombre, inicio y duración — y los envía a un colector.
+
+El colector procesa, muestrea y reenvía las trazas a un backend como Jaeger o Grafana Tempo. El resultado es un gráfico de llama que muestra la ruta completa de una petición: 10 ms en la puerta de enlace, 200 ms esperando a la base de datos, 5 ms serializando la respuesta. El cuello de botella se ve al instante.
+
+La instrumentación puede ser automática — el OpenTelemetry Operator inyecta sidecars que capturan el tráfico HTTP sin modificar el código — o manual para controlar exactamente qué operaciones se trazan.
+
+## Las tres señales juntas
+
+Las métricas dicen que algo va mal. Los logs dicen qué falla. Las trazas dicen dónde se origina el fallo.
+
+Un flujo práctico: Prometheus alerta de que la tasa de error se dispara. Abres Grafana, ves el servicio afectado y navegas a Loki con un filtro de etiquetas para ese servicio y esa ventana de tiempo. Loki muestra logs de error con IDs de traza. Copias un ID en Tempo o Jaeger y ves la ruta completa — la consulta a base de datos que agota el tiempo de espera, el servicio upstream que devuelve 5xx, la clave de caché que falta.
+
+Esta correlación requiere etiquetas consistentes en los tres sistemas. Las etiquetas de Kubernetes — namespace, deployment, pod — deben propagarse a las métricas de Prometheus, a las etiquetas de Loki y a los atributos de OpenTelemetry. Sin esa consistencia, el enlace entre señales se rompe.
+
+## Lo que no es la observabilidad
+
+La observabilidad no es instalar Prometheus y esperar que funcione. Requiere definir qué es importante para cada servicio: percentiles de latencia, presupuestos de error, puntos de saturación. Esos objetivos determinan qué merece una alerta y qué dashboards construir.
+
+También requiere planificar la capacidad del stack de observabilidad. Prometheus almacena muchas métricas, pero la retención está limitada por el disco. Loki comprime logs bien, pero los servicios con alto tráfico generan terabytes al día. El muestreo de trazas reduce el almacenamiento pero pierde visibilidad sobre eventos raros. Cada componente hay que dimensionarlo para el tráfico que observa, y el dimensionado depende de las decisiones de instrumentación que se tomen a nivel de aplicación.
+
+## Cierre
+
+Kubernetes proporciona la plataforma para ejecutar aplicaciones. Prometheus, Grafana, Loki y OpenTelemetry proporcionan la visibilidad de lo que esas aplicaciones hacen. Las tres señales son complementarias, no opcionales. Métricas para alertar, logs para depurar, trazas para diagnosticar. Juntas responden a la pregunta que los health checks dejan abierta: ¿está funcionando realmente el sistema?

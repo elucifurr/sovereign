@@ -1,0 +1,138 @@
+---
+title: "Stateful Workloads in Kubernetes"
+description: "Running databases on Kubernetes with StatefulSets, CloudNativePG, and Velero."
+category: "sistemas"
+tags:
+  - "infraestructura"
+  - "devops"
+  - "arquitectura"
+pubDate: 2026-07-22
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1498050108023-c5249f4df085"
+heroImageAlt: "Laptop with code on screen on a wooden desk"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+Kubernetes was designed for stateless workloads. A Deployment creates interchangeable pods that can be scaled up, scaled down, or replaced without anyone noticing. The pod has no identity, no persistent storage, and no ordering requirements. This fits web servers, API backends, and worker queues perfectly.
+
+Databases are the opposite. A PostgreSQL instance has a hostname that clients rely on, data that must survive pod restarts, and a startup order — replicas should not start promoting themselves before the primary is healthy. Running stateful workloads on Kubernetes requires a different set of primitives.
+
+## StatefulSet
+
+StatefulSet is the Kubernetes resource designed for stateful workloads. Unlike a Deployment, each pod in a StatefulSet has a stable identity and a stable storage association.
+
+```yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+spec:
+  serviceName: postgres
+  replicas: 3
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:17
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 100Gi
+```
+
+Each pod gets the name `postgres-0`, `postgres-1`, `postgres-2` and a corresponding PersistentVolumeClaim named `data-postgres-0`, `data-postgres-1`, `data-postgres-2`. When a pod is recreated, it keeps its name and its storage. The DNS records match the pod names, so clients can connect to `postgres-0.postgres.default.svc.cluster.local`.
+
+StatefulSet also supports ordered deployment and teardown. Pods are created sequentially from 0 to N-1, and each one must be running and ready before the next starts. The reverse applies during scale-down. This matters for databases that require a specific startup sequence.
+
+A raw StatefulSet is not enough for production databases. It handles identity and storage, but not backups, failover, replication, or version upgrades. Operators fill that gap.
+
+## CloudNativePG
+
+CloudNativePG is a Kubernetes operator for PostgreSQL. It manages the full lifecycle of a PostgreSQL cluster: replication, failover, backups, and minor version upgrades.
+
+```yaml
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres
+spec:
+  instances: 3
+  storage:
+    size: 100Gi
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://backups/postgres
+      s3Credentials:
+        accessKeyId:
+          name: postgres-backup
+          key: aws-access-key-id
+        secretAccessKey:
+          name: postgres-backup
+          key: aws-secret-access-key
+    retentionPolicy: "30d"
+```
+
+The operator creates a primary instance and two replicas. It configures streaming replication, sets up a persistent volume for each instance, and schedules daily backups to S3. If the primary fails, the operator promotes a replica automatically. The application connects to a read-write service that always points to the current primary, and a read-only service that load balances across replicas.
+
+Backups are stored outside the cluster — S3 in this example, but any object store works. Point-in-time recovery restores the cluster to any second within the retention window. The operator handles the restore process, creating a new cluster from the backup and replaying the write-ahead log.
+
+Upgrades are declarative. Changing the `imageName` in the Cluster spec triggers a rolling update. The operator upgrades each instance one at a time, ensuring at most one replica is unavailable during the process.
+
+## Velero for Cluster Backups
+
+CloudNativePG backs up PostgreSQL. Velero backs up the entire Kubernetes cluster — including etcd, PersistentVolume data, and resource definitions.
+
+Velero runs as a controller inside the cluster. A backup schedule captures the state of specified namespaces and stores it in object storage.
+
+```yaml
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: daily-backup
+spec:
+  schedule: "0 1 * * *"
+  template:
+    ttl: 720h
+    includedNamespaces:
+    - api
+    - database
+    storageLocation: default
+    volumeSnapshotLocations:
+    - default
+```
+
+Velero integrates with cloud provider snapshot APIs to back up PersistentVolume data efficiently. A full cluster restore creates new volumes from the snapshots and recreates all Kubernetes resources from the backup. The process is not instantaneous — volume snapshots take time to restore — but it is automated and tested.
+
+The critical detail is that Velero backups are only useful if they are tested. A backup that has never been restored is not a backup. The restore procedure should be run periodically in a staging environment to verify that the data is readable and the application starts correctly.
+
+## When Not to Put a Database on Kubernetes
+
+Running stateful workloads on Kubernetes is possible and increasingly common, but it is not always the right choice.
+
+A managed database service — RDS, Cloud SQL, or a dedicated PostgreSQL instance — removes the operational burden of backups, failover, storage management, and version upgrades. The team does not need to learn the operator's API, test restore procedures, or size persistent volumes. The database is someone else's problem.
+
+Kubernetes makes sense for stateful workloads when the team already runs Kubernetes, when the database must be co-located with the application for latency reasons, or when the organisation does not use a cloud provider with managed database offerings.
+
+It does not make sense for a single-team startup that can use a managed database for the same cost as running a Kubernetes operator. The operational complexity of an operator exceeds the complexity of the application it supports for the first few years of a project.
+
+## Closing
+
+StatefulSet gives pods identity and persistent storage. Operators like CloudNativePG add replication, failover, and backups. Velero protects the entire cluster. Each layer addresses a specific risk: pod identity, data durability, and disaster recovery. The combination makes stateful workloads viable on Kubernetes, but viable does not mean mandatory. The decision to run a database on Kubernetes is a trade-off between operational control and operational cost, and the right answer depends on the team and the context.
