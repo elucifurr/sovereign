@@ -1,0 +1,125 @@
+---
+title: "Local LLMs: Why and How to Run AI on Your Own Hardware"
+description: "Running AI models on your own machine means full sovereignty over your data and inference. A practical guide to Ollama, llama.cpp, and choosing the right model."
+category: "entornos"
+tags:
+  - "ia-local"
+  - "ia-aplicada"
+  - "privacidad"
+pubDate: 2026-07-28
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1597733336794-12d05021d510"
+heroImageAlt: "Personal computing setup with monitor showing code"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+Every query you send to a cloud LLM travels through someone else's infrastructure. The provider sees your prompts, logs your patterns, and decides what the model can and cannot say. You get convenience and capability, but you lose control over where your data goes and how it is used.
+
+Running a large language model locally flips that tradeoff. Your data stays on your machine. There is no API key to rotate, no billing endpoint to depend on, and no terms of service that change without notice. The model runs where you run.
+
+This post covers why local inference matters, what hardware you actually need, and how to get your first model running in minutes.
+
+## Sovereignty Over Inference
+
+The argument for local LLMs is not about privacy alone. It is about operational independence.
+
+A cloud API gives you intelligence on demand, but it creates a dependency chain: the provider's uptime, their pricing decisions, their data retention policies, and their content filters. When OpenAI deprecated GPT-3.5, every application that depended on it had to migrate. When a provider changes their terms, you adapt or leave.
+
+A local model has none of these constraints. You choose the weights, you set the parameters, and you decide what happens to the data. The model does not phone home. It does not rate-limit you based on your subscription tier. It runs until your hardware stops.
+
+This matters for personal use, but it matters even more for anything involving sensitive data: legal documents, medical records, internal codebases, financial analysis. The moment that data leaves your machine, you have made a decision about who can access it.
+
+## What Hardware You Actually Need
+
+The most common misconception about local LLMs is that you need expensive GPU hardware. The reality depends on the model size and the tool you use to run it.
+
+| Model Size | RAM Required | GPU Helpful? | Example Models |
+|-----------|-------------|-------------|----------------|
+| 1-3B | 4-6 GB | No | Phi-3 Mini, TinyLlama |
+| 7-8B | 8-12 GB | Optional | Llama 3 8B, Mistral 7B, Qwen2 7B |
+| 13-14B | 16-24 GB | Yes | Llama 3 13B, Mistral 14B |
+| 30-34B | 32-48 GB | Yes | CodeLlama 34B, Qwen2 32B |
+| 70B+ | 64+ GB | Yes (multi-GPU) | Llama 3 70B, Mixtral 8x7B |
+
+The key variable is RAM. A 7B model quantized to 4-bit precision needs roughly 5-6 GB of RAM. If you have 16 GB of RAM in your laptop, you can run a 7B model comfortably while keeping your system responsive.
+
+GPU acceleration matters for speed, not for capability. A CPU-only setup generates about 5-10 tokens per second on a 7B model. A consumer GPU like an RTX 3060 with 12 GB VRAM pushes that to 30-50 tokens per second. Both are usable. The GPU makes the experience feel instant rather than tolerable.
+
+Apple Silicon Macs are a special case. The unified memory architecture means the CPU and GPU share the same RAM pool. A MacBook Pro with 32 GB of unified memory can run a 13B model at GPU-level speeds without discrete graphics.
+
+## Ollama: The Five-Minute Start
+
+Ollama is the simplest way to run a local LLM. It handles model downloads, quantization, and serving with a single binary.
+
+```bash
+# Install Ollama (macOS, Linux, Windows)
+curl -fsSL https://ollama.ai/install.sh | sh
+
+# Pull and run a model
+ollama run llama3.1:8b
+
+# Start an API server (OpenAI-compatible)
+ollama serve
+```
+
+The `ollama run` command downloads the model on first execution, then drops you into an interactive chat. The model stays loaded in memory for subsequent queries.
+
+Ollama exposes an OpenAI-compatible API on port 11434 by default. Any tool that works with the OpenAI API can point at your local instance:
+
+```bash
+curl http://localhost:11434/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "llama3.1:8b",
+    "messages": [{"role": "user", "content": "Explain the CAP theorem in one paragraph."}]
+  }'
+```
+
+The OpenAI compatibility is not a coincidence. It is the reason Ollama has become the default backend for local AI tools. Every post-production tool in the ecosystem can connect to it without modification.
+
+## llama.cpp: The Lightweight Alternative
+
+llama.cpp is a C++ implementation of the Llama model architecture with no dependencies beyond a C++ compiler. It runs on CPU, with optional GPU acceleration via Metal (macOS), CUDA (NVIDIA), or Vulkan.
+
+```bash
+# Build from source
+git clone https://github.com/ggerganov/llama.cpp
+cd llama.cpp
+cmake -B build
+cmake --build build --config Release
+
+# Download a quantized model (GGUF format)
+wget https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF/resolve/main/llama-2-7b-chat.Q4_K_M.gguf
+
+# Run inference
+./build/bin/llama-cli -m llama-2-7b-chat.Q4_K_M.gguf \
+  -p "What is the difference between TCP and UDP?" \
+  -n 256
+```
+
+llama.cpp is the engine behind most local AI tools. Ollama uses it internally. LM Studio uses it. GPT4All uses it. Understanding what happens under the hood gives you control over quantization, context length, and thread allocation.
+
+The GGUF format is the standard for quantized models. The naming convention tells you the quantization level: Q4_K_M means 4-bit quantization with medium quality. Q5_K_M offers better quality at the cost of more RAM. Q8_0 is near-original quality but uses roughly twice the memory.
+
+## Choosing Your First Model
+
+The model landscape moves fast, but a few families have proven themselves for local use:
+
+- **Llama 3.1 (Meta)** — The most versatile family. The 8B variant runs well on consumer hardware. The 70B variant competes with GPT-4 class models. Strong at instruction following, reasoning, and code.
+- **Mistral / Mixtral** — Excellent at instruction following with a smaller footprint. The 7B model punches above its weight. Mixtral 8x7B uses a mixture-of-experts architecture that delivers 14B-class quality at 7B-class inference cost.
+- **Qwen 2** — Strong multilingual performance, particularly good at Chinese and English. The 7B and 32B variants are well-quantized across community repositories.
+- **Phi-3 (Microsoft)** — Designed for small-model performance. The 3.8B model runs on phones and laptops with 4 GB of RAM. Good for lightweight tasks where a larger model is overkill.
+- **CodeLlama / DeepSeek Coder** — Specialized for code generation. If your primary use case is programming assistance, these models outperform general-purpose alternatives at the same parameter count.
+
+Start with Llama 3.1 8B or Mistral 7B. They are the best balance of quality, speed, and hardware requirements for someone getting started.
+
+## First Steps
+
+The barrier to running a local LLM is lower than it has ever been. Ollama gives you a running model in five minutes. llama.cpp gives you control without overhead. The models themselves are free and improving on a monthly cycle.
+
+The next post covers the ecosystem around these tools: LocalAI as an OpenAI-compatible gateway, Open WebUI as a browser interface, and how to integrate local inference into your daily workflow without giving up the convenience that made cloud AI appealing in the first place.
