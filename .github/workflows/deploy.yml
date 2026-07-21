@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: 24
       - run: pnpm install
-      - uses: actions/cache@v5
+      - uses: actions/cache@v6
         with:
           path: node_modules/.astro
           key: astro-images-${{ hashFiles('src/content/**/*.mdx', 'src/assets/**/*') }}
