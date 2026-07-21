@@ -15,5 +15,5 @@ onlyBuiltDependencies:
   - sharp
   - workerd
 overrides:
-  devalue: 5.8.1
+  devalue: 5.8.2
   yaml: 2.8.4
