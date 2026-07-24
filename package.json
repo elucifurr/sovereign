@@ -43,7 +43,7 @@
     "@astrojs/compiler-rs": "^0.2.1",
     "@tailwindcss/typography": "^0.5.19",
     "sharp": "^0.34.5",
-    "typescript": "~6.0.3",
+    "typescript": "~7.0.0",
     "wrangler": "^4.90.0"
   }
 }
