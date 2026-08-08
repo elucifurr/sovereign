@@ -208,20 +208,8 @@ export const TAXONOMY = {
       }),
     },
     {
-      slug: "grapheneos",
-      order: 15,
-      labelByLocale: localized({
-        en: "GrapheneOS",
-        es: "GrapheneOS",
-      }),
-      descriptionByLocale: localized({
-        en: "GrapheneOS, mobile privacy, and secure smartphones.",
-        es: "GrapheneOS, privacidad móvil y smartphones seguros.",
-      }),
-    },
-    {
       slug: "ia-local",
-      order: 16,
+      order: 15,
       labelByLocale: localized({
         en: "Local AI",
         es: "IA Local",
@@ -242,7 +230,7 @@ const TAGS_BY_CATEGORY: Record<
 > = {
   soberania: ["regulacion", "privacidad", "plataformas", "protocolos"],
   sistemas: ["linux", "infraestructura", "devops", "arquitectura", "protocolos", "automatizacion"],
-  entornos: ["herramientas", "self-hosting", "ia-aplicada", "workflow", "grapheneos", "ia-local"],
+  entornos: ["herramientas", "self-hosting", "ia-aplicada", "workflow", "ia-local"],
 }
 
 export function getCategory(slug: string): TaxonomyItem | undefined {

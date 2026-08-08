@@ -110,12 +110,12 @@
 
 ## Serie: IA Local: Soberanía del Modelo
 
-- [ ] **Post 1** — 2026-07-28 — Local LLMs: Why and How / LLM locales: por qué y cómo
-  - [ ] en: `src/content/posts/en/20260728-local-llms.mdx`
-  - [ ] es: `src/content/posts/es/20260728-llm-locales.mdx`
-- [ ] **Post 2** — 2026-08-04 — Local AI Ecosystem / Ecosistema de IA local
-  - [ ] en: `src/content/posts/en/20260804-local-ai-ecosystem.mdx`
-  - [ ] es: `src/content/posts/es/20260804-ecosistema-ia-local.mdx`
+- [x] **Post 1** — 2026-07-28 — Local LLMs: Why and How / LLM locales: por qué y cómo
+  - [x] en: `src/content/posts/en/20260728-local-llms.mdx`
+  - [x] es: `src/content/posts/es/20260728-llm-locales.mdx`
+- [x] **Post 2** — 2026-08-04 — Local AI Ecosystem / Ecosistema de IA local
+  - [x] en: `src/content/posts/en/20260804-local-ai-ecosystem.mdx`
+  - [x] es: `src/content/posts/es/20260804-ecosistema-ia-local.mdx`
 
 ## Tags clean-up
 
