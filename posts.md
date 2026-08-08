@@ -125,6 +125,9 @@
 
 ## Posts sueltos (Linux)
 
-- [ ] **2026-08-05 — systemd: qué es y por qué existe / What It Is and Why It Exists**
-  - [ ] en: `src/content/posts/en/20260805-what-is-systemd.mdx`
-  - [ ] es: `src/content/posts/es/20260805-que-es-systemd.mdx`
+- [x] **2026-08-05 — systemd: qué es y por qué existe / What It Is and Why It Exists**
+  - [x] en: `src/content/posts/en/20260805-what-is-systemd.mdx`
+  - [x] es: `src/content/posts/es/20260805-que-es-systemd.mdx`
+- [x] **2026-08-07 — Linux contra la verificación de edad / Linux vs. Age Verification**
+  - [x] en: `src/content/posts/en/20260807-systemd-age-verification.mdx`
+  - [x] es: `src/content/posts/es/20260807-polemica-systemd.mdx`

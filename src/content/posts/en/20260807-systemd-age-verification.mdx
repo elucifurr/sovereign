@@ -1,0 +1,265 @@
+---
+title: "Linux vs. Age Verification: How systemd Opened the Debate"
+description: "An optional field in systemd's user database cracked the deepest rift in Linux history in March 2026. Who bent, who refused, and who changed the law."
+category: "soberania"
+tags:
+  - "linux"
+  - "regulacion"
+  - "plataformas"
+pubDate: 2026-08-07
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1756963322523-1e9bb61ee31d"
+heroImageAlt: "The US Capitol in Washington DC representing the state laws that reached systemd"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+import OptimizedPicture from "@/components/features/OptimizedPicture.astro"
+
+In March 2026, an *optional* field in systemd's user database cracked the deepest rift in the history of the Linux ecosystem. The argument was not whether Linux should store a birth date: it was whether the operating system should become an identity authority in service of the state. In one week, the question crossed laws, corporations, distributions, and a brand-new fork — and left one clear lesson: open source alone is no longer enough to guarantee digital sovereignty, but organized resistance can still change the course of a law.
+
+## The Chronology of a Week
+
+| Date | What happened | Who |
+|---|---|---|
+| Oct 2025 | The Digital Age Assurance Act (AB 1043) is signed | California |
+| Feb 2026 | AB 1856 is introduced, the amendment that could exempt open source | California Assembly |
+| 18-mar-2026 | PR #40954: the `birthDate` field enters systemd | systemd |
+| 23-mar-2026 | Liberated systemd is born; Garuda publishes its manifesto | Community |
+| Mar 2026 | The age portal and the D-Bus interface are closed | xdg-desktop-portal / freedesktop |
+| 26-may-2026 | Colorado and California exempt open-source software | System76 |
+| 1-jan-2027 | AB 1043 takes effect (without the exemption, for now) | California |
+| Jul 2028 | SB 26-051 takes effect | Colorado |
+
+The story that follows is the story of those eight lines: a law arrives, a central piece adapts, the community responds, and someone finds a way to change the law instead of dodging it.
+
+## The Laws That Started It All
+
+Operating-system-level age verification was not born in code; it was born in parliaments. Instead of forcing every website to check age, they move the burden to the device: the operating system stores the data once when the account is created and exposes an *age signal* — an age bracket (0-13, 13-16, 16-18, 18+) instead of the exact date — that any application can query through an API when it needs to.
+
+| Law | Jurisdiction | Effective |
+|---|---|---|
+| Digital Age Assurance Act (AB 1043) | California | 1-jan-2027 |
+| Age Attestation on Computing Devices (SB 26-051) | Colorado | jul-2028 |
+| S8102A | New York | proposed (real verification) |
+| Lei 15.211/2025 | Brazil | approved |
+| Parents Decide Act (H.R. 8250) | US federal | proposed |
+
+The penalties are not symbolic: California sets $2,500 per affected minor if the violation is negligent and $7,500 if it is intentional. New York goes further than all of them: it requires real age verification, bans self-declaration, and forces the intervention of a third party.
+
+The EFF and the Software Freedom Conservancy summarized the underlying problem surgically:
+
+> These laws treat the operating system as if it were a commercial platform like any other, without distinguishing between an open ecosystem and a closed model — and without considering that free software is distributed to thousands of jurisdictions at once.
+
+A California state law ends up regulating the behavior of servers in Germany and laptops in Finland.
+
+## The PR That Changed Everything
+
+systemd is in practically every major distribution — Fedora, Arch, Debian, Ubuntu, openSUSE, RHEL. If any law was going to turn an operating system into the compliance surface, systemd was the cheapest place to implement it: a single point where the rest of the ecosystem could lean on.
+
+On March 18, 2026, PR #40954 was merged: a `birthDate` field in the user records of `userdb`, explicitly citing the laws of California, Colorado, and Brazil. The design was technically discreet. The field is optional, only an administrator can set it through `homectl`, it is stored in `YYYY-MM-DD` format, and systemd does nothing with it. Lennart Poettering defended it in those terms:
+
+> It's not a policy engine, it's not an API for applications. We just define the field so that it's standardized.
+
+<OptimizedPicture
+  src="https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7"
+  alt="Source code on a computer screen representing the changes in systemd"
+  width={1600}
+  height={1067}
+  variant="content"
+/>
+
+That technical framing is correct and, at the same time, sidesteps the underlying question. Infrastructure does not decide on its own, but it normalizes: as soon as `birthDate` is a standard `userdb` field, any distribution pressured by a law — or by a future government — already has the piece built. The attempt to revert it (PR #41179) was rejected, and the discussion thread was closed after more than nine hundred comments.
+
+The complementary pieces were closed one by one:
+
+- The age verification portal in `xdg-desktop-portal` (PR #1922, by David Edmundson, KDE maintainer) was closed without being merged in April 2026.
+- The proposed D-Bus interface `org.freedesktop.AgeVerification1` was withdrawn in the face of community rejection.
+- Without a portal, without an API, without consumers, the field was left technically inert — though present in every new installation.
+
+### Check It On Your Own System
+
+That the field exists in systemd does not mean your distribution uses it, or that it is filled in. You can check it on your own machine:
+
+```bash
+userdbctl user "$USER"
+```
+
+The output includes the fields of the JSON record that your distribution exposes. If `birthDate` appears, your system recognizes the field; if it does not appear, your distribution does not expose it even though systemd supports it. To see which schema version your installation handles:
+
+```bash
+systemd --version
+```
+
+The version matters because the field arrived with systemd 261. But the version is not the complete answer: the real decision lies with the distribution. Fedora, Arch, and Debian package it without using it; Devuan, Artix, and Void have no systemd at all. What matters is that your system does not store your birth date anywhere — and no Linux standard includes it. That is the prior state the laws want to change.
+
+## The Corporations Caught in the Middle
+
+Commercial distributions do not have the luxury of refusing. Canonical received an external contribution that added a birth-date picker to the Ubuntu installer and a `SetBirthDate` call over D-Bus, with a design document explaining the strategy. The three PRs were closed due to the community's reaction, and the public response was terse: the lawyers were reviewing the matter.
+
+Ubuntu is the most exposed distribution on the planet. Canonical sells Ubuntu Pro to governments, universities, and companies that are not going to risk their legal compliance over a fight about principles. And there is an irony worth pointing out: Ubuntu was systemd's gateway into the ecosystem, the argument that centralization was acceptable. Fifteen years later, the same distribution that normalized that central piece discovers that centralization makes it the easiest target for a law.
+
+Fedora declared that the matter belongs "to the realm of legal advice." AlmaLinux said it would observe and hoped the courts would end up striking down the laws. But the one truly trapped is **Red Hat**.
+
+### Red Hat, the One With the Most to Lose
+
+RHEL is sold by subscription to ministries, banks, and organizations across half of Europe and America; the average contract includes regulatory compliance clauses that no corporate lawyer is going to risk over a community principle. If California demands it, Red Hat cannot answer "we won't do it": the next tender would go to whoever does offer it.
+
+Its escape hatch is Fedora. By keeping the upstream project in the community's hands and answering "this is legal advice," Red Hat buys both time and a cover story: Fedora can refuse without commercial consequences, and RHEL can wait for the courts to strike down the laws before committing a single contract. It is not cowardice. It is incentive structure: the same centrality that makes systemd the cheapest point to comply with makes Red Hat the most expensive seller of "no."
+
+Each of these responses reveals the same dynamic: a company that sells systems to governments and corporations cannot simply ignore a law. It can negotiate the law — as System76 did — or it can wait for the courts to strike it down. What it cannot do is disappear.
+
+## The Third Way: Packaging Without Using
+
+Between the trapped corporation and the outright refusal there is a third position, and it is the one the silent majority adopted. Fedora, Arch, and Debian package systemd with the `birthDate` field inside — they do not remove it, they do not activate it, they do not use it. The field exists in the code installed on millions of machines, but nothing in those distributions fills it in or queries it.
+
+The move is deliberately gray. Packaging without using avoids a patch war against the upstream project and preserves compatibility with every future version of systemd; not using it prevents the distribution from becoming the compliance surface. Technically they refuse nothing. Politically they obey nothing either. They wait.
+
+It is the most comfortable position for surviving a law that has not yet taken effect, and the most vulnerable one if that law arrives. Because a field that already ships in your installation only needs someone to decide to start using it.
+
+## The Ones Who Refused Outright
+
+Against the corporations, a block of distributions responded with an unqualified refusal. This is the part of the story that deserves the most attention, because it proves that the decision not to build certain infrastructure is still possible.
+
+| Distribution | Init | Response |
+|---|---|---|
+| Artix | OpenRC / runit / s6 | Total refusal |
+| Devuan | SysV (no systemd) | "We will remove age verification now" |
+| Garuda | systemd | Will not implement it (FI/DE jurisdiction) |
+| Void | runit | "No plans at this time" |
+| Alpine | busybox-init | Will not implement it |
+| Gentoo | OpenRC | Will not implement it |
+| Slackware | SysV / RC | Will not implement it |
+| Zorin | systemd | Will not implement it |
+| EndeavourOS | systemd | Will not implement it |
+| CachyOS | systemd | Will not implement it |
+| Solus | systemd | Will not implement it |
+| Parrot OS | systemd | Will not implement it |
+| GhostBSD | FreeBSD (no systemd) | Will not implement it |
+| Arch Linux 32 | systemd | Bans its use in CA and Brazil |
+| Ageless Linux | Debian fork | Deliberate disobedience |
+| GrapheneOS | AOSP without systemd | Will not implement it |
+
+**Artix Linux** was the most blunt:
+
+> We will never require any verification or identification from the user.
+
+Artix is a fork of Arch without systemd, so its refusal is structural: there is no layer to implement it in. **Devuan**, the Debian fork without systemd that has existed since 2014, was immediate; Jaromil, its driving force, argued that this was a sovereignty decision, not an engineering one. **Garuda Linux** published the most developed statement: based in Finland and Germany, it notes that no law in those jurisdictions obliges it to comply.
+
+> If California has a problem, it can block the website.
+
+Garuda's statement included a nuance that deserves respect: the fines in these laws can ruin lives, so distributions that choose to comply should not be judged. Pressure should be directed at the laws, not at volunteers.
+
+Each of the other refusals has its own story. **Void** answered "No plans at this time" — two lines that say a lot about who it is: a distribution born independent of everyone, running runit instead of systemd, that feels no need to justify itself to anyone. **Alpine** was equally brief: no systemd, no glibc, no stack for the laws to assume; its answer is that age verification has nowhere to stand in its architecture.
+
+**Gentoo** made the most technical argument: you compile everything from source, so the decision of what to include and exclude is local, not a decision of the distribution. If you want a system without `birthDate`, you compile it without it; Gentoo does not need to refuse because its model already delegates the decision to the user. **Slackware**, the oldest living distribution, was the most conservative: its project has spent decades rejecting any change that does not come from within, and this one was no different.
+
+**Zorin** and **EndeavourOS** are distributions aimed at newcomers, designed to resemble Windows or the consumer experience; that they refused is significant. **CachyOS** and **Solus** leaned on the jurisdiction argument: with no clients in California or Brazil, there is no obligation and no reason to add the field. **Parrot OS**, focused on security, added the most uncomfortable nuance: if an auditing operating system incorporates an age field, it stops being a neutral tool. **Arch Linux 32** was the only one that spelled out a territorial ban on use in California and Brazil — a position between refusing and complying.
+
+**Ageless Linux** turned disobedience into design: a deliberately non-conforming Debian fork, with a machine-readable refusal notice and tools to neutralize the age-verification stack, which plans to distribute itself in schools. **GrapheneOS**, the mobile operating system the privacy ecosystem considers the standard, also refused — and its case matters because it proves that refusal is not a luxury of small distributions: the reference distribution of the privacy world did exactly the same.
+
+The line that connects all these distributions is the same: they sell nothing to any state. Without contracts, without legal market requirements, refusal is a real option. None of them has an app store that turns it into an "operating system provider" in the eyes of the laws — and precisely for that reason they can afford the luxury of consistency. Resistance is also an economic matter.
+
+## Liberated systemd: The Fork
+
+On March 23, 2026, five days after the PR was merged, AI researcher Jeffrey Seathrún Sardina published **Liberated systemd**: a fork whose only mission is to remove what it defines as "surveillance enablement" from the base system. The project's motto sums it up:
+
+> Mass surveillance is bad, actually.
+
+The change is surgical: twelve files in five commits, everything related to `birthDate` — the field, the `homectl` option, the man pages, the display code, and the tests. Sardina reverted exactly the commit that added the feature and keeps the fork in sync with upstream. It introduces no features, fixes no bugs: it exists only to guarantee that no call to the age-verification API works.
+
+A protest fork is not a production alternative. When it was announced, it was 37 commits behind mainline systemd, and keeping pace with such an active codebase is thankless work. Its value is something else: it is a signal that the project has a red line, and a real escape route if someone needs it. In an ecosystem where the discussion is what it means for one piece to be so central, the existence of such a fork is the reminder that centrality does not have to be permanent.
+
+## The Counterexample
+
+The spectrum of reactions includes the opposite decision, and it deserves attention for what it reveals. **MidnightBSD** implemented the first age-verification daemon in a base system — `aged` — and enabled it by default in version 4.0.4 in March 2026.
+
+MidnightBSD is not a Linux distro: it is a FreeBSD derivative, and that distance gave it perspective. While the debate in the Linux world focused on systemd, it had the chance to see the law coming and decide from scratch how to respond, without the pressure of a user base accustomed to saying no. The question they asked was not "do we implement it?", but "if someone is going to implement it, who controls the code?".
+
+### How It Works
+
+- **Self-declared**: the user enters their age bracket with no external verification — the minimum the law allows.
+- **By default**: the daemon comes enabled in 4.0.4; it is not an option the administrator has to discover.
+- **Geographic exclusion**: the license excludes use in California and Brazil, where the law is more aggressive.
+
+You can check it on your own system:
+
+```bash
+sysrc aged_enable
+service aged status
+```
+
+The first line shows whether the daemon is enabled at boot; the second, whether it is running.
+
+The decision is not an endorsement of age verification, but a strategic bet: they prefer to implement the minimum required and keep control of the data in their own code rather than let a government impose something worse later. It is the same logic that led some distributions not to touch the field at all — but from the opposite end: instead of waiting to see what the government does, they got ahead and set the rules on their own terms.
+
+### The Three Forms of Defense
+
+| Strategy | Who | Position |
+|---|---|---|
+| Refuse on principle | Artix, Devuan, Garuda | Do not build the infrastructure |
+| Negotiate the law | System76 | Change the legislation |
+| Comply with the minimum | MidnightBSD | Implement `aged` and keep control |
+
+The lesson is not that MidnightBSD is wrong. It is that resistance is not a monolithic block: there are those who refuse on principle, those who negotiate the law, and those who comply with the minimum while staying in control. All three are forms of defense.
+
+## Who Pushes These Laws
+
+It is worth looking at who is behind the legislative wave. The research project **The Boring Techie** (TBOTE) tracked the funding and points to **Meta** as the largest donor:
+
+| Data | Amount |
+|---|---|
+| Traced funding | more than $25 million |
+| Total estimate | up to $2 billion |
+| In Europe alone | more than $10 million |
+
+The money flows through the **Digital Childhood Alliance**, backed by the Institute for Family Studies, and through groups like Common Sense Media. Bloomberg reported Meta's funding of the alliance in July 2025.
+
+The motives are not hard to infer:
+
+- If age verification moves to the operating system level, small applications without a store or infrastructure are left out — or end up depending on whoever owns the API.
+- Platforms with app stores, installed bases, and legal capacity become the natural gatekeepers of digital identity.
+- The rhetoric of child protection is legitimate and welcome. The identity infrastructure built under that banner is something else.
+
+## The Human Cost
+
+The fight had a personal cost. The author of the systemd PR, **Dylan Taylor**, had proposed the same idea — a self-declared field, without verification — on three fronts:
+
+- **systemd**: PR #40954, which added `birthDate` to `userdb`.
+- **Ubuntu installer**: a birth-date picker, closed by the community's reaction.
+- **Arch installer**: the same proposal, with the same result.
+
+In his defense, he presented it as the least horrible way to comply with the law:
+
+> You can put January 1, 1900.
+
+The community did not respond with arguments. Taylor was doxxed, received death threats, and sustained harassment, and ended up disabling the issues and pull request tabs of his repositories. That response is the one not to imitate. Refusing to let identity infrastructure into the base system is a defensible position and, in this blog's view, the right one. Harassing the messenger destroys it. Garuda's statement said it better than anyone: pressure should go against the laws, not against volunteers.
+
+## How to Change the Law Instead of Dodging It
+
+The alternative to refusal and compliance exists, and **System76** proved it. The sequence was this:
+
+1. In Colorado, founder Carl Richell met with Senator Matt Ball, co-author of SB 26-051, along with other members of the local open-source community.
+2. The result was a collaborative process that ended in a concrete exemption, written in terms that do not depend on a distro being called Linux:
+
+> The provider or developer that distributes software under terms that permit copying, redistribution, and modification, without technical or contractual restrictions imposed by the provider, is exempt.
+
+3. Richell coordinated with community members and lobbyists in California, exchanging notes and language that ended up in California's legislation.
+
+The strategy was deliberate: to set a precedent in Colorado that could influence California. And it worked. California adopted language almost identical to what System76 drafted in Colorado. Pop!_OS and the COSMIC desktop will not include age verification or attestation.
+
+The exemption is not a clause to cover piracy: it requires whoever invokes it not to impose technical or contractual restrictions on installing modified versions — an anti-tivoization safeguard. And it leaves gray areas where it touches:
+
+- **SteamOS**, for including the proprietary Steam client.
+- **Commercial Android** with Play Services.
+- The criterion is not "Linux"; it is the license and the absence of locks.
+
+## What It All Means
+
+The lesson of March 2026 is twofold. The first: open source is no longer enough. A central piece of the ecosystem can be reached by a law passed thousands of kilometers away, and technical architecture matters less than the ability of those who control it to negotiate. Digital sovereignty is not won by writing good code: it is won by deciding, law by law and distribution by distribution, which infrastructure is built and which is refused.
+
+The second is more hopeful. The entire ecosystem — distros, forks, contributors, manufacturers — breathed in one week. An optional field did not become mandatory, and two state laws ended up exempting open-source software. The battle is not over: the federal level, New York, the European Union, and the rest of the states have seen that this tactic works and will come back. But the demonstration has been made: sovereignty is exercised, not granted. And every time it is exercised — with a refusal, a fork, or a meeting with a senator — the next law arrives weaker.
