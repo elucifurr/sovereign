@@ -122,3 +122,9 @@
 - [x] Remove `protocolos-abiertos` from taxonomy.ts
 - [x] Remove `dependencia-tecnologica` from taxonomy.ts
 - [x] Update existing posts that referenced those tags
+
+## Posts sueltos (Linux)
+
+- [ ] **2026-08-05 — systemd: qué es y por qué existe / What It Is and Why It Exists**
+  - [ ] en: `src/content/posts/en/20260805-what-is-systemd.mdx`
+  - [ ] es: `src/content/posts/es/20260805-que-es-systemd.mdx`

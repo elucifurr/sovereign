@@ -1,0 +1,103 @@
+---
+title: "systemd: What It Is and Why It Exists"
+description: "The system that boots your Linux machine, supervises your services, and organizes your operating system — and how it got that way."
+category: "sistemas"
+tags:
+  - "linux"
+  - "arquitectura"
+pubDate: 2026-08-05
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1561144257-e32e8efc6c4f"
+heroImageAlt: "Server room with blue lights representing system management"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: en
+draft: false
+featured: false
+---
+
+systemd is the first process that runs on your Linux machine — process 1 — but it is far more than an init system. It is a complete system management platform that boots the hardware, supervises services, captures logs, resolves DNS, manages user sessions, and describes the entire machine as a set of units with explicit dependencies. To understand modern Linux, you need to understand what systemd is and why it was built.
+
+## The Problem It Solved
+
+Before systemd, Linux booting was managed with shell scripts. A SysV init read a runlevel number and ran the scripts in `/etc/rc.d/` or `/etc/init.d/` in order — one per service, with a number fixing its position in the sequence. The system booted sequentially: networking waited for the filesystem, the filesystem waited for the hardware, and nobody knew for certain what depended on what.
+
+That model had a design flaw. The sequence was encoded in file names — `S20networking`, `S30postgresql` — and the real dependencies between services were assumed by convention, not declared. If a service started before its dependency, it failed; if it started after, it slowed the boot. Race conditions were common, boots were slow because everything waited for everything, and each distribution maintained its own variant of the scripts.
+
+In 2010, Lennart Poettering and Kay Sievers presented systemd as a radical alternative: describe the boot as a dependency graph rather than a list of commands.
+
+## What systemd Is
+
+systemd is not a single program. It is a suite of components that share a common idea — that system configuration is expressed in declarative unit files, orchestrated by a central supervisor. The main components are:
+
+- **PID 1 (systemd)**: the first process, replacing init. It starts units, manages their dependencies, and supervises running services.
+- **systemd-journald**: captures system logs in a structured, queryable journal.
+- **systemd-logind**: manages user sessions, consoles, and logout.
+- **systemd-resolved**: local DNS resolver with caching.
+- **systemd-networkd**: network configuration.
+- **systemd-udevd**: device management and hardware rules.
+- **systemd-timesyncd**: time synchronization.
+- **systemd-tmpfiles**: temporary files and directories.
+- **systemd-boot**: a minimal boot loader.
+- **systemd-machined** and **systemd-nspawn**: lightweight containers and machines.
+- **systemd-userdb**: a user record service available to other services.
+
+They all share the same philosophy: each piece is configured with simple text files and exposes a uniform interface through `systemctl` and `journalctl`.
+
+## The Architecture: Units and Dependencies
+
+The fundamental unit is the *unit*. Each unit is defined in a `.service`, `.socket`, `.target`, `.timer`, `.mount`, `.automount`, `.path`, `.slice`, `.scope`, or `.device` file. The key is dependencies: a unit declares what it needs before starting and what activates it.
+
+A database service, for example, declares that it needs the network and storage. systemd builds the full graph of the system at boot and runs everything in parallel that has no dependencies between it. That is why modern machines boot in seconds: the sequential SysV boot has been replaced by a parallel boot governed by declared dependencies.
+
+Targets replace runlevels. `multi-user.target` is the equivalent of runlevel 3; `graphical.target` of runlevel 5; `rescue.target` of emergency mode. But unlike runlevels, targets are nodes in the same dependency graph, not discrete levels — booting toward a target means starting every unit that aggregates into it.
+
+Supervision goes beyond boot. systemd keeps every service in a control cgroup, making it possible to group processes, measure their CPU and memory usage, and kill them cleanly when the service stops. If a main process dies, systemd can restart it according to policy. systemd timers have replaced cron in most installations, and socket activation starts a service only when the first connection arrives.
+
+## The Journal
+
+SysV scripts wrote to scattered log files with different formats — each daemon its own. systemd centralizes logging in journald, which stores messages with structured metadata: precise timestamps, source service, priority, unit. `journalctl` filters by unit, by boot, by priority, or by time range without needing external tools.
+
+That was not received without friction. The binary journal format broke the UNIX tradition of plain-text files, and debates about its format have been constant. The trade-off is real: a structured, coherent log is fundamentally more useful for diagnosing a complex system than a collection of files that each daemon writes its own way.
+
+## Practical Diagnostics
+
+Inspect what systemd is managing on your system:
+
+```bash
+systemctl list-units --type=service --state=running
+```
+
+This lists active services, their status, and the description of each unit. For the status of one service:
+
+```bash
+systemctl status sshd
+```
+
+Analyze the boot sequence:
+
+```bash
+systemd-analyze
+systemd-analyze critical-chain
+```
+
+The first command measures total boot time. The second shows the critical chain — the dependency path that consumes the most time — and reveals which unit is delaying the rest.
+
+Read the logs from the current boot:
+
+```bash
+journalctl -b
+```
+
+The `-b` flag limits output to the current boot; `journalctl -u sshd.service -f` follows a specific service's logs in real time. To check scheduled timers:
+
+```bash
+systemctl list-timers
+```
+
+## Where We Are
+
+systemd has become the common infrastructure of virtually every major Linux distribution — Fedora, Arch, Debian, Ubuntu, openSUSE, SUSE Enterprise, RHEL — and its coverage grows with each release. That it is controversial is not an accident: concentrating boot, services, logging, and session management in a single project has triggered one of the longest debates in the ecosystem's history. But its current role is undeniable: systemd is the layer on which modern Linux stands.
+
+The architecture it chose is not the only one possible — alternatives such as OpenRC, runit, or s6 exist — but they increasingly operate at the periphery. What is debated is not whether systemd works: it works. The debate is what it means, for an ecosystem built on the idea of interchangeable parts, that one part has become so central.

@@ -1,0 +1,103 @@
+---
+title: "systemd: qué es y por qué existe"
+description: "El sistema que arranca tu Linux, gestiona tus servicios y organiza tu sistema operativo — y cómo llegó a serlo."
+category: "sistemas"
+tags:
+  - "linux"
+  - "arquitectura"
+pubDate: 2026-08-05
+authors:
+  - "default"
+heroImage: "https://images.unsplash.com/photo-1561144257-e32e8efc6c4f"
+heroImageAlt: "Sala de servidores con luces azules representando la gestión del sistema"
+heroImageWidth: 1600
+heroImageHeight: 1067
+locale: es
+draft: false
+featured: false
+---
+
+systemd es el primer proceso que se ejecuta en tu equipo Linux — el proceso 1 — pero es mucho más que un init. Es una plataforma completa de gestión del sistema que arranca el hardware, supervisa los servicios, captura los registros, resuelve DNS, gestiona sesiones de usuario, y describe toda la máquina como un conjunto de unidades con dependencias explícitas. Para entender Linux moderno, hay que entender qué es systemd y por qué se construyó.
+
+## El problema que resolvió
+
+Antes de systemd, el arranque de Linux se gestionaba con scripts de shell. Un init SysV leía un número de runlevel y ejecutaba en orden los scripts de `/etc/rc.d/` o `/etc/init.d/` — uno para cada servicio, con un número que fijaba su posición en la secuencia. El sistema arrancaba de forma secuencial: la red esperaba al sistema de ficheros, el sistema de ficheros esperaba al hardware, y nadie sabía con certeza qué dependía de qué.
+
+Este modelo tenía un problema de diseño. La secuencia estaba codificada en el nombre de los ficheros — `S20networking`, `S30postgresql` — y las dependencias reales entre servicios no eran declarativas, sino asumidas por convención. Si un servicio arrancaba antes que su dependencia, fallaba; si arrancaba después, alargaba el arranque. Las condiciones de carrera eran frecuentes, el arranque era lento porque todo esperaba a todo, y cada distribución mantenía su propia variante de los scripts.
+
+En 2010, Lennart Poettering y Kay Sievers presentaron systemd como una alternativa radical: describir el arranque como un grafo de dependencias, no como una lista de comandos.
+
+## Qué es systemd
+
+systemd no es un programa. Es una suite de componentes que comparten una idea común — que la configuración del sistema se expresa en ficheros de unidades declarativos y que un supervisor central los orquesta. Los componentes principales son:
+
+- **PID 1 (systemd)**: el primer proceso, reemplaza al init. Arranca unidades, gestiona sus dependencias y supervisa los servicios en ejecución.
+- **systemd-journald**: captura los registros del sistema en un registro estructurado y consultable.
+- **systemd-logind**: gestiona sesiones de usuario, puestos de consola y el cierre de sesión.
+- **systemd-resolved**: resolutor de DNS local con caché.
+- **systemd-networkd**: configuración de red.
+- **systemd-udevd**: gestión de dispositivos y reglas de hardware.
+- **systemd-timesyncd**: sincronización de hora.
+- **systemd-tmpfiles**: ficheros y directorios temporales.
+- **systemd-boot**: un gestor de arranque minimalista.
+- **systemd-machined** y **systemd-nspawn**: contenedores y máquinas ligeras.
+- **systemd-userdb**: registro de usuarios accesible por servicios.
+
+Todos comparten la misma filosofía: cada pieza se configura con ficheros de texto simples y expone una interfaz uniforme vía `systemctl` y `journalctl`.
+
+## La arquitectura: unidades y dependencias
+
+La unidad fundamental es la *unit*. Cada unidad se define en un fichero `.service`, `.socket`, `.target`, `.timer`, `.mount`, `.automount`, `.path`, `.slice`, `.scope` o `.device`. La clave está en las dependencias: una unidad declara qué necesita antes de arrancar y qué la activa.
+
+Un servicio de base de datos, por ejemplo, declara que necesita la red y el almacenamiento. systemd construye el grafo completo del sistema en el arranque y ejecuta en paralelo todo lo que no tiene dependencias entre sí. Por eso los equipos modernos arrancan en segundos: el arranque secuencial de SysV ha sido sustituido por un arranque paralelo gobernado por dependencias declaradas.
+
+Los targets reemplazan a los runlevels. `multi-user.target` es el equivalente del runlevel 3; `graphical.target`, del 5; `rescue.target`, del modo de emergencia. Pero a diferencia de los runlevels, los targets son nodos del mismo grafo de dependencias, no niveles discretos — arrancar hacia un target significa arrancar todas las unidades que se agregan hacia él.
+
+La supervisión va más allá del arranque. systemd mantiene cada servicio en un cgroup de control, lo que permite agrupar procesos, medir su consumo de CPU y memoria, y matarlos de forma limpia al detener el servicio. Si un proceso principal muere, systemd puede reiniciarlo según política. Los timers de systemd han sustituido a cron en la mayoría de las instalaciones, y la activación por socket permite arrancar un servicio solo cuando llega la primera conexión.
+
+## El journal
+
+Los scripts de SysV escribían en ficheros de log dispersos con formatos distintos — cada daemon con el suyo. systemd centraliza los registros en journald, que almacena los mensajes con metadatos estructurados: tiempo preciso, servicio de origen, prioridad, unidad. `journalctl` permite filtrar por unidad, por arranque, por prioridad o por rango de tiempo sin necesidad de herramientas externas.
+
+Esto no fue recibido sin fricción. El journal en formato binario rompía con la tradición UNIX de ficheros de texto planos, y los debates sobre su formato han sido constantes. La contrapartida es real: un registro estructurado y coherente es fundamentalmente más útil para diagnosticar un sistema complejo que una colección de ficheros que cada daemon escribe a su manera.
+
+## Diagnóstico práctico
+
+Inspecciona qué está gestionando systemd en tu sistema:
+
+```bash
+systemctl list-units --type=service --state=running
+```
+
+Muestra los servicios activos, su estado y la descripción de cada unidad. Para el estado de un servicio concreto:
+
+```bash
+systemctl status sshd
+```
+
+Analiza la secuencia de arranque:
+
+```bash
+systemd-analyze
+systemd-analyze critical-chain
+```
+
+La primera orden mide el tiempo total de arranque. La segunda muestra la cadena crítica — el camino de dependencias que más tiempo consume — y permite ver qué unidad retrasa el resto.
+
+Lee los registros del arranque actual:
+
+```bash
+journalctl -b
+```
+
+La opción `-b` limita la salida al arranque en curso; `journalctl -u sshd.service -f` sigue los registros de un servicio concreto en tiempo real. Para comprobar los timers programados:
+
+```bash
+systemctl list-timers
+```
+
+## Dónde estamos
+
+systemd se ha convertido en la infraestructura común de prácticamente todas las distribuciones Linux principales — Fedora, Arch, Debian, Ubuntu, openSUSE, SUSE Enterprise, RHEL — y su cobertura crece con cada lanzamiento. Que sea controvertido no es un accidente: concentrar el arranque, los servicios, los registros y la gestión de sesiones en un mismo proyecto ha provocado uno de los debates más largos de la historia del ecosistema. Pero su papel actual es innegable: systemd es la capa sobre la que se sostiene el Linux moderno.
+
+La arquitectura que eligió no es la única posible — existen alternativas como OpenRC, runit o s6 — pero cada vez operan en la periferia. Lo que se discute no es si systemd funciona: funciona. La discusión es qué significa, para un ecosistema construido sobre la idea de piezas intercambiables, que una pieza sea tan central.
