@@ -37,7 +37,7 @@ importers:
         version: 1.1.5(supports-color@10.2.2)
       astro-seo:
         specifier: ^1.1.0
-        version: 1.1.0(prettier@3.9.6)(typescript@7.0.2)
+        version: 1.2.0
       pagefind:
         specifier: ^1.5.0
         version: 1.5.2
@@ -1437,8 +1437,8 @@ packages:
   astro-icon@1.1.5:
     resolution: {integrity: sha512-CJYS5nWOw9jz4RpGWmzNQY7D0y2ZZacH7atL2K9DeJXJVaz7/5WrxeyIxO8KASk1jCM96Q4LjRx/F3R+InjJrw==}
 
-  astro-seo@1.1.0:
-    resolution: {integrity: sha512-G6LDNDyga30o+52v58jU7C35n3cORUzk7RSuY+xf/ZRbW6JiNplyaOO1VoYVKO+xzYNaBcxqNln2RFRR/wgJNQ==}
+  astro-seo@1.2.0:
+    resolution: {integrity: sha512-ZqS2ZLKJ9GZwcONho9W95xkGBWuPpikTsMBzjuq/6CKtKUEgMDbSZkoLwoZsmLVq/p52T4z7JwgjC3AtMg7Trg==}
 
   astro@7.1.4:
     resolution: {integrity: sha512-e0gkBReJECAZuuTgpEB5JMUc6J4mM6boD6wuVE1pBf/fMywG47f8qm9XQoA6kZB1RWHiHmUlLuQ2jd9Q5+72HQ==}
@@ -4203,13 +4203,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  astro-seo@1.1.0(prettier@3.9.6)(typescript@7.0.2):
-    dependencies:
-      '@astrojs/check': 0.9.10(prettier@3.9.6)(typescript@7.0.2)
-    transitivePeerDependencies:
-      - prettier
-      - prettier-plugin-astro
-      - typescript
+  astro-seo@1.2.0: {}
 
   astro@7.1.4(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.1.2)(jiti@2.7.0)(yaml@2.9.0):
     dependencies:
